@@ -143,4 +143,5 @@ infra/nginx_prod.conf
 infra/docker-compose.prod.yml
 
 
-
+# frontend
+frontend/node_modules
