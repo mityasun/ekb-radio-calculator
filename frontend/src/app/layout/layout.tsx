@@ -1,15 +1,17 @@
 import clsx from 'clsx';
 import s from './layout.module.css';
 import { Outlet } from 'react-router-dom';
+import { Header } from '../../widgets/header';
+import { Footer } from '../../widgets/footer';
 
 export const Layout = () => {
   return (
     <div className={clsx(s.layout)}>
-      <header>This is header</header>
-      <main className={clsx(s.main)}>
+      <Header />
+      <main className={clsx(s.layoutMain)}>
         <Outlet />
       </main>
-      <footer>This is footer</footer>
+      <Footer />
     </div>
   );
 };

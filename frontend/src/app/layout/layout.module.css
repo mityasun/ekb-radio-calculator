@@ -2,11 +2,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 1161px;
+  width: 100%;
   height: 100%;
   margin: 0 auto;
 }
 
-.main {
+.layoutMain {
   flex: 1 0 auto;
+  width: 100%;
+}
+
+.layoutFooter {
+  display: flex;
+  width: 100%;
+  background-color: var(--secondary-color);
 }

@@ -1,0 +1,20 @@
+.header {
+  width: 100%;
+}
+
+.headerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: var(--wrapper-width);
+  margin: 20px auto;
+  padding: 20px;
+  background-color: var(--white);
+  border-radius: 20px;
+  box-shadow: var(--header-shadow);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+}

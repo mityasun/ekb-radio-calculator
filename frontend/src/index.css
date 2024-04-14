@@ -10,6 +10,10 @@
   --secondary-color: #222d50;
   --primary-text-color: #2b3140;
   --background-color: #f6f8fe;
+
+  --wrapper-width: 1160px;
+
+  --header-shadow: 0px 2px 10px 0px rgba(79,79,79,0.1);
 }
 
 body,
@@ -17,4 +21,31 @@ html,
 #root {
   margin: 0;
   height: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 6.4rem;
+}
+
+h2 {
+  font-size: 4.8rem;
+}
+
+h3 {
+  font-size: 2.4rem;
 }

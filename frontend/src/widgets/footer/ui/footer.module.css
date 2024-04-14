@@ -1,0 +1,14 @@
+.footer {
+  width: 100%;
+  color: var(--white);
+  background-color: var(--secondary-color);
+}
+
+.footerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--wrapper-width);
+  margin: 0 auto;
+  padding: 40px 0;
+}
