@@ -1,3 +1,25 @@
+@font-face {
+  font-family: 'Gilroy';
+  src: url('shared/assets/fonts/Gilroy-Regular.eot');
+  src: url('shared/assets/fonts/Gilroy-Regular.eot?#iefix') format('embedded-opentype'),
+  url('shared/assets/fonts/Gilroy-Regular.woff') format('woff'),
+  url('shared/assets/fonts/Gilroy-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy Bold';
+  src: url('shared/assets/fonts/Gilroy-Bold.eot');
+  src: url('shared/assets/fonts/Gilroy-Bold.eot?#iefix') format('embedded-opentype'),
+  url('shared/assets/fonts/Gilroy-Bold.woff') format('woff'),
+  url('shared/assets/fonts/Gilroy-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {
@@ -13,7 +35,7 @@
 
   --wrapper-width: 1160px;
 
-  --header-shadow: 0px 2px 10px 0px rgba(79,79,79,0.1);
+  --header-shadow: 0px 2px 10px 0px #4f4f4f1a;
 }
 
 body,
@@ -21,7 +43,7 @@ html,
 #root {
   margin: 0;
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: 'Gilroy', Arial, Helvetica, sans-serif;
   font-size: 10px;
 }
 

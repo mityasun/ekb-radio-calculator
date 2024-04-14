@@ -7,8 +7,8 @@
 .footerWrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: var(--wrapper-width);
+  justify-content: space-between;
+  max-width: var(--wrapper-width);
   margin: 0 auto;
   padding: 40px 0;
 }

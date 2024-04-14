@@ -9,7 +9,7 @@ export default defineConfig({
       include: '**/*.svg?react'
     })
   ],
-  base: '/frontend/',
+  base: '/',
   resolve: {
     alias: {
       app: '/src/app',

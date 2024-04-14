@@ -6,9 +6,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: var(--wrapper-width);
+  max-width: var(--wrapper-width);
   margin: 20px auto;
-  padding: 20px;
+  padding: 15px 20px;
   background-color: var(--white);
   border-radius: 20px;
   box-shadow: var(--header-shadow);
