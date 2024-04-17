@@ -1,0 +1,37 @@
+.radioStationDescription {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  padding: 20px 20px;
+  max-width: var(--wrapper-width);
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  font-size: 1.6rem;
+}
+
+.radioStationLogo {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  width: 20%;
+  min-width: 260px;
+
+  img {
+    width: 70%;
+  }
+}
+
+.radioStationDescriptionText {
+  article {
+    max-width: 700px;
+  }
+
+  h3 {
+    margin-bottom: var(--h3-mb);
+  }
+
+  p {
+    margin-bottom: var(--paragraph-mb);
+  }
+}

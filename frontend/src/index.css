@@ -12,10 +12,22 @@
   --secondary-color: #222d50;
   --primary-text-color: #2b3140;
   --background-color: #f6f8fe;
+  --background-color-select: #ebf0f6;
+  --primary-color-gradient: linear-gradient(to bottom left, #05bb758d, #05bb75);
 
-  --wrapper-width: 1160px;
+  --wrapper-width: 1200px;
 
   --header-shadow: 0px 2px 10px 0px #4f4f4f1a;
+
+  --select-color-hover: #0000001a;
+  --select-color-is-selected: #05bb7572;
+
+  --border-radius: 20px;
+
+  --paragraph-mb: 10px;
+
+  --h3-mb: 15px;
+
 }
 
 body,

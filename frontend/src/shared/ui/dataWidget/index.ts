@@ -1,0 +1,1 @@
+export { DataWidget } from './dataWidget';

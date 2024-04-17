@@ -1,0 +1,50 @@
+.app-select {
+  max-width: 25%;
+  min-width: 250px;
+  font-size: 1.8rem;
+
+}
+
+.app-select__control {
+  background-color: var(--background-color-select) !important;
+  border: none !important;
+  border-radius: 15px !important;
+  padding: 5px 15px !important;
+  cursor: pointer !important;
+}
+
+.app-select__control--is-focused {
+  box-shadow: none !important;
+}
+
+.app-select__indicator {
+  color: transparent !important;
+}
+
+.app-select__indicator:after {
+  display: inline-flex;
+  content: '';
+  background-image: url(src/shared/assets/icon/ArrowDown.svg);
+  background-size: 24px 24px;
+  height: 24px;
+  width: 24px;
+  position: absolute;
+  right: 20px;
+  border-style: unset;
+  border-width: 0px;
+  border-color: unset;
+}
+
+.app-select__indicator-separator {
+  display: none !important;
+}
+
+.app-select__option:hover,
+.app-select__option--is-focused {
+  background-color: var(--select-color-hover) !important;
+}
+
+.app-select__option--is-selected {
+  background-color: var(--select-color-is-selected) !important;
+  color: var(--primary-text-color) !important;
+}

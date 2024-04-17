@@ -5,9 +5,17 @@
 .headerWrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   max-width: var(--wrapper-width);
-  margin: 20px auto;
+  margin: 0 auto;
+  padding: 15px 20px;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   padding: 15px 20px;
   background-color: var(--white);
   border-radius: 20px;

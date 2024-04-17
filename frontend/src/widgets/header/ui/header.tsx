@@ -7,8 +7,10 @@ export const Header = () => {
   return (
     <header className={clsx(s.header)}>
       <div className={clsx(s.headerWrapper)}>
-        <HeaderLogo />
-        <Contacts textColor={'#2b3140'} />
+        <div className={clsx(s.headerContainer)}>
+          <HeaderLogo />
+          <Contacts textColor={'#2b3140'} />
+        </div>
       </div>
     </header>
   );
