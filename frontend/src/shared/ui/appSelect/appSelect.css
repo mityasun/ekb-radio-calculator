@@ -24,7 +24,7 @@
 .app-select__indicator:after {
   display: inline-flex;
   content: '';
-  background-image: url(src/shared/assets/icon/ArrowDown.svg);
+  background-image: url(/src/shared/assets/icon/ArrowDown.svg);
   background-size: 24px 24px;
   height: 24px;
   width: 24px;

@@ -9,11 +9,14 @@
 :root {
   --white: #ffffff;
   --primary-color: #05bb75;
+  --primary-color-hover: #02935b;
   --secondary-color: #222d50;
   --primary-text-color: #2b3140;
   --background-color: #f6f8fe;
   --background-color-select: #ebf0f6;
-  --primary-color-gradient: linear-gradient(to bottom left, #05bb758d, #05bb75);
+  --primary-color-gradient: linear-gradient(to bottom left, #63f7b0, #05bb75);
+  --data-picker-border-color: #61646c32;
+  --data-picker-weekend-background-color: #05bb7545;
 
   --wrapper-width: 1200px;
 
@@ -38,6 +41,7 @@ html,
   font-family: 'Gilroy', Arial, Helvetica, sans-serif;
   font-size: 10px;
   color: var(--primary-text-color);
+  background: var(--background-color);
 }
 
 h1,

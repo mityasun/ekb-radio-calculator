@@ -20,5 +20,7 @@ module.exports = {
       'error',
       120
     ],
+    'react-hooks/exhaustive-deps': 'off',
+    '@typescript-eslint/no-unused-vars': 'off'
   },
 }

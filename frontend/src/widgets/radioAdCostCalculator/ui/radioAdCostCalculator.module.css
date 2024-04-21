@@ -1,0 +1,27 @@
+.radioAdCostCalculator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 20px 20px;
+  width: 100%;
+  max-width: var(--wrapper-width);
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  font-size: 1.6rem;
+}
+
+.radioAdCostCalculatorTitle {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.radioAdCostCalculatorWelcome {
+  max-width: 850px;
+  margin: 0 auto;
+
+  p {
+    margin-bottom: var(--paragraph-mb);
+  }
+}

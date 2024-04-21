@@ -1,2 +1,2 @@
 export { PHONE, EMAIL, ADDRESS } from './contacts';
-export { MAIN_PAGE_TITLE } from './mainPage';
+export { TITLE_ONLINE_CALCULATOR } from './radioAdCostCalculator';

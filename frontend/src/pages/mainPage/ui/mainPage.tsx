@@ -3,6 +3,7 @@ import s from './mainPage.module.css';
 import { LocationStationSelect } from 'widgets/locationStationSelect';
 import { RadioStationDescription } from 'widgets/radioStationDescription';
 import { RadioStationDataWidget } from 'widgets/radioStationDataWidget';
+import { RadioAdCostCalculator } from 'widgets/radioAdCostCalculator';
 
 export const MainPage = () => {
   return (
@@ -10,6 +11,7 @@ export const MainPage = () => {
       <LocationStationSelect />
       <RadioStationDescription />
       <RadioStationDataWidget />
+      <RadioAdCostCalculator />
     </div>
   );
 };

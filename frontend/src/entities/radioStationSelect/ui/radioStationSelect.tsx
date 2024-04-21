@@ -27,5 +27,5 @@ export const RadioStationSelect = () => {
     setCurrentRadioStation((newValue as AppSelectOption).value);
   };
 
-  return <AppSelect options={options} onChange={onChange} value={getValue()} />;
+  return <AppSelect maxWidth={'275px'} options={options} onChange={onChange} value={getValue()} />;
 };

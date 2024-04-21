@@ -7,6 +7,17 @@ export type AppSelectOption = {
   label: string;
 };
 
-export const AppSelect: FC<React.ComponentProps<typeof Select>> = ({ ...props }) => {
-  return <Select className="app-select" classNamePrefix="app-select" {...props} />;
+export interface AppSelectProps extends React.ComponentProps<typeof Select> {
+  maxWidth: string;
+}
+
+export const AppSelect: FC<AppSelectProps> = ({ maxWidth, ...props }) => {
+  return (
+    <Select
+      styles={{ container: (base) => ({ ...base, maxWidth }) }}
+      className="app-select"
+      classNamePrefix="app-select"
+      {...props}
+    />
+  );
 };

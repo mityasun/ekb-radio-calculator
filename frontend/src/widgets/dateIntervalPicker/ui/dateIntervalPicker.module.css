@@ -1,0 +1,141 @@
+:root {
+  --height-basic-rows: 30px;
+  --wigth-basic-cells: 28px;
+  --height-title-rows: 60px;
+  --table-cells-padding: 4px;
+
+}
+
+.dateIntervalPicker {
+  display: flex;
+  width: 100%;
+  font-size: 1.2rem;
+}
+
+.rowHeaders {
+  display: flex;
+  flex-direction: column;
+  min-width: 90px;
+  max-width: 90px;
+}
+
+.rowHeaders > * {
+  width: 100%;
+  padding: var(--table-cells-padding);
+  font-weight: 600;
+  height: var(--height-basic-rows);
+  border: 1px solid var(--data-picker-border-color);
+  border-right: 1px solid var(--primary-color);
+}
+
+.rowHeaders > *:first-child {
+  height: var(--height-title-rows);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.rowHeaders > *:last-child {
+  display: flex;
+  align-items: center;
+  height: var(--height-title-rows);
+}
+
+.scrollContainer {
+  flex-grow: 1;
+  overflow-x: auto;
+}
+
+.columHeaders {
+  display: flex;
+  font-weight: 600;
+}
+
+.columHeaders > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--wigth-basic-cells);
+  max-width: var(--wigth-basic-cells);
+  padding: var(--table-cells-padding);
+  height: var(--height-title-rows);
+  border: 1px solid var(--data-picker-border-color);
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.tableRow {
+  display: flex;
+  align-items: center;
+  height: var(--height-basic-rows);
+}
+
+.tableRowTotal {
+  display: flex;
+  align-items: center;
+  height: var(--height-title-rows);
+}
+
+.tableRowTotal > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--wigth-basic-cells);
+  max-width: var(--wigth-basic-cells);
+  height: 100%;
+  border: 1px solid var(--data-picker-border-color);
+}
+
+.tableCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--wigth-basic-cells);
+  max-width: var(--wigth-basic-cells);
+  height: var(--height-basic-rows);
+  border: 1px solid var(--data-picker-border-color);
+  cursor: pointer;
+}
+
+.tableCell:hover {
+  border: 1px solid var(--primary-color);
+  outline: 2px solid var(--primary-color);
+}
+
+.weekend {
+  background-color: var(--data-picker-weekend-background-color);
+}
+
+.scrollContainerCounter,
+.scrollContainerTotal,
+.tableCellCounter,
+.tableCellTotal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--data-picker-border-color);
+  min-width: 75px;
+  max-width: 75px;
+}
+
+.scrollContainerCounter,
+.scrollContainerTotal {
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.scrollContainerTotal,
+.tableCellTotal {
+  min-width: 85px;
+  max-width: 85px;
+}
+
+.tableCellCounter,
+.tableCellTotal {
+  height: 100%;
+  font-weight: 600;
+}
+
+.selectedCell {
+  background-color: var(--primary-color);
+  color: var(--white);
+  font-weight: 600;
+}

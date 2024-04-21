@@ -1,0 +1,39 @@
+:root {
+  --onColor: #05bb75;
+}
+
+.adSettings {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.adSettingsSelector {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.adSettingsSelector > * {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  p {
+    margin-bottom: var(--paragraph-mb);
+  }
+}
+
+.adSettingsSwitch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.adSettingsSwitch > * {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
