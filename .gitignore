@@ -144,3 +144,7 @@ infra/docker-compose.prod.yml
 
 
 
+/backend/media/system/
+/backend/media/stations/
+/backend/media/import/
+/backend/data.json
