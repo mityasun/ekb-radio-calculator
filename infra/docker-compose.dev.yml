@@ -13,21 +13,21 @@ services:
       - 5432
     container_name: ekb_radio_db
 
-#  pgadmin:
-#    image: dpage/pgadmin4:7.6
-#    restart: always
-#    volumes:
-#      - pgadmin_data:/var/lib/pgadmin
-#    env_file:
-#      - .env.dev
-#    networks:
-#      - db_network
-#      - pgadmin_network
-#    depends_on:
-#      - postgres
-#    expose:
-#      - 1043
-#    container_name: ekb_radio_pgadmin
+  pgadmin:
+    image: dpage/pgadmin4:7.6
+    restart: always
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    env_file:
+      - .env.dev
+    networks:
+      - db_network
+      - pgadmin_network
+    depends_on:
+      - postgres
+    expose:
+      - 1043
+    container_name: ekb_radio_pgadmin
 
   redis:
     image: redis:7.2.1-alpine
@@ -89,21 +89,20 @@ services:
     networks:
       - redis_network
       - backend_network
-#      - pgadmin_network
+      - pgadmin_network
     depends_on:
       - backend
-#      - pgadmin
     container_name: ekb_radio_nginx
 
 networks:
   backend_network:
   db_network:
   redis_network:
-#  pgadmin_network:
+  pgadmin_network:
 
 volumes:
   postgres_data:
-#  pgadmin_data:
+  pgadmin_data:
   static_value:
   media_value:
   api_docs_value:
