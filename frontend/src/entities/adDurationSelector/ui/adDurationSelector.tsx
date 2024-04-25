@@ -1,42 +1,59 @@
-import { FC, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
-
-export interface AdDurationSelectorProps {
-  onDurationChange: (duration: string) => void;
-}
+import { useAdSettings } from 'shared/store';
+import { getAudioDurations } from '../api';
+import { useQuery } from '@tanstack/react-query';
+import { AdDuration, AdDurationOptions } from 'shared/types';
 
 const maxWidth = '100%';
 
-const getDurationOptions = (startDuration: number, endDuration: number, period: number): AppSelectOption[] => {
-  const result: AppSelectOption[] = [];
-
-  for (let i = startDuration; i <= endDuration; i += period) {
-    result.push({
-      value: i.toString(),
-      label: `${i.toString()} сек`
-    });
-  }
-
-  return result;
-};
-
-const options = getDurationOptions(5, 30, 5);
-
-export const AdDurationSelector: FC<AdDurationSelectorProps> = ({ onDurationChange }) => {
-  const [currentDuration, setCurrentDuration] = useState(options[0].value);
+export const AdDurationSelector = () => {
+  const { adSettings, setAudioDuration } = useAdSettings();
+  const { data, isLoading } = useQuery({ queryKey: ['audio-durations'], queryFn: getAudioDurations });
 
   useEffect(() => {
-    onDurationChange(currentDuration);
-  }, []);
+    if (!data) return;
 
-  const getValue = () => {
-    return currentDuration ? options.find((d) => d.value === currentDuration) : '';
-  };
+    const defaultAudioDuration = data.find((duration: AdDuration) => duration.default) || data[0];
 
-  const onChange = (newValue: unknown) => {
-    setCurrentDuration((newValue as AppSelectOption).value);
-    onDurationChange((newValue as AppSelectOption).value);
-  };
+    if (!defaultAudioDuration) return;
+    setAudioDuration(defaultAudioDuration);
+  }, [data]);
 
-  return <AppSelect maxWidth={maxWidth} options={options} onChange={onChange} value={getValue()} />;
+  const options =
+    data?.map((duration: AdDuration) => ({
+      value: duration.id.toString(),
+      label: duration.audio_duration + ' сек'
+    })) || [];
+
+  const getValue = useCallback(() => {
+    return adSettings.audio_duration
+      ? options.find(
+          (duration: AdDurationOptions) =>
+            duration.value.toString() === (adSettings.audio_duration?.id || '').toString()
+        )
+      : null;
+  }, [adSettings, options]);
+
+  const onChange = useCallback(
+    (newValue: unknown) => {
+      const selectedDuration = data.find(
+        (duration: AdDuration) => duration.id.toString() === (newValue as AppSelectOption).value
+      );
+      if (selectedDuration) {
+        setAudioDuration(selectedDuration);
+      }
+    },
+    [data]
+  );
+
+  return (
+    <AppSelect
+      placeholder={isLoading ? 'Загрузка...' : 'Выберите продолжительность'}
+      maxWidth={maxWidth}
+      options={options}
+      onChange={onChange}
+      value={getValue()}
+    />
+  );
 };

@@ -16,14 +16,18 @@ export const RadioStationDataWidget = () => {
       icon: <ReachDlyIcon />,
       value: [
         <>
-          <h4>
-            {selectedRadio?.reach_dly || '--'}
-            <span> чел./сутки</span>
-          </h4>
-          <h4>
-            {selectedRadio?.reach_dly_percent || '--'}
-            <span> %</span>
-          </h4>
+          {selectedRadio?.reach_dly && (
+            <h4>
+              {selectedRadio?.reach_dly}
+              <span> чел./сутки</span>
+            </h4>
+          )}
+          {selectedRadio?.reach_dly_percent && (
+            <h4>
+              {selectedRadio?.reach_dly_percent}
+              <span> %</span>
+            </h4>
+          )}
         </>
       ]
     },
@@ -42,16 +46,20 @@ export const RadioStationDataWidget = () => {
       icon: <GenderIcon />,
       value: [
         <>
-          <h4>
-            <span>{selectedRadio?.audience_sex[1].sex || 'Женщины'} </span>
-            {selectedRadio?.audience_sex[1].percent || '--'}
-            <span>%</span>
-          </h4>
-          <h4>
-            <span>{selectedRadio?.audience_sex[0].sex || 'Мужчины'} </span>
-            {selectedRadio?.audience_sex[0].percent || '--'}
-            <span>%</span>
-          </h4>
+          {!!selectedRadio?.audience_sex.length && (
+            <>
+              <h4>
+                <span>{selectedRadio?.audience_sex[1].sex || 'Женщины'} </span>
+                {selectedRadio?.audience_sex[1].percent || '--'}
+                <span>%</span>
+              </h4>
+              <h4>
+                <span>{selectedRadio?.audience_sex[0].sex || 'Мужчины'} </span>
+                {selectedRadio?.audience_sex[0].percent || '--'}
+                <span>%</span>
+              </h4>
+            </>
+          )}
         </>
       ]
     },
@@ -60,14 +68,19 @@ export const RadioStationDataWidget = () => {
       icon: <AudienceAgeIcon />,
       value: [
         <>
-          <h4>
-            <span>ядро аудитории </span>
-            {selectedRadio?.audience_sex[0].sex || '--'}
-          </h4>
-          <h4>
-            {selectedRadio?.audience_sex[0].percent || '--'}
-            <span> лет</span>
-          </h4>
+          {!!selectedRadio?.audience_age.length && (
+            <>
+              <h4>
+                <span>ядро аудитории </span>
+                <br />
+                {selectedRadio?.audience_age[0].age || '--'}
+              </h4>
+              <h4>
+                {selectedRadio?.audience_age[0].percent || '--'}
+                <span> %</span>
+              </h4>
+            </>
+          )}
         </>
       ]
     }

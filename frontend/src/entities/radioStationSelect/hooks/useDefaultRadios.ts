@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getDefaultRadio, getRadioStations } from '../api';
 import { useCityStore, useRadioStore } from 'shared/store';
-import { RadioFullModel } from 'shared/types';
+import { RadioFullModel, RadioModel } from 'shared/types';
 
 export const useDefaultRadios = () => {
   const cityId = useCityStore((state) => state.selectedCity)?.id as number | null;
@@ -20,20 +20,14 @@ export const useDefaultRadios = () => {
       queryFn: () => getDefaultRadio(selectedRadioId)
     }).data as RadioFullModel | undefined) || null;
 
-  console.log('Это selectedRadio ' + radioFull);
-
   useEffect(() => {
     if (!radios) return;
     setRadios(radios);
 
-    const defaultRadio = radios.find((radio) => radio.default === true);
+    const defaultRadio: RadioModel = radios.find((radio: RadioModel) => radio.default === true) || radios[0];
 
-    if (defaultRadio) {
-      setSelectedRadioId(defaultRadio.id);
-    }
+    setSelectedRadioId(defaultRadio.id);
   }, [radios]);
-
-  console.log(selectedRadioId);
 
   useEffect(() => {
     if (radioFull?.id) {

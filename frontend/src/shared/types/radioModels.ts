@@ -72,13 +72,13 @@ export interface RadioFullModel extends RadioModel {
   description: string;
   city: CityModel;
   broadcast_zone: string;
-  reach_dly: number;
-  reach_dly_percent: number;
+  reach_dly: number | null;
+  reach_dly_percent: number | null;
   other_person_rate: number;
   hour_selected_rate: number;
   logo: string;
-  audience_sex: AudienceSex[];
-  audience_age: AudienceAge[];
+  audience_sex: AudienceSex[] | [];
+  audience_age: AudienceAge[] | [];
   month_rate: MonthRate[];
   block_position_rate: BlockPositionRate[];
   intrval_price: IntervalPrice[];

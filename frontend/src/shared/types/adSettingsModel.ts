@@ -1,5 +1,5 @@
 export interface AdSettings {
-  audio_duration?: number;
+  audio_duration?: AdDuration;
   block_position?: string;
   month?: string;
   hour_selection?: boolean;
@@ -14,4 +14,15 @@ export interface AdSettingsState {
   setMonth: (month: string) => void;
   setGuaranteedHour: (hourSelection: boolean) => void;
   setThirdParty: (otherPerson: boolean) => void;
+}
+
+export interface AdDuration {
+  id: number;
+  audio_duration: number;
+  default: boolean;
+}
+
+export interface AdDurationOptions {
+  value: number;
+  label: string;
 }

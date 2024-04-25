@@ -1,11 +1,14 @@
-import { mockData, mockStationData } from './mockData';
+import axios from 'axios';
+import { apiBaseUrl } from 'shared/constants/apiBaseUrl';
 
 export const getRadioStations = async (cityId: number | null) => {
-  const response = mockData.filter((city) => city.cityId === cityId)[0];
-  return response ? response.radios : [];
+  if (!cityId) return [];
+  const response = await axios.get(`${apiBaseUrl}/api/stations?city=${cityId}`);
+  return response ? response.data.results : [];
 };
 
 export const getDefaultRadio = async (radioId: number | null) => {
-  const response = mockStationData.id === radioId ? mockStationData : null;
-  return response;
+  if (!radioId) return {};
+  const response = await axios.get(`${apiBaseUrl}/api/stations/${radioId}`);
+  return response ? response.data : {};
 };
