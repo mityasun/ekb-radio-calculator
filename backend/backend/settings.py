@@ -123,7 +123,7 @@ RATELIMIT_BLOCK_TIME = 60 * 1
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-CACHE_TTL = 60 * 60
+CACHE_TTL = 60 * 1
 
 AUTH_PASSWORD_VALIDATORS = [
     {
