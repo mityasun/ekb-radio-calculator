@@ -13,13 +13,13 @@ router_v1.register(r'system-texts', SystemTextViewSet, basename='system-texts')
 router_v1.register(r'stations', StationViewSet, basename='stations')
 router_v1.register(r'cities', CityViewSet, basename='cities')
 router_v1.register(
-    r'audio-durations', AudioDurationViewSet, basename='audio_durations'
+    r'audio-durations', AudioDurationViewSet, basename='audio-durations'
 )
 router_v1.register(
-    r'block-positions', BlockPositionViewSet, basename='block_positions'
+    r'block-positions', BlockPositionViewSet, basename='block-positions'
 )
 router_v1.register(
-    r'time-intervals', TimeIntervalViewSet, basename='time_intervals'
+    r'time-intervals', TimeIntervalViewSet, basename='time-intervals'
 )
 router_v1.register(
     r'order', OrderViewSet, basename='order'
