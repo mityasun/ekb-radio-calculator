@@ -17,14 +17,24 @@ export const Contacts: FC<ContactsProps> = (props) => {
     <div className={clsx(s.contacts)}>
       <ul className={clsx(s.contactsList)}>
         <li className={clsx(s.contactsListItem)}>
-          <PhoneIcon />
-          <a href={PHONE.link} style={{ color: textColor }} target="_blank" rel="noreferrer">
+          <a
+            className={clsx(s.contactsListLink)}
+            href={PHONE.link}
+            style={{ color: textColor }}
+            target="_blank"
+            rel="noreferrer">
+            <PhoneIcon />
             {PHONE.title}
           </a>
         </li>
         <li className={clsx(s.contactsListItem)}>
-          <EmailIcon />
-          <a href={EMAIL.link} style={{ color: textColor }} target="_blank" rel="noreferrer">
+          <a
+            className={clsx(s.contactsListLink)}
+            href={EMAIL.link}
+            style={{ color: textColor }}
+            target="_blank"
+            rel="noreferrer">
+            <EmailIcon />
             {EMAIL.title}
           </a>
         </li>

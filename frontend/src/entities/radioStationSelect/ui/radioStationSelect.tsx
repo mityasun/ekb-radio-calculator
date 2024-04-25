@@ -1,30 +1,23 @@
-import { useState } from 'react';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
-
-const options: AppSelectOption[] = [
-  {
-    value: 'europa_plus',
-    label: 'Европа Плюс'
-  },
-  {
-    value: 'radio_CI',
-    label: 'Радио СИ'
-  },
-  {
-    value: 'autoradio',
-    label: 'Авторадио'
-  }
-];
+import { useRadioStore } from 'shared/store';
+import { useDefaultRadios } from '../hooks';
 
 export const RadioStationSelect = () => {
-  const [currentRadioStation, setCurrentRadioStation] = useState('autoradio');
+  const { radios, selectedRadioId, setSelectedRadioId } = useRadioStore();
+
+  useDefaultRadios();
+
+  const options = radios.map((radio) => ({ value: radio.id.toString(), label: radio.name }));
 
   const getValue = () => {
-    return currentRadioStation ? options.find((station) => station.value === currentRadioStation) : '';
+    return selectedRadioId ? options.find((radio) => radio.value === selectedRadioId.toString()) : '';
   };
 
   const onChange = (newValue: unknown) => {
-    setCurrentRadioStation((newValue as AppSelectOption).value);
+    const selectedRadio = radios.find((radio) => radio.id.toString() === (newValue as AppSelectOption).value);
+    if (selectedRadio) {
+      setSelectedRadioId(selectedRadio.id);
+    }
   };
 
   return <AppSelect maxWidth={'275px'} options={options} onChange={onChange} value={getValue()} />;

@@ -7,7 +7,7 @@ export const Footer = () => {
   return (
     <footer className={clsx(s.footer)}>
       <div className={clsx(s.footerWrapper)}>
-        <FooterLogo />
+        <FooterLogo className={clsx(s.footerIcon)} />
         <Contacts textColor={'#ffffff'} />
       </div>
     </footer>

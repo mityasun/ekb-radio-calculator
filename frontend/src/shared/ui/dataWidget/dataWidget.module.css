@@ -1,10 +1,12 @@
 .dataWidget {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 35px;
   border-radius: var(--border-radius);
   background-color: var(--white);
-  gap: 7px;
+  gap: 10px;
+  height: 100%;
 }
 
 .dataWidgetIcon {
@@ -23,6 +25,14 @@
   }
 }
 
+.dataWidgetContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+}
+
 .dataWidgetTitle {
   font-size: 2.0rem;
   font-weight: 400;
@@ -37,6 +47,8 @@
   }
 
   h4 {
+    text-align: right;
+    width: 100%;
     font-size: 2.4rem;
   }
 }

@@ -1,50 +1,23 @@
-import { useState } from 'react';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
-
-const options: AppSelectOption[] = [
-  {
-    value: 'moscow',
-    label: 'Москва'
-  },
-  {
-    value: 'saint-petersburg',
-    label: 'Санкт-Петербург'
-  },
-  {
-    value: 'kazan',
-    label: 'Казань'
-  },
-  {
-    value: 'rostov',
-    label: 'Ростов-на-Дону'
-  },
-  {
-    value: 'ekaterinburg',
-    label: 'Екатеринбург'
-  },
-  {
-    value: 'volgograd',
-    label: 'Волгоград'
-  },
-  {
-    value: 'omsk',
-    label: 'Омск'
-  },
-  {
-    value: 'novosibirsk',
-    label: 'Новосибирск'
-  }
-];
+import { useCityStore } from 'shared/store';
+import { useDefaultCity } from '../hooks';
 
 export const LocationSelect = () => {
-  const [currentLocation, setCurrentLocation] = useState('ekaterinburg');
+  const { cities, selectedCity, setSelectedCity } = useCityStore();
+
+  useDefaultCity();
+
+  const options = cities.map((city) => ({ value: city.id.toString(), label: city.name }));
 
   const getValue = () => {
-    return currentLocation ? options.find((loc) => loc.value === currentLocation) : '';
+    return selectedCity ? options.find((loc) => loc.value === selectedCity.id.toString()) : '';
   };
 
   const onChange = (newValue: unknown) => {
-    setCurrentLocation((newValue as AppSelectOption).value);
+    const selectedCity = cities.find((city) => city.id.toString() === (newValue as AppSelectOption).value);
+    if (selectedCity) {
+      setSelectedCity(selectedCity);
+    }
   };
 
   return <AppSelect maxWidth={'275px'} options={options} onChange={onChange} value={getValue()} />;
