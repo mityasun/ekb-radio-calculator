@@ -145,3 +145,8 @@ infra/docker-compose.prod.yml
 
 # frontend
 frontend/node_modules
+
+/backend/media/system/
+/backend/media/stations/
+/backend/media/import/
+/backend/data.json
