@@ -5,7 +5,7 @@ import { useDefaultCity } from '../hooks';
 export const LocationSelect = () => {
   const { cities, selectedCity, setSelectedCity } = useCityStore();
 
-  useDefaultCity();
+  const { isLoading } = useDefaultCity();
 
   const options = cities.map((city) => ({ value: city.id.toString(), label: city.name }));
 
@@ -20,5 +20,13 @@ export const LocationSelect = () => {
     }
   };
 
-  return <AppSelect maxWidth={'275px'} options={options} onChange={onChange} value={getValue()} />;
+  return (
+    <AppSelect
+      placeholder={isLoading ? 'Загрузка ...' : options.length ? 'Выберите город' : 'Нет доступных'}
+      maxWidth={'275px'}
+      options={options}
+      onChange={onChange}
+      value={getValue()}
+    />
+  );
 };

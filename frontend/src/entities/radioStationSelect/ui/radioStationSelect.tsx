@@ -5,7 +5,7 @@ import { useDefaultRadios } from '../hooks';
 export const RadioStationSelect = () => {
   const { radios, selectedRadioId, setSelectedRadioId } = useRadioStore();
 
-  useDefaultRadios();
+  const { isLoading } = useDefaultRadios();
 
   const options = radios.map((radio) => ({ value: radio.id.toString(), label: radio.name }));
 
@@ -20,5 +20,13 @@ export const RadioStationSelect = () => {
     }
   };
 
-  return <AppSelect maxWidth={'275px'} options={options} onChange={onChange} value={getValue()} />;
+  return (
+    <AppSelect
+      placeholder={isLoading ? 'Загрузка ...' : options.length ? 'Выберите радио' : 'Нет доступных'}
+      maxWidth={'275px'}
+      options={options}
+      onChange={onChange}
+      value={getValue()}
+    />
+  );
 };

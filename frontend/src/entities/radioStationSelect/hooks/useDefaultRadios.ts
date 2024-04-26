@@ -8,11 +8,11 @@ export const useDefaultRadios = () => {
   const cityId = useCityStore((state) => state.selectedCity)?.id as number | null;
   const { selectedRadioId, setRadios, setSelectedRadio, setSelectedRadioId } = useRadioStore();
 
-  const radios = useQuery({
+  const { data: radios, isLoading } = useQuery({
     queryKey: ['radios', cityId],
     queryFn: () => getRadioStations(cityId),
     enabled: !!cityId
-  }).data;
+  });
 
   const radioFull =
     (useQuery({
@@ -26,7 +26,11 @@ export const useDefaultRadios = () => {
 
     const defaultRadio: RadioModel = radios.find((radio: RadioModel) => radio.default === true) || radios[0];
 
-    setSelectedRadioId(defaultRadio.id);
+    if (defaultRadio) {
+      setSelectedRadioId(defaultRadio.id);
+    } else {
+      setSelectedRadioId(null);
+    }
   }, [radios]);
 
   useEffect(() => {
@@ -37,4 +41,6 @@ export const useDefaultRadios = () => {
       setSelectedRadio(null);
     }
   }, [radioFull?.id]);
+
+  return { isLoading };
 };

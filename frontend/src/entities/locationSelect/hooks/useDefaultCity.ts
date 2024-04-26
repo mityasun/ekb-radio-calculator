@@ -5,7 +5,7 @@ import { useCityStore } from 'shared/store';
 import { CityModel } from 'shared/types';
 
 export const useDefaultCity = () => {
-  const { data } = useQuery({ queryKey: ['cities'], queryFn: getCities });
+  const { data, isLoading } = useQuery({ queryKey: ['cities'], queryFn: getCities });
   const { setCities, setSelectedCity } = useCityStore();
 
   useEffect(() => {
@@ -17,4 +17,6 @@ export const useDefaultCity = () => {
     if (!defaultCity) return;
     setSelectedCity(defaultCity);
   }, [data]);
+
+  return { isLoading };
 };
