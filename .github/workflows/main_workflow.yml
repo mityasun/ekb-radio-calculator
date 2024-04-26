@@ -66,10 +66,10 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           passphrase: ${{ secrets.PROD_PASSPHRASE }}
           script: |
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_BACK_IMAGE }}
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_FRONT_IMAGE }}
-            sudo docker compose stop
-            sudo docker compose up -d
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_BACK_IMAGE }}
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_FRONT_IMAGE }}
+            docker compose stop
+            docker compose up -d
 
   send_message_prod:
     runs-on: ubuntu-latest
