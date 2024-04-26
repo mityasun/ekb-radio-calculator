@@ -62,7 +62,6 @@ jobs:
           host: ${{ secrets.PROD_HOST }}
           port: ${{ secrets.PROD_PORT }}
           username: ${{ secrets.PROD_USER }}
-          password: ${{ secrets.PASSWORD }}
           key: ${{ secrets.PROD_SSH_KEY }}
           passphrase: ${{ secrets.PROD_PASSPHRASE }}
           script: |
