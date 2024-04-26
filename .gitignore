@@ -141,6 +141,7 @@ infra/.redis
 infra/.redis_prod
 infra/nginx_prod.conf
 infra/docker-compose.prod.yml
+/frontend/config.production
 
 
 # frontend

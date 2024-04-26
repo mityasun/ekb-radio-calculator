@@ -63,11 +63,13 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         )
         customer_selection_serializer.is_valid(raise_exception=True)
 
+        unique_dates = set()
         order_amount = 0
         total_days = 0
         order_volume = 0
 
         for item in customer_selection_data:
+            date = item['date']
             time_interval = item['time_interval']
             audio_duration = item['audio_duration']
             interval_price = IntervalPrice.objects.get(
@@ -75,7 +77,9 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 audio_duration=audio_duration
             ).interval_price
             order_amount += interval_price
-            total_days += 1
+            if date not in unique_dates:
+                total_days += 1
+                unique_dates.add(date)
             order_volume += 1
 
         order_amount_with_rates = (
@@ -194,12 +198,19 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         )
         customer_selection_serializer.is_valid(raise_exception=True)
 
+        unique_dates = set()
+        total_days = 0
+
         order_customer_selections = []
         for item in customer_selection_data:
             date = item['date']
             time_interval = item['time_interval']
             audio_duration = item['audio_duration']
             week_day = get_day_name(month.id, date)
+
+            if date not in unique_dates:
+                total_days += 1
+                unique_dates.add(date)
 
             interval_price = IntervalPrice.objects.get(
                 station=station,
@@ -225,7 +236,6 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         order_amount = order_customer_selections.aggregate(
             total_interval_price=Sum('interval_price')
         )['total_interval_price'] or 0
-        total_days = len(order_customer_selections.distinct())
         order_volume = len(order_customer_selections)
 
         order.order_amount = order_amount

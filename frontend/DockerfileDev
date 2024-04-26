@@ -1,0 +1,7 @@
+FROM node:18-alpine as build
+WORKDIR /frontend
+COPY . .
+RUN npm install
+COPY . ./
+RUN npm run build-dev
+CMD cp -r dist result_build

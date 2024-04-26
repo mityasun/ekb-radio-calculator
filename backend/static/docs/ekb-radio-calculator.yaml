@@ -1,0 +1,1345 @@
+openapi: 3.0.2
+info:
+  title: 'Ekb Radio Calculator'
+  version: '1.0'
+  
+paths:
+  /api/system-texts/:
+    get:
+      operationId: Список системных текстов с пагинацией и фильтрами
+      description: Страница доступна всем пользователям. Доступна фильтрация, а также полнотекстовый поиск.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: 'Номер страницы. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: 'Количество объектов на странице. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: ordering
+          required: false
+          in: query
+          description: 'Сортировка и обратная сортировка по id или name. По умолчанию по id.'
+          example: 'id'
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/system-texts/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/system-texts/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SystemText'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Системные тексты
+
+  /api/system-texts/{id}/:
+    get:
+      operationId: Получение одного системного текста
+      description: 'Страница доступна всем пользователям'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id объекта'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemText'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Системные тексты
+        
+  /api/cities/:
+    get:
+      operationId: Список городов с пагинацией и фильтрами
+      description: Страница доступна всем пользователям. Доступна фильтрация, а также полнотекстовый поиск.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: 'Номер страницы. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: 'Количество объектов на странице. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: ordering
+          required: false
+          in: query
+          description: 'Сортировка и обратная сортировка по id или name. По умолчанию по id.'
+          example: 'id'
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/cities/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/cities/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/City'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Города
+        
+  /api/cities/{id}/:
+    get:
+      operationId: Получение одного города
+      description: 'Страница доступна всем пользователям'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id объекта'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Города
+        
+  /api/audio-durations/:
+    get:
+      operationId: Список длительностей аудио роликов
+      description: Страница доступна всем пользователям. Доступна фильтрация, а также полнотекстовый поиск.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: 'Номер страницы. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: 'Количество объектов на странице. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: ordering
+          required: false
+          in: query
+          description: 'Сортировка и обратная сортировка по id.'
+          example: 'id'
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/audio-durations/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/audio-durations/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AudioDuration'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Длительность аудио роликов
+        
+  /api/audio-durations/{id}/:
+    get:
+      operationId: Получение одной длительности аудио ролика
+      description: 'Страница доступна всем пользователям'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id объекта'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioDuration'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Длительность аудио роликов
+        
+  /api/block-positions/:
+    get:
+      operationId: Список позиций рекламных блоков
+      description: Страница доступна всем пользователям.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: 'Номер страницы. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: 'Количество объектов на странице. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: ordering
+          required: false
+          in: query
+          description: 'Сортировка и обратная сортировка по id.'
+          example: 'id'
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/block-positions/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/block-positions/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BlockPosition'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Позиционирование рекламных блоков
+        
+  /api/block-positions/{id}/:
+    get:
+      operationId: Получение одной позиции рекламного блока
+      description: 'Страница доступна всем пользователям'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id объекта'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockPosition'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Позиционирование рекламных блоков
+        
+  /api/time-intervals/:
+    get:
+      operationId: Список часовых интервалов
+      description: Страница доступна всем пользователям.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: 'Номер страницы. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: 'Количество объектов на странице. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: ordering
+          required: false
+          in: query
+          description: 'Сортировка и обратная сортировка по id.'
+          example: 'id'
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/time-intervals/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/time-intervals/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeInterval'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Часовые интервалы
+        
+  /api/time-intervals/{id}/:
+    get:
+      operationId: Получение одного часового интервала
+      description: 'Страница доступна всем пользователям'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id объекта'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeInterval'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Часовые интервалы
+        
+  /api/stations/:
+    get:
+      operationId: Список радиостанций с пагинацией и фильтрами
+      description: Страница доступна всем пользователям. Доступна фильтрация, сортировка, а также полнотекстовый поиск.
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: 'Номер страницы. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: 'Количество объектов на странице. Проверка на ошибки: только положительный int.'
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: ordering
+          required: false
+          in: query
+          description: 'Сортировка и обратная сортировка по id или name. По умолчанию по id.'
+          example: 'id'
+          schema:
+            type: string
+        - name: name
+          required: false
+          in: query
+          description: 'Полнотекстовый поиск по названию без учета регистра. Мин 1, макс 50, regex.'
+          example: 'Европа плюс'
+          schema:
+            type: string
+            pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|]{1,50}$
+            minLength: 1
+            maxLength: 50
+        - name: city
+          required: false
+          in: query
+          description: Показывать радиостанции только для конкретного города по id.
+          example: '1'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/stations/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://localhost/api/stations/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RadioStationShort'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Радио станции
+        
+  /api/stations/{id}/:
+    get:
+      operationId: Получение одного радио станции
+      description: 'Страница доступна всем пользователям'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id объекта'
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RadioStation'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Радио станции
+        
+  /api/order/:
+    post:
+      operationId: Отправка заказ
+      description: 'Доступно всем пользователям'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: 'Заявка успешно отправлена'
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Заказы
+        
+  /api/order-pdf/:
+    post:
+      operationId: Получить pdf
+      description: 'Доступно всем пользователям'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PdfCreate'
+      responses:
+        '200':
+          description: Отправлен pdf файл с расчетом
+          content:
+            application/pdf:
+              schema:
+                format: binary
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Заказы
+        
+components:
+  schemas:
+          
+    RadioStation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        default:
+          type: boolean
+          default: false
+          description: 'Станция по умолчанию: True / False. Может быть только одна.'
+          example: false
+        name:
+          type: string
+          uniqueItems: true
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Название радиостанции. Мин 1, макс 100, regex.'
+          example: 'Европа плюс'
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Заголовок радиостанции. Мин 1, макс 100, regex.'
+          example: 'Реклама на радио Европа плюс в Екатеринбурге'
+        description:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Описание радиостанции'
+          example: 'Реклама на радио Европа плюс в Екатеринбурге.'
+        city:
+          $ref: '#/components/schemas/City'
+        broadcast_zone:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Зона вещания радиостанции. Мин 1, макс 200, regex.'
+          example: 'Екатеринбург в радиусе 30км'
+        reach_dly:
+          type: integer
+          minimum: 1
+          description: 'Reach Dly, чел. Мин 1.'
+          example: 100500
+        reach_dly_percent:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Reach Dly, %. Мин 0, макс 100.'
+          example: 15
+        other_person_rate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Коэффициент за упоминание 3-х лиц. Мин 0, макс 100.'
+          example: 1.3
+        hour_selected_rate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Коэффициент за выбор часа. Мин 0, макс 100.'
+          example: 1.1
+        logo:
+          type: string
+          format: url
+          description: 'Логотип станции. Max 1mb, min 720px, max 3000px, соотношение сторон не менее 16:9. Разрешено: jpg, jpeg, png, gif, bmp, webp. После загрузки преобразуется в размер 1280px.'
+          example: 'http://localhost/media/stations/station.jpg'
+        audience_sex:
+          description: 'Аудитория станции по полу'
+          type: array
+          items:
+            $ref: '#/components/schemas/AudienceSexStation'
+        audience_age:
+          description: 'Аудитория станции по возрасту'
+          type: array
+          items:
+            $ref: '#/components/schemas/AudienceAgeStation'
+        month_rate:
+          description: 'Сезонные коэффициенты'
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthRate'
+        block_position_rate:
+          description: 'Коэффициент позиционирования в блоке'
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockPositionRate'
+        interval_price:
+          description: 'Цены часовых интервалов'
+          type: array
+          items:
+            $ref: '#/components/schemas/IntervalPrice'
+        amount_discount:
+          description: 'Скидки за сумму заказа'
+          type: array
+          items:
+            $ref: '#/components/schemas/AmountDiscount'
+        days_discount:
+          description: 'Скидки за продолжительность РК'
+          type: array
+          items:
+            $ref: '#/components/schemas/DaysDiscount'
+        volume_discount:
+          description: 'Скидки за кол-во выходов в сетке'
+          type: array
+          items:
+            $ref: '#/components/schemas/VolumeDiscount'
+            
+    RadioStationShort:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        default:
+          type: boolean
+          default: false
+          description: 'Станция по умолчанию: True / False. Может быть только одна.'
+          example: false
+        name:
+          type: string
+          uniqueItems: true
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Название радиостанции. Мин 1, макс 100, regex.'
+          example: 'Европа плюс'
+            
+    SystemText:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Заголовок. Мин 1, макс 100, regex.'
+          example: 'Реклама на радио Европа плюс в Екатеринбурге'
+        disclaimer:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Дисклеймер. Мин 1, макс 5000, regex.'
+          example: 'Рассчитать стоимость размещения рекламы - это легко! Для этого не нужно отправлять запросы в рекламные агентства и \"дожидаться\" ответа. Вам достаточно определить хронометраж  своего ролика, задать условия по времени и количеству выходов, а программа автоматически посчитает итоговый бюджет с учетом всех возможных скидок. Помимо удобства, при формировании медиаплана онлайн на сайте вы получаете дополнительную скидку 5%!\r\n\r\n<b>Внимание!</b>\r\n<b>Поскольку выбранные вами рекламные блоки могут быть уже заполнены, время выхода роликов может поменяться. Для получения фактического графика после расчета выберите пункт «Отправить на согласование».'
+        phone:
+          type: string
+          pattern: ^[-\d+() ]+$
+          description: "Телефон. Мин 1, макс 18, Цифры, скобки, пробел, дефис."
+          minLength: 1
+          maxLength: 18
+          example: "+7 (999) 999-99-99"
+        email:
+          type: string
+          format: email
+          minLength: 6
+          maxLength: 100
+          description: "Адрес электронной почты по шаблону xxx@xxx.ru. Мин 6, макс 100. Разрешено: A-Z, a-z, 0-9, точка, дефис, нижнее подчеркивание и @."
+          example: "company@company.ru"
+        address:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Адрес компании. Мин 1, макс 200, regex.'
+          example: '620036, г. Екатеринбург, ул. Улица, д.12, оф. 45'
+        copyright:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Копирайт. Мин 1, макс 200, regex.'
+          example: "© 2023-2024 site.ru | Размещение рекламы на радио в г. Екатеринбург: mail@mail.ru | Рекламная служба: +7 (999) 999-99-99"
+        logo:
+          type: string
+          format: url
+          description: 'Логотип компании. Max 1mb. Разрешено: jpg, jpeg, png, gif, bmp, webp.'
+          example: 'http://localhost/media/system/logo.png'
+        seo_title:
+          type: string
+          minLength: 1
+          maxLength: 150
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'seo_title. Мин 1, макс 150, regex.'
+          example: 'Online-калькулятор стоимости размещения рекламы на радио'
+        seo_description:
+          type: string
+          minLength: 1
+          maxLength: 300
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'seo_keywords. Мин 1, макс 300, regex.'
+          example: "Разместить рекламу на радио в г. Екатеринбург - Стоимость размещения Вы увидите сразу онлайн! Рекламная служба +7 (999) 999-99-99"
+        seo_keywords:
+          type: string
+          minLength: 1
+          maxLength: 200
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'seo_keywords. Мин 1, макс 200, regex.'
+          example: 'реклама на радио, радио, заказать рекламу на радио'
+        google_analytics_id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'google_analytics_id. Мин 1, макс 100.'
+          example: 'G-X48IXJ85M9'
+        google_tag_id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'google_tag_id. Мин 1, макс 100.'
+          example: 'GTM-OXE8M4K'
+        yandex_counter_id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'yandex_counter_id. Мин 1, макс 100.'
+          example: '12345678'
+        mailru_counter:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'mailru_counter. Мин 1, макс 100.'
+          example: '1234567'
+        privacy_text:
+          type: string
+          minLength: 1
+          maxLength: 5000
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Дисклеймер. Мин 1, макс 5000, regex.'
+          example: "Политика в отношении обработки персональных данных\r\n\r\n1. Общие положения Настоящая политика обработки персональных данных составлена в соответствии с требованиями Федерального закона от 27.07.2006. №152-ФЗ «О персональных данных» и определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных, предпринимаемые ООО \"РА \"Такса\" (далее – Оператор).\r\n1.1. Оператор ставит своей важнейшей целью и условием осуществления своей деятельности соблюдение прав и свобод человека и гражданина при обработке его персональных данных, в том числе защиты прав на неприкосновенность частной жизни, личную и семейную тайну.\r\n1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее – Политика) применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта https://ekb-radio.ru/.\r\n\r\n2. Основные понятия, используемые в Политике\r\n2.1. Автоматизированная обработка персональных данных – обработка персональных данных с помощью средств вычислительной техники;\r\n"
+        
+        
+    City:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        default:
+          type: boolean
+          default: false
+          description: 'Город по умолчанию: True / False. Может быть только один.'
+          example: false
+        name:
+          type: string
+          uniqueItems: true
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Название города. Мин 1, макс 100, regex.'
+          example: 'Екатеринбург'
+          
+    AudioDuration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        default:
+          type: boolean
+          default: false
+          description: 'Аудио ролик по умолчанию: True / False. Может быть только один.'
+          example: false
+        audio_duration:
+          type: integer
+          uniqueItems: true
+          minLength: 1
+          maxLength: 100
+          description: 'Продолжительность аудио ролика. Мин 1, макс 100'
+          example: 10
+          
+    BlockPosition:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        default:
+          type: boolean
+          default: false
+          description: 'Позиционирование в рекламном блоке по умолчанию: True / False. Может быть только один.'
+          example: false
+        block_position:
+          type: string
+          uniqueItems: true
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Позиционирование в рекламном блоке. Мин 1, макс 100, regex.'
+          example: 'Первый в блоке'
+          
+    TimeInterval:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+          uniqueItems: true
+        time_interval:
+          type: string
+          uniqueItems: true
+          minLength: 1
+          maxLength: 100
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: 'Часовой интервал. Мин 1, макс 100, regex.'
+          example: '10:00 - 11:00'
+          
+    AudienceSexStation:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        sex:
+          type: string
+          uniqueItems: true
+          description: 'Пол аудитории.'
+          example: 'Мужчины'
+        percent:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Процент аудитории определенного пола. Мин 0, макс 100.'
+          example: 58.0
+          
+    AudienceAgeStation:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        age:
+          type: string
+          uniqueItems: true
+          description: 'Возраст аудитории.'
+          example: '40-59 лет'
+        percent:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Процент аудитории определенного возраста. Мин 0, макс 100.'
+          example: 58.0
+          
+    MonthRate:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        month:
+          type: string
+          uniqueItems: true
+          description: 'Месяц.'
+          example: 'Январь'
+        rate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Сезонный коэффициент. Мин 0, макс 100.'
+          example: 1.2
+          
+    BlockPositionRate:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        block_position:
+          type: string
+          uniqueItems: true
+          description: 'Позиционирование в рекламном блоке.'
+          example: 'Первый в блоке'
+        rate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Коэффициент позиционирования в блоке. Мин 0, макс 100.'
+          example: 1.3
+          
+    IntervalPrice:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        time_interval:
+          type: string
+          uniqueItems: true
+          description: 'Часовой интервал.'
+          example: '10:00 - 11:00'
+        audio_duration:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: 'Продолжительность аудио ролика. Мин 0, макс 100.'
+          example: 10
+        interval_price:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+          description: 'Цена часового интервала.'
+          example: 1040
+          
+    AmountDiscount:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        order_amount:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+          description: 'Сумма заказа'
+          example: 14040
+        discount:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Скидка за сумму заказа. Мин 0, макс 100.'
+          example: 5.0
+          
+    DaysDiscount:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        total_days:
+          type: integer
+          minimum: 1
+          maximum: 31
+          description: 'Количество дней в заказе'
+          example: 12
+        discount:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Скидка за количество дней в заказе. Мин 0, макс 100.'
+          example: 12.0
+          
+    VolumeDiscount:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        order_volume:
+          type: integer
+          minimum: 1
+          maximum: 496
+          description: 'Количество выходов в сетке'
+          example: 50
+        discount:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'Скидка за кол-во выходов в сетке. Мин 0, макс 100.'
+          example: 7.0
+          
+    CustomerCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          uniqueItems: true
+          readOnly: true
+          example: 1
+        company_name:
+          type: string
+          pattern: ^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$
+          description: "Название компании. Мин 1, макс 100, regex."
+          minLength: 1
+          maxLength: 100
+          example: "ООО Рога и копыта"
+        name:
+          type: string
+          pattern: ^[A-Za-zА-ЯЁа-яё -]+$
+          description: "Имя. Мин 1, макс 100, A-Z, a-z, А-Я, а-я, пробел, дефис."
+          minLength: 1
+          maxLength: 100
+          example: "Василий Петрович"
+        phone:
+          type: string
+          pattern: ^[-\d+() ]+$
+          description: "Имя. Мин 1, макс 18, Цифры, скобки, пробел, дефис."
+          minLength: 1
+          maxLength: 18
+          example: "+7 (999) 999-99-99"
+        email:
+          type: string
+          format: email
+          minLength: 6
+          maxLength: 100
+          description: "Адрес электронной почты по шаблону xxx@xxx.ru. Мин 6, макс 100. Разрешено: A-Z, a-z, 0-9, точка, дефис, нижнее подчеркивание и @."
+          example: "vpupkin@yandex.ru"
+      required:
+        - name
+        - phone
+        
+    CustomerSelection:
+      type: object
+      properties:
+        date:
+          description: 'Дата'
+          type: integer
+          minimum: 1
+          maximum: 31
+          example: 15
+        time_interval:
+          description: 'id часового интервала. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 7
+        audio_duration:
+          description: 'id продолжительности аудио ролика. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 2
+      required:
+        - date
+        - time_interval
+        - audio_duration
+          
+    OrderCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        customer:
+          description: 'Данные покупателя'
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerCreate'
+        city:
+          description: 'id города. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 1
+        station:
+          description: 'id радиостанции. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 1
+        month:
+          description: 'id месяца. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 3
+        block_position:
+          description: 'id позиции в рекламном блоке. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 2
+        other_person_rate:
+          description: 'Коэффициент за упоминание 3-х лиц выбран или нет: True/False'
+          type: boolean
+          example: true
+        hour_selected_rate:
+          description: 'Коэффициент за выбор часа выбран или нет: True/False'
+          type: boolean
+          example: false
+        customer_selection:
+          description: 'Выбор пользователя'
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerSelection'
+      required:
+        - customer
+        - city
+        - station
+        - month
+        - block_position
+        - other_person_rate
+        - hour_selected_rate
+        - customer_selection
+        
+    PdfCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        city:
+          description: 'id города. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 1
+        station:
+          description: 'id радиостанции. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 1
+        month:
+          description: 'id месяца. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 3
+        block_position:
+          description: 'id позиции в рекламном блоке. Есть проверка на ошибки: id должен существовать.'
+          type: integer
+          example: 2
+        other_person_rate:
+          description: 'Коэффициент за упоминание 3-х лиц выбран или нет: True/False'
+          type: boolean
+          example: true
+        hour_selected_rate:
+          description: 'Коэффициент за выбор часа выбран или нет: True/False'
+          type: boolean
+          example: false
+        customer_selection:
+          description: 'Выбор пользователя'
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerSelection'
+      required:
+        - city
+        - station
+        - month
+        - block_position
+        - other_person_rate
+        - hour_selected_rate
+        - customer_selection
+
+    ValidationError:
+      description: Стандартные ошибки валидации DRF
+      type: object
+      properties:
+        error:
+          description: 'Поле в котором ошибка и описание ошибки'
+          type: string
+
+    SelfMadeError:
+      description: Ошибка
+      type: object
+      properties:
+        error:
+          description: 'Описание ошибки'
+          type: string
+
+    AuthenticationError:
+      description: Пользователь не авторизован
+      type: object
+      properties:
+        error:
+          description: 'Описание ошибки'
+          example: "Учетные данные не были предоставлены."
+          type: string
+
+    PermissionDenied:
+      description: Недостаточно прав
+      type: object
+      properties:
+        error:
+          description: 'Описание ошибки'
+          example: "У вас недостаточно прав для выполнения данного действия."
+          type: string
+
+    NotFound:
+      description: Объект, объекты или страница не найдены
+      type: object
+      properties:
+        detail:
+          description: 'Описание ошибки'
+          example: "Страница не найдена."
+          type: string
+
+  responses:
+    ValidationError:
+      description: 'Ошибки валидации в стандартном формате DRF'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    NestedValidationError:
+      description: 'Ошибки валидации в стандартном формате DRF, в том числе с внутренними элементами.'
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/ValidationError'
+
+    AuthenticationError:
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthenticationError'
+            
+    PermissionDenied:
+      description: Недостаточно прав
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PermissionDenied'
+
+    NotFound:
+      description: Объект, объекты или страница не найдены
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
