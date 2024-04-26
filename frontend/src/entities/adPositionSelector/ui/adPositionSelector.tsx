@@ -1,42 +1,59 @@
-import { FC, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useEffect } from 'react';
+import { useAdSettings } from 'shared/store';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
-
-export interface AdPositionSelectorProps {
-  onPositionChange: (position: string) => void;
-}
+import { getBlockPositions } from '../api';
+import { AdBlockPosition, AdBlockPositionOptions } from 'shared/types';
 
 const maxWidth = '100%';
 
-const options: AppSelectOption[] = [
-  {
-    value: 'bez-pozicionirovaniya',
-    label: 'Без позиционирования'
-  },
-  {
-    value: 'perviy-v-reklamnom-bloke',
-    label: 'Первый в рекламном блоке'
-  },
-  {
-    value: 'posledniy-v-reklamnom-bloke',
-    label: 'Последний в рекламном блоке'
-  }
-];
-
-export const AdPositionSelector: FC<AdPositionSelectorProps> = ({ onPositionChange }) => {
-  const [currentPosition, setCurrentPosition] = useState(options[0].value);
-
-  const getValue = () => {
-    return currentPosition ? options.find((d) => d.value === currentPosition) : '';
-  };
-
-  const onChange = (newValue: unknown) => {
-    setCurrentPosition((newValue as AppSelectOption).value);
-    onPositionChange((newValue as AppSelectOption).value);
-  };
+export const AdPositionSelector = () => {
+  const { adSettings, setBlockPosition } = useAdSettings();
+  const { data, isLoading } = useQuery({ queryKey: ['block-positions'], queryFn: getBlockPositions });
 
   useEffect(() => {
-    onPositionChange(currentPosition);
-  }, []);
+    if (!data) return;
 
-  return <AppSelect maxWidth={maxWidth} options={options} onChange={onChange} value={getValue()} />;
+    const defaultBlockPosition = data.find((position: AdBlockPosition) => position.default) || data[0];
+
+    if (!defaultBlockPosition) return;
+    setBlockPosition(defaultBlockPosition);
+  }, [data]);
+
+  const options =
+    data?.map((position: AdBlockPosition) => ({
+      value: position.id.toString(),
+      label: position.block_position
+    })) || [];
+
+  const getValue = useCallback(() => {
+    return adSettings.block_position
+      ? options.find(
+          (position: AdBlockPositionOptions) =>
+            position.value.toString() === (adSettings.block_position?.id || '').toString()
+        )
+      : null;
+  }, [adSettings, options]);
+
+  const onChange = useCallback(
+    (newValue: unknown) => {
+      const selectedPosition = data.find(
+        (position: AdBlockPosition) => position.id.toString() === (newValue as AppSelectOption).value
+      );
+      if (selectedPosition) {
+        setBlockPosition(selectedPosition);
+      }
+    },
+    [data]
+  );
+
+  return (
+    <AppSelect
+      placeholder={isLoading ? 'Загрузка...' : 'Выберите позиционирование в блоке'}
+      maxWidth={maxWidth}
+      options={options}
+      onChange={onChange}
+      value={getValue()}
+    />
+  );
 };

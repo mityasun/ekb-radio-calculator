@@ -1,3 +1,12 @@
 export type { CityModel, CityState } from './cityModels';
 export type { RadioModel, RadioState, RadioFullModel } from './radioModels';
-export type { AdSettingsState, AdSettings, AdDuration, AdDurationOptions } from './adSettingsModel';
+export type {
+  AdSettingsState,
+  AdSettings,
+  AdDuration,
+  AdDurationOptions,
+  AdBlockPosition,
+  AdBlockPositionOptions,
+  AdMonth,
+  AdMonthOptions
+} from './adSettingsModel';

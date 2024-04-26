@@ -3,6 +3,7 @@ import s from './dateIntervalPicker.module.css';
 import { ROW_HEADERS } from './mockData';
 import { getDaysInMonth } from 'shared/utils';
 import { useState } from 'react';
+import { useAdSettings } from 'shared/store';
 
 const ROW_HEADERS_HEADER = 'интервал времени';
 const ROW_HEADERS_FOOTER = 'итого';
@@ -11,7 +12,6 @@ const TIMING_QUANTITY = 'общий хронометраж';
 const rowHeaders = ROW_HEADERS;
 const daysInMonth = getDaysInMonth(1, 2024);
 const timeUnit = 'сек';
-const audio_duration = 5;
 
 const rowBroadcastQuantity = 1;
 const totalBroadcastQuantity = 15;
@@ -20,9 +20,14 @@ const rowTimingQuantity = 1;
 const totalTimingQuantity = 15;
 
 export const DateIntervalPicker = () => {
+  const { adSettings } = useAdSettings();
+
+  const audio_duration = adSettings.audio_duration?.audio_duration ?? 0;
+
   const [selectedCells, setSelectedCells] = useState<Record<string, number>>({});
 
   const handleCellClick = (day: number, row: number) => {
+    const currentAudioDuration = audio_duration;
     setSelectedCells((prevState) => {
       const key = `${row}-${day}`;
       if (prevState[key]) {
@@ -31,7 +36,7 @@ export const DateIntervalPicker = () => {
       } else {
         return {
           ...prevState,
-          [key]: audio_duration
+          [key]: currentAudioDuration
         };
       }
     });
@@ -69,7 +74,7 @@ export const DateIntervalPicker = () => {
                 )}
                 key={day.date}
                 onClick={() => handleCellClick(day.date, row.id)}>
-                {selectedCells[`${row.id}-${day.date}`] && audio_duration}
+                {selectedCells[`${row.id}-${day.date}`] && selectedCells[`${row.id}-${day.date}`]}
               </div>
             ))}
             <div className={clsx(s.tableCellCounter)}>{rowBroadcastQuantity}</div>

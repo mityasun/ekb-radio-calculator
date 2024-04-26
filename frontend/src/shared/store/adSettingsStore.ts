@@ -1,18 +1,23 @@
 import { create } from 'zustand';
-import { AdSettings, AdSettingsState } from 'shared/types';
+import { AdDuration, AdSettings, AdSettingsState, AdBlockPosition, AdMonth } from 'shared/types';
+
+const initState = {
+  hour_selected_rate: false,
+  other_person_rate: false
+};
 
 const useAdSettings = create<AdSettingsState>()((set) => ({
-  adSettings: {},
+  adSettings: initState,
   setAdSettings: (adSettings: AdSettings) => set({ adSettings }),
-  setAudioDuration: (audioDuration: number) =>
+  setAudioDuration: (audioDuration: AdDuration) =>
     set((state) => ({ adSettings: { ...state.adSettings, audio_duration: audioDuration } })),
-  setBlockPosition: (blockPosition: string) =>
+  setBlockPosition: (blockPosition: AdBlockPosition) =>
     set((state) => ({ adSettings: { ...state.adSettings, block_position: blockPosition } })),
-  setMonth: (month: string) => set((state) => ({ adSettings: { ...state.adSettings, month } })),
-  setGuaranteedHour: (hourSelection: boolean) =>
-    set((state) => ({ adSettings: { ...state.adSettings, hour_selection: hourSelection } })),
-  setThirdParty: (otherPerson: boolean) =>
-    set((state) => ({ adSettings: { ...state.adSettings, other_person: otherPerson } }))
+  setMonth: (month: AdMonth) => set((state) => ({ adSettings: { ...state.adSettings, month } })),
+  setHourSelection: (hourSelection: boolean) =>
+    set((state) => ({ adSettings: { ...state.adSettings, hour_selected_rate: hourSelection } })),
+  setOtherPerson: (otherPerson: boolean) =>
+    set((state) => ({ adSettings: { ...state.adSettings, other_person_rate: otherPerson } }))
 }));
 
 export { useAdSettings };
