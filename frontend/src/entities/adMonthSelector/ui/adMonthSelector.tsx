@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useAdSettings } from 'shared/store';
+import { useAdSettingsStore, useOrder } from 'shared/store';
 import { AdMonth } from 'shared/types';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
 import { getMonthOptions } from 'shared/utils';
@@ -8,7 +8,8 @@ const maxWidth = '100%';
 
 export const AdMonthSelector = () => {
   const months = getMonthOptions('ru');
-  const { adSettings, setMonth } = useAdSettings();
+  const { adSettings, setMonth } = useAdSettingsStore();
+  const { clearCustomerSelections } = useOrder();
 
   useEffect(() => {
     const defaultMonth = months.find((month: AdMonth) => month.default) || months[0];
@@ -31,6 +32,7 @@ export const AdMonthSelector = () => {
     const selectedMonth = months.find((month) => month.id.toString() === (newValue as AppSelectOption).value);
     if (selectedMonth) {
       setMonth(selectedMonth);
+      clearCustomerSelections();
     }
   };
 

@@ -4,7 +4,7 @@ import { AdDurationSelector } from 'entities/adDurationSelector';
 import { AdMonthSelector } from 'entities/adMonthSelector';
 import { AdPositionSelector } from 'entities/adPositionSelector';
 import Switch from 'react-switch';
-import { useAdSettings } from 'shared/store';
+import { useAdSettingsStore } from 'shared/store';
 
 const SELECT_DURATION_LABEL = 'Длительность ролика';
 const SELECT_POSITION_LABEL = 'Позиционирование в рекламном блоке';
@@ -14,7 +14,7 @@ const SWITCH_THIRD_PARTY_LABEL = 'Упоминание 3-их лиц';
 const onColor = '#05bb75';
 
 export const AdSettingsSelector = () => {
-  const { adSettings, setHourSelection, setOtherPerson } = useAdSettings();
+  const { adSettings, setHourSelection, setOtherPerson } = useAdSettingsStore();
 
   const handleHourSelectionChange = (value: boolean) => {
     setHourSelection(value);

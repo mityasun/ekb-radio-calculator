@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
-import { useAdSettings } from 'shared/store';
+import { useAdSettingsStore } from 'shared/store';
 import { getAudioDurations } from '../api';
 import { useQuery } from '@tanstack/react-query';
 import { AdDuration, AdDurationOptions } from 'shared/types';
@@ -8,7 +8,7 @@ import { AdDuration, AdDurationOptions } from 'shared/types';
 const maxWidth = '100%';
 
 export const AdDurationSelector = () => {
-  const { adSettings, setAudioDuration } = useAdSettings();
+  const { adSettings, setAudioDuration } = useAdSettingsStore();
   const { data, isLoading } = useQuery({ queryKey: ['audio-durations'], queryFn: getAudioDurations });
 
   useEffect(() => {

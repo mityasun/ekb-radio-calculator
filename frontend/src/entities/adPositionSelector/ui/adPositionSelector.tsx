@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
-import { useAdSettings } from 'shared/store';
+import { useAdSettingsStore } from 'shared/store';
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
 import { getBlockPositions } from '../api';
 import { AdBlockPosition, AdBlockPositionOptions } from 'shared/types';
@@ -8,7 +8,7 @@ import { AdBlockPosition, AdBlockPositionOptions } from 'shared/types';
 const maxWidth = '100%';
 
 export const AdPositionSelector = () => {
-  const { adSettings, setBlockPosition } = useAdSettings();
+  const { adSettings, setBlockPosition } = useAdSettingsStore();
   const { data, isLoading } = useQuery({ queryKey: ['block-positions'], queryFn: getBlockPositions });
 
   useEffect(() => {

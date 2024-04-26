@@ -96,9 +96,11 @@
   cursor: pointer;
 }
 
-.tableCell:hover {
-  border: 1px solid var(--primary-color);
-  outline: 2px solid var(--primary-color);
+@media (hover:hover) {
+  .tableCell:hover {
+    border: 1px solid var(--primary-color);
+    outline: 2px solid var(--primary-color);
+  }
 }
 
 .weekend {
@@ -129,9 +131,14 @@
 }
 
 .tableCellCounter,
+.tableCellTotal,
+.tableRowTotal {
+  font-weight: 600;
+}
+
+.tableCellCounter,
 .tableCellTotal {
   height: 100%;
-  font-weight: 600;
 }
 
 .selectedCell {

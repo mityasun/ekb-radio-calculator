@@ -6,7 +6,7 @@ const initState = {
   other_person_rate: false
 };
 
-const useAdSettings = create<AdSettingsState>()((set) => ({
+const useAdSettingsStore = create<AdSettingsState>()((set) => ({
   adSettings: initState,
   setAdSettings: (adSettings: AdSettings) => set({ adSettings }),
   setAudioDuration: (audioDuration: AdDuration) =>
@@ -20,4 +20,4 @@ const useAdSettings = create<AdSettingsState>()((set) => ({
     set((state) => ({ adSettings: { ...state.adSettings, other_person_rate: otherPerson } }))
 }));
 
-export { useAdSettings };
+export { useAdSettingsStore };
