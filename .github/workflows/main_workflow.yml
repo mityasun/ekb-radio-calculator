@@ -72,7 +72,7 @@ jobs:
 
   send_message_prod:
     runs-on: ubuntu-latest
-    needs: [build_prod_backend_and_push_to_docker_hub, build_prod_frontend_and_push_to_docker_hub]
+    needs: [build_prod_backend_and_push_to_docker_hub, build_prod_frontend_and_push_to_docker_hub, deploy_production]
     steps:
     - name: Send message after successful production deployment
       uses: appleboy/telegram-action@master
