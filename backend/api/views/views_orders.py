@@ -1,5 +1,8 @@
+import asyncio
+
 from django.db import transaction
 from django.db.models import Sum
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 
@@ -7,7 +10,8 @@ from api.permissions import AllowAnyPost
 from api.serializers.serializers_orders import (OrderCreateSerializer,
                                                 CustomerSelectionSerializer,
                                                 OrderPdfSerializer)
-from api.utils import get_day_name, get_discount_value, create_pdf
+from api.utils import (get_day_name, get_discount_value, create_pdf,
+                       send_pdf_to_group)
 from customers.models import Customer
 from discounts.models import AmountDiscount, DaysDiscount, VolumeDiscount
 from orders.models import Order, OrderCustomerSelection
@@ -49,11 +53,13 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             else 1
         )
 
-        block_position_rate = BlockPositionRate.objects.get(
+        block_position_rate = get_object_or_404(
+            BlockPositionRate,
             station__id=station.id, block_position__id=block_position.id
         ).rate
 
-        month_rate = MonthRate.objects.get(
+        month_rate = get_object_or_404(
+            MonthRate,
             station__id=station.id, month__id=month.id
         ).rate
 
@@ -72,8 +78,8 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             date = item['date']
             time_interval = item['time_interval']
             audio_duration = item['audio_duration']
-            interval_price = IntervalPrice.objects.get(
-                station=station, time_interval=time_interval,
+            interval_price = get_object_or_404(
+                IntervalPrice, station=station, time_interval=time_interval,
                 audio_duration=audio_duration
             ).interval_price
             order_amount += interval_price
@@ -120,7 +126,7 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             month_rate, other_person_rate, hour_selected_rate,
             order_amount_with_rates, order_amount_discount, total_days,
             order_days_discount, order_volume, order_volume_discount,
-            final_order_amount, customer_selection_data
+            final_order_amount, customer_selection_data, False
         )
         return pdf
 
@@ -162,17 +168,13 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             else 1
         )
 
-        block_position_rate = BlockPositionRate.objects.get(
+        block_position_rate = get_object_or_404(
+            BlockPositionRate,
             station__id=station.id, block_position__id=block_position.id
         ).rate
 
-        # block_position_rate = get_discount_value(
-        #     station.blockpositionrate_set.filter(
-        #         block_position=block_position.id),
-        #     'block_position_rate'
-        # )
-
-        month_rate = MonthRate.objects.get(
+        month_rate = get_object_or_404(
+            MonthRate,
             station__id=station.id, month__id=month.id
         ).rate
 
@@ -200,24 +202,19 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 
         unique_dates = set()
         total_days = 0
-
         order_customer_selections = []
         for item in customer_selection_data:
             date = item['date']
             time_interval = item['time_interval']
             audio_duration = item['audio_duration']
             week_day = get_day_name(month.id, date)
-
             if date not in unique_dates:
                 total_days += 1
                 unique_dates.add(date)
-
-            interval_price = IntervalPrice.objects.get(
-                station=station,
-                time_interval=time_interval,
+            interval_price = get_object_or_404(
+                IntervalPrice, station=station, time_interval=time_interval,
                 audio_duration=audio_duration
             ).interval_price
-
             order_customer_selections.append(
                 OrderCustomerSelection(
                     order=order,
@@ -241,18 +238,6 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         order.order_amount = order_amount
         order.total_days = total_days
         order.order_volume = order_volume
-
-        # order_amount_discount = get_discount_value(
-        #     station.amountdiscount_set.filter(order_amount__lte=order_amount),
-        #     'order_amount_discount')
-
-        # order_days_discount= get_discount_value(
-        #     station.daysdiscount_set.filter(total_days__lte=total_days),
-        #     'order_days_discount')
-
-        # order_volume_discount = get_discount_value(
-        #     station.volumediscount_set.filter(order_volume__lte=order_volume),
-        #     'order_volume_discount')
 
         order_amount_with_rates = (
                 order_amount
@@ -293,5 +278,19 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 
         order.final_order_amount = final_order_amount
         order.save()
+
+        pdf_file_path = create_pdf(
+            city, station, month, block_position, block_position_rate,
+            month_rate, other_person_rate, hour_selected_rate,
+            order_amount_with_rates, order_amount_discount, total_days,
+            order_days_discount, order_volume, order_volume_discount,
+            final_order_amount, customer_selection_data, True
+        )
+        order_info = (f'Заказ:\n'
+                      f'Название компании: {customer.company_name}\n'
+                      f'Имя: {customer.name}\n'
+                      f'Телефон: {customer.phone}\n'
+                      f'email: {customer.email}')
+        # asyncio.run(send_pdf_to_group(order_info, pdf_file_path))
 
         return Response(status=status.HTTP_201_CREATED)

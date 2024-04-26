@@ -1,10 +1,13 @@
 import calendar
+import os
 from datetime import datetime
 from io import BytesIO
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Union
 
 from django.db.models import QuerySet
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from dotenv import load_dotenv
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import landscape, A4
 from reportlab.lib.units import inch
@@ -13,10 +16,14 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
+from telegram import Bot
+from telegram.error import TelegramError
 
 from rates.models import BlockPosition
 from settings.models import SystemText, TimeInterval, AudioDuration, City, Month
 from stations.models import RadioStation
+
+load_dotenv()
 
 
 def get_discount_value(
@@ -160,8 +167,8 @@ def create_pdf(
         order_amount_discount: float,
         total_days: int, order_days_discount: float, order_volume: float,
         order_volume_discount: float, final_order_amount: float,
-        customer_selection: list
-) -> HttpResponse:
+        customer_selection: list, save_option: bool
+) -> Union[HttpResponse, str]:
     """
     Generates a PDF document based on provided data.
 
@@ -182,6 +189,7 @@ def create_pdf(
     - order_volume_discount: Discount percentage for order volume (float)
     - final_order_amount: Final amount to be paid (float)
     - customer_selection: List of dictionaries representing customer selections
+    - save_option: Boolean to save the PDF document or send to response (bool)
 
     Returns:
     - response: HttpResponse object containing the generated PDF document
@@ -202,7 +210,9 @@ def create_pdf(
 
     page.setFont('Mulish-Regular', size=10)
 
-    logo_image = ImageReader(SystemText.objects.get(pk=1).logo)
+    company = get_object_or_404(SystemText, pk=1)
+
+    logo_image = ImageReader(company.logo)
     scaled_width, scaled_height = scaling_image(logo_image, 200)
     page.drawImage(
         logo_image, 30, 530, width=scaled_width, height=scaled_height
@@ -213,7 +223,6 @@ def create_pdf(
         station_logo, 660, 470, width=scaled_width, height=scaled_height
     )
 
-    company = SystemText.objects.get(pk=1)
     company_data = [
         'ООО "РА "Такса"',
         f'{company.address}',
@@ -309,9 +318,41 @@ def create_pdf(
     pdf_data = buffer.getvalue()
     buffer.close()
 
-    filename = f'Taksa_Radio_{datetime.now().strftime("%d.%m.%Y_%H.%M")}'
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
-    response.write(pdf_data)
+    filename = f'Taksa_Radio_{datetime.now().strftime("%d.%m.%Y_%H.%M")}.pdf'
 
-    return response
+    if save_option:
+        filepath = os.path.join('media/orders', filename)
+        with open(filepath, 'wb') as f:
+            f.write(pdf_data)
+        return filepath
+    else:
+        response = HttpResponse(content_type='application/pdf')
+        response[
+            'Content-Disposition'
+        ] = f'attachment; filename="{filename}"'
+        response.write(pdf_data)
+        return response
+
+
+async def send_pdf_to_group(order_info: str, pdf_file_path: str):
+    """
+    Sends a PDF file to a Telegram group using the given file path.
+
+    Parameters:
+        order_info (str): The order information to send.
+        pdf_file_path (str): The file path of the PDF to send.
+
+    Returns:
+        Awaitable[None]: A coroutine object representing the sending process.
+    """
+
+    bot = Bot(token=os.getenv('BOT_TOKEN', default='default-value'))
+    try:
+        with open(pdf_file_path, 'rb') as pdf_file:
+            await bot.send_document(
+                chat_id=os.getenv('CHAT_ID', default='default-value'),
+                document=pdf_file, caption=order_info
+            )
+    except TelegramError as e:
+        print(f"An error occurred while sending the message: {e}")
+    return send_pdf_to_group
