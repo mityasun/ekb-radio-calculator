@@ -5,3 +5,6 @@ class SettingsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'settings'
     verbose_name = 'Настройки'
+
+    def ready(self):
+        import settings.signals

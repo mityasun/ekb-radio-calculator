@@ -123,7 +123,8 @@ RATELIMIT_BLOCK_TIME = 60 * 1
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-CACHE_TTL = 60 * 60
+CACHE_TTL = 60 * 60 * 24
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -139,6 +140,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Main settings
 
 LANGUAGE_CODE = 'ru-RU'
 
@@ -160,6 +163,8 @@ LOGOUT_REDIRECT_URL = '/admin/login/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+# Rest settings
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [

@@ -2,7 +2,9 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.vary import vary_on_cookie
+from django_filters.rest_framework import DjangoFilterBackend
 
+from api.filters import NameFilter, CaseInsensitiveOrderingFilter
 from api.mixins import ReadOnlyViewSet
 from api.serializers.serializers_settings import (SystemTextSerializer,
                                                   CitySerializer,
@@ -34,6 +36,11 @@ class CityViewSet(ReadOnlyViewSet):
 
     serializer_class = CitySerializer
     queryset = City.objects.all()
+    filter_backends = (
+        NameFilter, DjangoFilterBackend, CaseInsensitiveOrderingFilter
+    )
+    search_fields = ('@name',)
+    ordering_fields = ('id', 'name')
 
     @method_decorator(vary_on_cookie)
     @method_decorator(cache_control(no_cache=True, must_revalidate=True))

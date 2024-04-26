@@ -99,7 +99,7 @@ DATABASES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-CACHE_TTL = 60 * 1
+CACHE_TTL = 60 * 60
 
 # Logging settings
 
@@ -209,7 +209,7 @@ BIG_TEXT: int = 20000
 IMAGE_SIZE: int = 1280
 PHOTO_QUALITY: int = 90
 PHOTO_RATIO: int = 4
-MIN_IMAGE_RESOLUTION: int = 720
+MIN_IMAGE_RESOLUTION: int = 500
 MAX_IMAGE_RESOLUTION: int = 3000
 MAX_IMAGE_SIZE: int = 1048576
 DEFAULT_LOGO: str = 'default_images/station.jpg'

@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from api.views.views_orders import OrderViewSet
+from api.views.views_orders import OrderViewSet, OrderPdfViewSet
 from api.views.views_settings import (SystemTextViewSet, CityViewSet,
                                       AudioDurationViewSet,
                                       BlockPositionViewSet,
@@ -23,6 +23,9 @@ router_v1.register(
 )
 router_v1.register(
     r'order', OrderViewSet, basename='order'
+)
+router_v1.register(
+    r'order-pdf', OrderPdfViewSet, basename='order-pdf'
 )
 
 

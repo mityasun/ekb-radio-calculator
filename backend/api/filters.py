@@ -1,10 +1,13 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.functions import Lower
+from django_filters import rest_framework as filters
 from rest_framework import serializers
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
 
+from settings.models import City
+from stations.models import RadioStation
 from utils.validators import validate_search_query
 
 
@@ -109,3 +112,13 @@ class CaseInsensitiveOrderingFilter(OrderingFilter):
                     new_ordering.append(field)
             return queryset.order_by(*new_ordering)
         return queryset
+
+
+class StationFilterSet(filters.FilterSet):
+    """Filters for radio stations"""
+
+    city = filters.ModelChoiceFilter(queryset=City.objects.all())
+
+    class Meta:
+        model = RadioStation
+        fields = ('city',)

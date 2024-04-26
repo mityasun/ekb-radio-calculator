@@ -24,10 +24,9 @@ class CustomerSelectionSerializer(serializers.ModelSerializer):
         read_only_fields = ('order', 'week_day', 'interval_price')
 
 
-class OrderCreateSerializer(serializers.ModelSerializer):
-    """Serializer for create order"""
+class OrderPdfSerializer(serializers.ModelSerializer):
+    """Serializer for create pdf order"""
 
-    customer = CustomerSerializer()
     city = serializers.PrimaryKeyRelatedField(
         queryset=City.objects.all(), required=True
     )
@@ -50,11 +49,11 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         model = Order
         exclude = (
             'created_at', 'block_position_rate', 'month_rate', 'order_amount',
-            'total_days', 'order_volume', 'final_order_amount'
+            'total_days', 'order_volume', 'final_order_amount', 'customer'
         )
         read_only_fields = (
             'created_at', 'block_position_rate', 'month_rate', 'order_amount',
-            'total_days', 'order_volume', 'final_order_amount'
+            'total_days', 'order_volume', 'final_order_amount', 'customer'
         )
 
     def validate(self, data):
@@ -65,3 +64,20 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 'customer_selection'
             )
         return data
+
+
+class OrderCreateSerializer(OrderPdfSerializer):
+    """Serializer for create order"""
+
+    customer = CustomerSerializer()
+
+    class Meta(OrderPdfSerializer.Meta):
+        model = Order
+        exclude = (
+            'created_at', 'block_position_rate', 'month_rate', 'order_amount',
+            'total_days', 'order_volume', 'final_order_amount'
+        )
+        read_only_fields = (
+            'created_at', 'block_position_rate', 'month_rate', 'order_amount',
+            'total_days', 'order_volume', 'final_order_amount'
+        )
