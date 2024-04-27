@@ -942,11 +942,6 @@ components:
     AudienceSexStation:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
         sex:
           type: string
           uniqueItems: true
@@ -962,11 +957,6 @@ components:
     AudienceAgeStation:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
         age:
           type: string
           uniqueItems: true
@@ -987,11 +977,7 @@ components:
           uniqueItems: true
           readOnly: true
           example: 1
-        month:
-          type: string
-          uniqueItems: true
-          description: 'Месяц.'
-          example: 'Январь'
+          description: 'id месяца.'
         rate:
           type: number
           minimum: 0
@@ -1002,16 +988,11 @@ components:
     BlockPositionRate:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
-        block_position:
-          type: string
-          uniqueItems: true
+        time_interval:
           description: 'Позиционирование в рекламном блоке.'
-          example: 'Первый в блоке'
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockPosition'
         rate:
           type: number
           minimum: 0
@@ -1022,22 +1003,16 @@ components:
     IntervalPrice:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
         time_interval:
-          type: string
-          uniqueItems: true
           description: 'Часовой интервал.'
-          example: '10:00 - 11:00'
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeInterval'
         audio_duration:
-          type: integer
-          minimum: 1
-          maximum: 100
-          description: 'Продолжительность аудио ролика. Мин 0, макс 100.'
-          example: 10
+          description: 'Продолжительность аудио ролика.'
+          type: array
+          items:
+            $ref: '#/components/schemas/AudioDuration'
         interval_price:
           type: integer
           minimum: 1
@@ -1048,11 +1023,6 @@ components:
     AmountDiscount:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
         order_amount:
           type: integer
           minimum: 1
@@ -1069,11 +1039,6 @@ components:
     DaysDiscount:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
         total_days:
           type: integer
           minimum: 1
@@ -1090,11 +1055,6 @@ components:
     VolumeDiscount:
       type: object
       properties:
-        id:
-          type: integer
-          uniqueItems: true
-          readOnly: true
-          example: 1
         order_volume:
           type: integer
           minimum: 1

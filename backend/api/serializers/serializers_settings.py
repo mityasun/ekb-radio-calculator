@@ -52,7 +52,7 @@ class AudienceSexStationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AudienceSexStation
-        fields = ('id', 'sex', 'percent')
+        fields = ('sex', 'percent')
 
 
 class AudienceAgeStationSerializer(serializers.ModelSerializer):
@@ -62,4 +62,4 @@ class AudienceAgeStationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AudienceAgeStation
-        fields = ('id', 'age', 'percent')
+        fields = ('age', 'percent')
