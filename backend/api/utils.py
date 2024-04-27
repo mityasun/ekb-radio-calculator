@@ -318,7 +318,7 @@ def create_pdf(
     pdf_data = buffer.getvalue()
     buffer.close()
 
-    filename = f'Taksa_Radio_{datetime.now().strftime("%d.%m.%Y_%H.%M")}.pdf'
+    filename = f'Taksa_Radio_{datetime.now().strftime("%d.%m.%Y_%H.%M.%S")}.pdf'
 
     if save_option:
         filepath = os.path.join('media/orders', filename)
