@@ -10,4 +10,12 @@ export type {
   AdMonth,
   AdMonthOptions
 } from './adSettingsModel';
-export type { Order, Customer, CustomerSelection, AdOrderSettings, OrderState, TimeInterval } from './orderModel';
+export type {
+  Order,
+  Customer,
+  CustomerSelection,
+  AdOrderSettings,
+  OrderState,
+  TimeInterval,
+  OrderPdf
+} from './orderModel';

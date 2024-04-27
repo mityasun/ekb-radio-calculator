@@ -3,7 +3,7 @@ import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
 import { useAdSettingsStore } from 'shared/store';
 import { getAudioDurations } from '../api';
 import { useQuery } from '@tanstack/react-query';
-import { AdDuration, AdDurationOptions } from 'shared/types';
+import { AdDuration } from 'shared/types';
 
 const maxWidth = '100%';
 
@@ -28,16 +28,13 @@ export const AdDurationSelector = () => {
 
   const getValue = useCallback(() => {
     return adSettings.audio_duration
-      ? options.find(
-          (duration: AdDurationOptions) =>
-            duration.value.toString() === (adSettings.audio_duration?.id || '').toString()
-        )
+      ? options.find((duration) => duration.value.toString() === (adSettings.audio_duration?.id || '').toString())
       : null;
   }, [adSettings, options]);
 
   const onChange = useCallback(
     (newValue: unknown) => {
-      const selectedDuration = data.find(
+      const selectedDuration = data?.find(
         (duration: AdDuration) => duration.id.toString() === (newValue as AppSelectOption).value
       );
       if (selectedDuration) {

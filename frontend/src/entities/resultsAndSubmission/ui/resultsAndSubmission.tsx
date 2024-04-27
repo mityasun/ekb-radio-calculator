@@ -1,7 +1,11 @@
 import clsx from 'clsx';
 import s from './resultsAndSubmission.module.css';
 import { AppButton } from 'shared/ui/appButton';
-import { useOrder } from 'shared/store/orderStore';
+import { getResponseOrderPdf } from 'features/getOrderPdf';
+import { useAdSettingsStore, useCityStore, useRadioStore, useOrderStore } from 'shared/store';
+import { useMutation } from '@tanstack/react-query';
+import { OrderPdf } from 'shared/types';
+import { getOrderPdf } from '../api';
 
 export type CostAndDiscounts = Record<string, { title: string; value: string; unit?: string }>;
 
@@ -27,7 +31,24 @@ const BUTTON_TITLE = {
 };
 
 export const ResultsAndSubmission = () => {
-  const { clearCustomerSelections } = useOrder();
+  const { customer_selection, clearCustomerSelections } = useOrderStore();
+  const { selectedCity } = useCityStore();
+  const { selectedRadio } = useRadioStore();
+  const { adSettings } = useAdSettingsStore();
+
+  const mutation = useMutation<void, unknown, OrderPdf>({
+    mutationFn: getOrderPdf
+  });
+
+  const hanlderSavePDFClick = async () => {
+    const response = getResponseOrderPdf({ selectedCity, selectedRadio, adSettings, customer_selection });
+    if (!response) return;
+    mutation.mutate(response);
+  };
+
+  const handlerResetCustomerSelections = () => {
+    clearCustomerSelections();
+  };
 
   return (
     <div className={clsx(s.resultsAndSubmission)}>
@@ -58,10 +79,12 @@ export const ResultsAndSubmission = () => {
         </tfoot>
       </table>
       <div className={clsx(s.submission)}>
-        <AppButton variant={'secondary'} onClick={clearCustomerSelections}>
+        <AppButton variant={'secondary'} onClick={handlerResetCustomerSelections}>
           {BUTTON_TITLE.reset}
         </AppButton>
-        <AppButton variant={'secondary'}>{BUTTON_TITLE.savePDF}</AppButton>
+        <AppButton variant={'secondary'} onClick={hanlderSavePDFClick}>
+          {BUTTON_TITLE.savePDF}
+        </AppButton>
         <AppButton variant={'primary'}>{BUTTON_TITLE.sendToAproval}</AppButton>
       </div>
     </div>

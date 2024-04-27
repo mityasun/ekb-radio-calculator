@@ -1,7 +1,7 @@
 import { AdOrderSettings, Customer, CustomerSelection, OrderState } from 'shared/types';
 import { create } from 'zustand';
 
-export const useOrder = create<OrderState>()((set) => ({
+export const useOrderStore = create<OrderState>()((set) => ({
   customer: null,
   adOrderSettings: null,
   customer_selection: [],

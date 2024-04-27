@@ -1,10 +1,11 @@
 import clsx from 'clsx';
 import s from './dateIntervalPicker.module.css';
 import { getDaysInMonth } from 'shared/utils';
-import { useAdSettingsStore } from 'shared/store';
-import { useOrder } from 'shared/store/orderStore';
+import { useAdSettingsStore, useOrderStore } from 'shared/store';
 import { useQuery } from '@tanstack/react-query';
 import { getTimeIntervals } from '../api';
+import { AdDuration } from 'shared/types';
+import { useMemo } from 'react';
 
 const ROW_HEADERS_HEADER = 'интервал времени';
 const ROW_HEADERS_FOOTER = 'итого';
@@ -14,40 +15,67 @@ const timeUnit = 'сек';
 
 export const DateIntervalPicker = () => {
   const { adSettings } = useAdSettingsStore();
-  const { customer_selection, setCustomerSelection, deleteCustomerSelection } = useOrder();
-  const { data: rowHeaders } = useQuery({
-    queryKey: ['time-intervals'],
-    queryFn: getTimeIntervals
-  });
+  const { customer_selection, setCustomerSelection, deleteCustomerSelection } = useOrderStore();
+  const { data: rowHeaders } = useQuery({ queryKey: ['time-intervals'], queryFn: getTimeIntervals });
+  const { data: audioDuration } = useQuery<AdDuration[]>({ queryKey: ['audio-durations'] });
+
   const daysInMonth = getDaysInMonth(adSettings.month?.id);
 
-  const audio_duration = adSettings.audio_duration?.audio_duration ?? 0;
+  const audioDurationId = adSettings.audio_duration?.id ?? 0;
 
-  const rowBroadcastQuantity = (timeInterval: number) => {
-    const timeIntervalSelected = customer_selection.filter((cs) => cs.time_interval === timeInterval);
-    return timeIntervalSelected ? timeIntervalSelected.length : 0;
+  const findCustomerSelection = (date: number, time_interval: number) => {
+    return customer_selection.find((cs) => cs.date === date && cs.time_interval === time_interval);
   };
 
-  const columnBroadcastQuantity = (date: number) => {
-    const dateSelected = customer_selection.filter((cs) => cs.date === date);
-    return dateSelected ? dateSelected.length : 0;
+  const getAudioDurationById = (idAudioDuration?: number) => {
+    if (!audioDuration) return 0;
+    return audioDuration.find((ad) => ad.id === idAudioDuration)?.audio_duration || 0;
   };
 
-  const rowTimingQuantity = (timeInterval: number) => {
-    const timeIntervalSelected = customer_selection.filter((cs) => cs.time_interval === timeInterval);
-    return timeIntervalSelected ? timeIntervalSelected.reduce((a, b) => a + b.audio_duration, 0) : 0;
-  };
+  const rowBroadcastQuantity = useMemo(
+    () => (timeInterval: number) => {
+      const timeIntervalSelected = customer_selection.filter((cs) => cs.time_interval === timeInterval);
+      return timeIntervalSelected ? timeIntervalSelected.length : 0;
+    },
+    [customer_selection]
+  );
 
-  const totalBroadcastQuantity = () => {
-    return customer_selection ? customer_selection.length : 0;
-  };
+  const columnBroadcastQuantity = useMemo(
+    () => (date: number) => {
+      const dateSelected = customer_selection.filter((cs) => cs.date === date);
+      return dateSelected ? dateSelected.length : 0;
+    },
+    [customer_selection]
+  );
 
-  const totalTimingQuantity = () => {
-    return customer_selection ? customer_selection.reduce((a, b) => a + b.audio_duration, 0) : 0;
-  };
+  const rowTimingQuantity = useMemo(
+    () => (timeInterval: number) => {
+      const timeIntervalSelected = customer_selection.filter((cs) => cs.time_interval === timeInterval);
+      return timeIntervalSelected
+        ? timeIntervalSelected.reduce((a, b) => a + getAudioDurationById(b.audio_duration), 0)
+        : 0;
+    },
+    [customer_selection]
+  );
+
+  const totalBroadcastQuantity = useMemo(
+    () => () => {
+      return customer_selection ? customer_selection.length : 0;
+    },
+    [customer_selection]
+  );
+
+  const totalTimingQuantity = useMemo(
+    () => () => {
+      return customer_selection
+        ? customer_selection.reduce((a, b) => a + getAudioDurationById(b.audio_duration), 0)
+        : 0;
+    },
+    [customer_selection]
+  );
 
   const handleCellClick = (date: number, time_interval: number) => {
-    const currentAudioDuration = audio_duration;
+    const currentAudioDuration = audioDurationId;
     if (customer_selection.find((cs) => cs.date === date && cs.time_interval === time_interval)) {
       deleteCustomerSelection({
         date,
@@ -95,9 +123,8 @@ export const DateIntervalPicker = () => {
                   )}
                   key={day.date}
                   onClick={() => handleCellClick(day.date, row.id)}>
-                  {customer_selection.find((cs) => cs.date === day.date && cs.time_interval === row.id) &&
-                    customer_selection.find((cs) => cs.date === day.date && cs.time_interval === row.id)
-                      ?.audio_duration}
+                  {findCustomerSelection(day.date, row.id) &&
+                    getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)}
                 </div>
               ))}
               <div className={clsx(s.tableCellCounter)}>{rowBroadcastQuantity(row.id)}</div>

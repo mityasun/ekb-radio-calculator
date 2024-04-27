@@ -3,6 +3,10 @@ export interface Order extends AdOrderSettings {
   customer_selection: CustomerSelection[];
 }
 
+export interface OrderPdf extends AdOrderSettings {
+  customer_selection: CustomerSelection[];
+}
+
 export type Customer = {
   company_name: string;
   name: string;
@@ -26,8 +30,8 @@ export type AdOrderSettings = {
   station: number;
   month: number;
   block_position: number;
-  other_person_rate: boolean;
-  hour_selected_rate: boolean;
+  other_person_rate?: boolean;
+  hour_selected_rate?: boolean;
 };
 
 export interface OrderState {
