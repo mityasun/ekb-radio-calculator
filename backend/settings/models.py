@@ -35,7 +35,7 @@ class SystemText(models.Model):
         validators=[partial(validate_text, max_length=settings.COPYRIGHT)]
     )
     logo = models.ImageField(
-        'Логотип', upload_to='system/'
+        'Логотип', upload_to='system/', default=settings.DEFAULT_COMPANY_LOGO,
     )
     seo_title = models.CharField(
         'SEO Title', max_length=settings.SEO_TITLE,
@@ -60,10 +60,10 @@ class SystemText(models.Model):
     yandex_counter_id = models.CharField(
         'Яндекс метрика ID', max_length=settings.NAME, blank=True, null=True
     )
-    mailru_counter = models.TextField(
+    mailru_counter = models.CharField(
         'Mail ru метрика ID', max_length=settings.NAME, blank=True, null=True
     )
-    privacy_text = models.CharField(
+    privacy_text = models.TextField(
         'Политика конфиденциальности', max_length=settings.BIG_TEXT,
         validators=[partial(validate_text, max_length=settings.BIG_TEXT)]
     )

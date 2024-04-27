@@ -84,7 +84,6 @@ class RadioStation(DefaultOneMixin, models.Model):
                 img_bytes = BytesIO(self.logo.read())
                 img = PilImage.open(img_bytes)
                 default_storage.delete(old_logo.name)
-                print('deleting logo')
                 self.logo = reduce_image(
                     img, max_size=settings.IMAGE_SIZE, image_name=file_name
                 )

@@ -8,7 +8,7 @@ class AmountDiscountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AmountDiscount
-        fields = ('id', 'order_amount', 'discount')
+        fields = ('order_amount', 'discount')
 
 
 class DaysDiscountSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class DaysDiscountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DaysDiscount
-        fields = ('id', 'total_days', 'discount')
+        fields = ('total_days', 'discount')
 
 
 class VolumeDiscountSerializer(serializers.ModelSerializer):
@@ -24,4 +24,4 @@ class VolumeDiscountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VolumeDiscount
-        fields = ('id', 'order_volume', 'discount')
+        fields = ('order_volume', 'discount')

@@ -58,7 +58,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
+#db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -141,6 +141,7 @@ infra/.redis
 infra/.redis_prod
 infra/nginx_prod.conf
 infra/docker-compose.prod.yml
+#/frontend/config.production
 
 
 # frontend
@@ -150,3 +151,9 @@ frontend/node_modules
 /backend/media/stations/
 /backend/media/import/
 /backend/data.json
+/backend/media/orders/
+/infra/.env.prod
+/infra/docker-compose.yml
+/infra/nginx.conf
+/infra/init-letsencrypt.sh
+/backend/db.sqlite3

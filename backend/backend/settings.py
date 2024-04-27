@@ -77,23 +77,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database settings
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
-#         'default': {
-#             'ENGINE': os.getenv('DB_ENGINE'),
-#             'NAME': os.getenv('DB_NAME'),
-#             'USER': os.getenv('POSTGRES_USER'),
-#             'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#             'HOST': os.getenv('DB_HOST'),
-#             'PORT': os.getenv('DB_PORT')
-#         }
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
+# }
+
+DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('DB_ENGINE'),
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT')
+        }
+    }
 
 # Cache settings
 
@@ -217,10 +217,11 @@ BIG_TEXT: int = 20000
 IMAGE_SIZE: int = 1280
 PHOTO_QUALITY: int = 90
 PHOTO_RATIO: int = 4
-MIN_IMAGE_RESOLUTION: int = 720
+MIN_IMAGE_RESOLUTION: int = 500
 MAX_IMAGE_RESOLUTION: int = 3000
 MAX_IMAGE_SIZE: int = 1048576
-DEFAULT_LOGO: str = 'default_images/station.jpg'
+DEFAULT_LOGO: str = 'default_images/default-station.jpg'
+DEFAULT_COMPANY_LOGO: str = 'default_images/default-company.png'
 MAX_LIMIT: int = 100
 SEO_TITLE: int = 150
 SEO_DESCRIPTION: int = 300
