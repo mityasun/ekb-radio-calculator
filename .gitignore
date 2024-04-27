@@ -153,3 +153,7 @@ frontend/node_modules
 /backend/data.json
 /backend/media/orders/
 /infra/.env.prod
+/infra/docker-compose.yml
+/infra/nginx.conf
+/infra/init-letsencrypt.sh
+/backend/db.sqlite3
