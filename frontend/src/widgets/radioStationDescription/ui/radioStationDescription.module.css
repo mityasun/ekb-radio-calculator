@@ -9,6 +9,19 @@
   border-radius: var(--border-radius);
   background-color: var(--white);
   font-size: 1.6rem;
+
+
+}
+
+.radioStationDescriptionText {
+  width: 100%;
+  text-align: justify;
+
+  img {
+    width: 185px;
+    float: left;
+    margin: 0 20px 5px 0;
+  }
 }
 
 .radioStationLogo {
@@ -25,7 +38,7 @@
 
 .radioStationDescriptionText {
   article {
-    max-width: 700px;
+    width: 100%;
   }
 
   h3 {

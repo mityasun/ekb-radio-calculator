@@ -118,8 +118,7 @@ export const DateIntervalPicker = () => {
                   className={clsx(
                     day.isWeekend && s.weekend,
                     s.tableCell,
-                    customer_selection.find((cs) => cs.date === day.date && cs.time_interval === row.id) &&
-                      s.selectedCell
+                    findCustomerSelection(day.date, row.id) && s.selectedCell
                   )}
                   key={day.date}
                   onClick={() => handleCellClick(day.date, row.id)}>

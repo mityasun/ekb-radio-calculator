@@ -24,6 +24,7 @@
   padding: var(--table-cells-padding);
   font-weight: 600;
   height: var(--height-basic-rows);
+  text-align: center;
   border: 1px solid var(--data-picker-border-color);
   border-right: 1px solid var(--primary-color);
 }
@@ -32,12 +33,16 @@
   height: var(--height-title-rows);
   display: flex;
   align-items: center;
+  text-align: center;
   border-bottom: 1px solid var(--primary-color);
 }
 
 .rowHeaders > *:last-child {
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   height: var(--height-title-rows);
 }
 
@@ -54,11 +59,11 @@
 .columHeaders > * {
   display: flex;
   align-items: center;
-  justify-content: center;
   min-width: var(--wigth-basic-cells);
   max-width: var(--wigth-basic-cells);
   padding: var(--table-cells-padding);
   height: var(--height-title-rows);
+  text-align: center;
   border: 1px solid var(--data-picker-border-color);
   border-bottom: 1px solid var(--primary-color);
 }
