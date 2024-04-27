@@ -9,12 +9,17 @@
   max-width: var(--wrapper-width);
   margin: 0 auto;
   padding: 15px 20px;
+
+  @media screen and (max-width: 480px) {
+    padding: 15px 10px;
+  }
 }
 
 .headerContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 15px;
   width: 100%;
   padding: 15px 20px;
   background-color: var(--white);

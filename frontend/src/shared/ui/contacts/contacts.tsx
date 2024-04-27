@@ -8,10 +8,11 @@ import { FC } from 'react';
 
 interface ContactsProps {
   textColor: string;
+  variant: 'primary' | 'header';
 }
 
 export const Contacts: FC<ContactsProps> = (props) => {
-  const { textColor } = props;
+  const { textColor, variant = 'primary' } = props;
 
   return (
     <div className={clsx(s.contacts)}>
@@ -24,7 +25,7 @@ export const Contacts: FC<ContactsProps> = (props) => {
             target="_blank"
             rel="noreferrer">
             <PhoneIcon />
-            {PHONE.title}
+            <span className={clsx(variant === 'header' && s.addressHeader)}>{PHONE.title}</span>
           </a>
         </li>
         <li className={clsx(s.contactsListItem)}>
@@ -35,11 +36,11 @@ export const Contacts: FC<ContactsProps> = (props) => {
             target="_blank"
             rel="noreferrer">
             <EmailIcon />
-            {EMAIL.title}
+            <span className={clsx(variant === 'header' && s.addressHeader)}>{EMAIL.title}</span>
           </a>
         </li>
       </ul>
-      <div className={clsx(s.address)}>
+      <div className={clsx(s.address, variant === 'header' && s.addressHeader)}>
         <a href={ADDRESS.mapLink} target="_blank" rel="noreferrer">
           <AddressIcon />
         </a>

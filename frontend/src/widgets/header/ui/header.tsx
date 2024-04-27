@@ -9,7 +9,7 @@ export const Header = () => {
       <div className={clsx(s.headerWrapper)}>
         <div className={clsx(s.headerContainer)}>
           <HeaderLogo className={clsx(s.headerIcon)} />
-          <Contacts textColor={'#2b3140'} />
+          <Contacts textColor={'#2b3140'} variant={'header'} />
         </div>
       </div>
     </header>

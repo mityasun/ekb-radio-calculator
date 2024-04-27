@@ -5,6 +5,10 @@
   max-width: var(--wrapper-width);
   padding: 0 20px;
   margin: 0 auto;
+
+  @media screen and (max-width: 480px) {
+    padding: 0 10px;
+  }
 }
 
 .title {

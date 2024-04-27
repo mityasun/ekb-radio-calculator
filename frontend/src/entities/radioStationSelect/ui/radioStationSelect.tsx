@@ -1,11 +1,11 @@
 import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
-import { useRadioStore } from 'shared/store';
+import { useOrderStore, useRadioStore } from 'shared/store';
 import { useDefaultRadios } from '../hooks';
 
 export const RadioStationSelect = () => {
-  const { radios, selectedRadioId, setSelectedRadioId } = useRadioStore();
-
   const { isLoading } = useDefaultRadios();
+  const { clearCustomerSelections } = useOrderStore();
+  const { radios, selectedRadioId, setSelectedRadioId } = useRadioStore();
 
   const options = radios.map((radio) => ({ value: radio.id.toString(), label: radio.name }));
 
@@ -17,6 +17,7 @@ export const RadioStationSelect = () => {
     const selectedRadio = radios.find((radio) => radio.id.toString() === (newValue as AppSelectOption).value);
     if (selectedRadio) {
       setSelectedRadioId(selectedRadio.id);
+      clearCustomerSelections();
     }
   };
 

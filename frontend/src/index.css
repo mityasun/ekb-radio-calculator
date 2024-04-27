@@ -7,6 +7,8 @@
 }
 
 :root {
+  color-scheme: only light;
+
   --white: #ffffff;
   --primary-color: #05bb75;
   --primary-color-hover: #02935b;
@@ -38,8 +40,9 @@ html,
 #root {
   margin: 0;
   height: 100%;
-  font-family: 'Gilroy', Arial, Helvetica, sans-serif;
+  font-family: 'Mulish';
   font-size: 10px;
+  font-weight: 400;
   color: var(--primary-text-color);
   background: var(--background-color);
 }
@@ -68,4 +71,5 @@ h2 {
 
 h3 {
   font-size: 2.4rem;
+  font-weight: 700;
 }
