@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import s from './header.module.css';
 import HeaderLogo from 'shared/assets/logo/taksa_header_logo.svg?react';
-import { Contacts } from 'shared/ui/contacts';
+import { Contacts } from 'entities/contacts';
 import { Link } from 'react-router-dom';
 
 export const Header = () => {

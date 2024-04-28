@@ -5,18 +5,45 @@
 }
 
 .footerWrapper {
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 15px;
   max-width: var(--wrapper-width);
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 30px 20px;
 
   @media screen and (max-width: 480px) {
     padding: 20px 10px;
   }
+}
+
+.footerContacts {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.footerPoliticy {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.footerLinkPoliticy {
+  display: block;
+  color: var(--primary-color);
 }
 
 .footerIcon {
