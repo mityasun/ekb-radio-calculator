@@ -12,10 +12,10 @@ export type CostAndDiscounts = Record<string, { title: string; value: string; un
 const costAndDiscounts: CostAndDiscounts = {
   blockPositionCoefficient: { title: 'Коэффициент за позиционирование в блоке:', value: '1.0' },
   seasonalCoefficient: { title: 'Сезонный коэффициент:', value: '1.0' },
-  priceListBroadcastCost: { title: 'Стоимость трансляции прайсовая:', value: '1500', unit: 'руб.' },
+  priceListBroadcastCost: { title: 'Сумма заказа без скидок:', value: '1500', unit: 'руб.' },
   volumeDiscount: { title: 'Скидка за объем:', value: '0', unit: 'руб.' },
-  adDurationDiscount: { title: 'Скидка за продолжительность РК:', value: '0', unit: 'руб.' },
-  totalGridOutputDiscount: { title: 'Скидки за кол-во выходов в сетке в целом:', value: '0', unit: 'руб.' }
+  adDurationDiscount: { title: 'Скидка за количество дней выходов:', value: '0', unit: 'руб.' },
+  totalGridOutputDiscount: { title: 'Скидки за количество выходов в сетке в целом:', value: '0', unit: 'руб.' }
 };
 
 const totalCost = {
