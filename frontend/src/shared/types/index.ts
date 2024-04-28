@@ -19,3 +19,5 @@ export type {
   TimeInterval,
   OrderPdf
 } from './orderModel';
+
+export type { SystemText } from './systemTextModel';

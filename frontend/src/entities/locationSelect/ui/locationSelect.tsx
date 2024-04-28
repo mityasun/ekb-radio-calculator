@@ -24,7 +24,7 @@ export const LocationSelect = () => {
   return (
     <AppSelect
       placeholder={isLoading ? 'Загрузка ...' : options.length ? 'Выберите город' : 'Нет доступных'}
-      maxWidth={'275px'}
+      maxWidth={'100%'}
       options={options}
       onChange={onChange}
       value={getValue()}

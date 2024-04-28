@@ -1,10 +1,16 @@
 import clsx from 'clsx';
 import s from '../styles/index.module.css';
-import { Link, Route, createRoutesFromElements, createHashRouter, RouterProvider } from 'react-router-dom';
+import { Link, Route, createRoutesFromElements, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from '../layout';
-import { MainPage } from '../../pages/mainPage';
+import { MainPage } from 'pages/mainPage';
+import { PrivacyPage } from 'pages/privacyPage';
+import { useQuery } from '@tanstack/react-query';
+import { getSystemText } from './api';
+import { Helmet } from 'react-helmet-async';
 
 export const AppRouter = () => {
+  const { data: systemText } = useQuery({ queryKey: ['system-text'], queryFn: getSystemText });
+
   const routers = createRoutesFromElements(
     <Route
       path="/"
@@ -12,14 +18,23 @@ export const AppRouter = () => {
       handle={{ crumb: <Link to="/">Home</Link> }}
       errorElement={<p>Something went wrong</p>}>
       <Route index element={<MainPage />} />
+      <Route path="privacy" handle={{ crumb: <Link to="/privacy">Privacy</Link> }}>
+        <Route index element={<PrivacyPage />} />
+      </Route>
     </Route>
   );
 
-  const router = createHashRouter(routers, {});
+  const router = createBrowserRouter(routers, {});
 
   return (
-    <div className={clsx(s.app)}>
-      <RouterProvider router={router} />
-    </div>
+    <>
+      <Helmet>
+        <meta name="description" content={systemText?.seo_description && systemText.seo_description} />
+        <meta name="keywords" content={systemText?.seo_keywords && systemText.seo_keywords} />
+      </Helmet>
+      <div className={clsx(s.app)}>
+        <RouterProvider router={router} />
+      </div>
+    </>
   );
 };

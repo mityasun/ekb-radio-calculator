@@ -8,14 +8,6 @@
 
   @media screen and (max-width: 480px) {
     padding: 0 10px;
+    font-weight: 700;
   }
-}
-
-.title {
-  width: 100%;
-}
-
-.selectContainer {
-  width: 100%;
-  display: flex;
 }

@@ -2,10 +2,12 @@ import clsx from 'clsx';
 import s from './radioStationDescription.module.css';
 import { useRadioStore } from 'shared/store';
 
-const logoImgAlt = 'Логотип радиостанции';
+const LOGO_IMG_ALT = 'Логотип радиостанции';
+const NO_SATATION_TEXT = 'В этом городе выбор радиостанции пока не доступен!';
 
 export const RadioStationDescription = () => {
   const { selectedRadio } = useRadioStore();
+  const markup = { __html: selectedRadio?.description ? selectedRadio?.description : '' };
 
   return (
     <div className={clsx(s.radioStationDescription)}>
@@ -13,11 +15,12 @@ export const RadioStationDescription = () => {
         <>
           <div className={clsx(s.radioStationDescriptionText)}>
             <h3>{selectedRadio.title}</h3>
-            <img src={selectedRadio.logo} alt={logoImgAlt} />
-            <p>{selectedRadio.description}</p>
+            <img src={selectedRadio.logo} alt={LOGO_IMG_ALT} />
+            <p dangerouslySetInnerHTML={markup}></p>
           </div>
         </>
       )}
+      {!selectedRadio && <h4>{NO_SATATION_TEXT}</h4>}
     </div>
   );
 };
