@@ -1,27 +1,25 @@
-import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 import { useAdSettingsStore } from 'shared/store';
 import { AppSelect } from 'shared/ui/appSelect';
-import { getBlockPositions } from '../api';
 import { BlockPosition, AppSelectOption } from 'shared/types';
 
 const maxWidth = '100%';
 
 export const AdPositionSelector = () => {
-  const { adSettings, setBlockPosition } = useAdSettingsStore();
-  const { data, isLoading } = useQuery({ queryKey: ['block-positions'], queryFn: getBlockPositions });
+  const { adSettings, blockPositions, setBlockPosition } = useAdSettingsStore();
 
   useEffect(() => {
-    if (!data) return;
+    if (!blockPositions) return;
 
-    const defaultBlockPosition = data.find((position: BlockPosition) => position.default) || data[0];
+    const defaultBlockPosition =
+      blockPositions.find((position: BlockPosition) => position.default) || blockPositions[0];
 
     if (!defaultBlockPosition) return;
     setBlockPosition(defaultBlockPosition);
-  }, [data]);
+  }, [blockPositions]);
 
   const options =
-    data?.map((position: BlockPosition) => ({
+    blockPositions?.map((position: BlockPosition) => ({
       value: position.id.toString(),
       label: position.block_position
     })) || [];
@@ -36,19 +34,19 @@ export const AdPositionSelector = () => {
 
   const onChange = useCallback(
     (newValue: unknown) => {
-      const selectedPosition = data.find(
+      const selectedPosition = blockPositions?.find(
         (position: BlockPosition) => position.id.toString() === (newValue as AppSelectOption).value
       );
       if (selectedPosition) {
         setBlockPosition(selectedPosition);
       }
     },
-    [data]
+    [blockPositions]
   );
 
   return (
     <AppSelect
-      placeholder={isLoading ? 'Загрузка...' : 'Выберите позиционирование в блоке'}
+      placeholder={!blockPositions ? 'Загрузка...' : 'Выберите позиционирование в блоке'}
       maxWidth={maxWidth}
       options={options}
       onChange={onChange}
