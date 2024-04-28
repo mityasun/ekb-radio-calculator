@@ -5,18 +5,17 @@ import { useCityStore } from 'shared/store';
 import { CityModel } from 'shared/types';
 
 export const useDefaultCity = () => {
-  const { data, isLoading } = useQuery({ queryKey: ['cities'], queryFn: getCities });
-  const { setCities, setSelectedCity } = useCityStore();
+  const { data: cities, isLoading } = useQuery({ queryKey: ['cities'], queryFn: getCities });
+  const { setSelectedCity } = useCityStore();
 
   useEffect(() => {
-    if (!data) return;
-    setCities(data);
+    if (!cities) return;
 
-    const defaultCity = data.find((city: CityModel) => city.default) || data[0];
+    const defaultCity = cities.find((city: CityModel) => city.default) || cities[0];
 
     if (!defaultCity) return;
     setSelectedCity(defaultCity);
-  }, [data]);
+  }, [cities]);
 
-  return { isLoading };
+  return { isLoading, cities };
 };

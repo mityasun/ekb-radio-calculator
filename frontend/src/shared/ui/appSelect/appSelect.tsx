@@ -2,11 +2,6 @@ import { FC } from 'react';
 import Select from 'react-select';
 import './appSelect.css';
 
-export type AppSelectOption = {
-  value: string;
-  label: string;
-};
-
 export interface AppSelectProps extends React.ComponentProps<typeof Select> {
   maxWidth: string;
 }

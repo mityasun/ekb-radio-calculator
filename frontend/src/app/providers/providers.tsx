@@ -7,13 +7,20 @@ interface ProvidersProps {
   children: React.ReactNode;
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false } } });
 
 export const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
-        <ErrorBoundary fallback={<p>Something went wrong</p>}>{children}</ErrorBoundary>
+        <ErrorBoundary
+          fallback={
+            <p style={{ fontSize: '24px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              Something went wrong
+            </p>
+          }>
+          {children}
+        </ErrorBoundary>
       </HelmetProvider>
     </QueryClientProvider>
   );

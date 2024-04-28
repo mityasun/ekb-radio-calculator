@@ -1,27 +1,25 @@
 import { useCallback, useEffect } from 'react';
-import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
+import { AppSelect } from 'shared/ui/appSelect';
 import { useAdSettingsStore } from 'shared/store';
-import { getAudioDurations } from '../api';
-import { useQuery } from '@tanstack/react-query';
-import { AdDuration } from 'shared/types';
+import { AudioDuration, AppSelectOption } from 'shared/types';
 
 const maxWidth = '100%';
 
 export const AdDurationSelector = () => {
-  const { adSettings, setAudioDuration } = useAdSettingsStore();
-  const { data, isLoading } = useQuery({ queryKey: ['audio-durations'], queryFn: getAudioDurations });
+  const { adSettings, audioDurations, setAudioDuration } = useAdSettingsStore();
 
   useEffect(() => {
-    if (!data) return;
+    if (!audioDurations) return;
 
-    const defaultAudioDuration = data.find((duration: AdDuration) => duration.default) || data[0];
+    const defaultAudioDuration =
+      audioDurations.find((duration: AudioDuration) => duration.default) || audioDurations[0];
 
     if (!defaultAudioDuration) return;
     setAudioDuration(defaultAudioDuration);
-  }, [data]);
+  }, [audioDurations]);
 
   const options =
-    data?.map((duration: AdDuration) => ({
+    audioDurations?.map((duration: AudioDuration) => ({
       value: duration.id.toString(),
       label: duration.audio_duration + ' сек'
     })) || [];
@@ -34,19 +32,19 @@ export const AdDurationSelector = () => {
 
   const onChange = useCallback(
     (newValue: unknown) => {
-      const selectedDuration = data?.find(
-        (duration: AdDuration) => duration.id.toString() === (newValue as AppSelectOption).value
+      const selectedDuration = audioDurations?.find(
+        (duration: AudioDuration) => duration.id.toString() === (newValue as AppSelectOption).value
       );
       if (selectedDuration) {
         setAudioDuration(selectedDuration);
       }
     },
-    [data]
+    [audioDurations]
   );
 
   return (
     <AppSelect
-      placeholder={isLoading ? 'Загрузка...' : 'Выберите продолжительность'}
+      placeholder={!audioDurations ? 'Загрузка...' : 'Выберите продолжительность'}
       maxWidth={maxWidth}
       options={options}
       onChange={onChange}

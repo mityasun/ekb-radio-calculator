@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useAdSettingsStore, useOrderStore } from 'shared/store';
-import { AdMonth } from 'shared/types';
-import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
+import { AdMonth, AppSelectOption } from 'shared/types';
+import { AppSelect } from 'shared/ui/appSelect';
 import { getMonthOptions } from 'shared/utils';
 
 const maxWidth = '100%';

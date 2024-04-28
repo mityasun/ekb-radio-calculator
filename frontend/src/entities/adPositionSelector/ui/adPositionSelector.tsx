@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 import { useAdSettingsStore } from 'shared/store';
-import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
+import { AppSelect } from 'shared/ui/appSelect';
 import { getBlockPositions } from '../api';
-import { AdBlockPosition, AdBlockPositionOptions } from 'shared/types';
+import { BlockPosition, AppSelectOption } from 'shared/types';
 
 const maxWidth = '100%';
 
@@ -14,14 +14,14 @@ export const AdPositionSelector = () => {
   useEffect(() => {
     if (!data) return;
 
-    const defaultBlockPosition = data.find((position: AdBlockPosition) => position.default) || data[0];
+    const defaultBlockPosition = data.find((position: BlockPosition) => position.default) || data[0];
 
     if (!defaultBlockPosition) return;
     setBlockPosition(defaultBlockPosition);
   }, [data]);
 
   const options =
-    data?.map((position: AdBlockPosition) => ({
+    data?.map((position: BlockPosition) => ({
       value: position.id.toString(),
       label: position.block_position
     })) || [];
@@ -29,8 +29,7 @@ export const AdPositionSelector = () => {
   const getValue = useCallback(() => {
     return adSettings.block_position
       ? options.find(
-          (position: AdBlockPositionOptions) =>
-            position.value.toString() === (adSettings.block_position?.id || '').toString()
+          (position: AppSelectOption) => position.value.toString() === (adSettings.block_position?.id || '').toString()
         )
       : null;
   }, [adSettings, options]);
@@ -38,7 +37,7 @@ export const AdPositionSelector = () => {
   const onChange = useCallback(
     (newValue: unknown) => {
       const selectedPosition = data.find(
-        (position: AdBlockPosition) => position.id.toString() === (newValue as AppSelectOption).value
+        (position: BlockPosition) => position.id.toString() === (newValue as AppSelectOption).value
       );
       if (selectedPosition) {
         setBlockPosition(selectedPosition);

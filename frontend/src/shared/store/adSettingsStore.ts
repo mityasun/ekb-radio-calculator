@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import { AdDuration, AdSettings, AdSettingsState, AdBlockPosition, AdMonth } from 'shared/types';
+import {
+  AdSettings,
+  AdSettingsState,
+  AdMonth,
+  AudioDuration,
+  BlockPosition,
+  TimeInterval,
+  RadioFullModel
+} from 'shared/types';
+import { getAudioDurations } from 'shared/utils';
 
 const initState = {
   hour_selected_rate: false,
@@ -8,16 +17,31 @@ const initState = {
 
 const useAdSettingsStore = create<AdSettingsState>()((set) => ({
   adSettings: initState,
+  audioDurations: null,
+  timeIntervals: null,
+  blockPositions: null,
+  selectedRadio: null,
+  selectedRadioId: null,
   setAdSettings: (adSettings: AdSettings) => set({ adSettings }),
-  setAudioDuration: (audioDuration: AdDuration) =>
+  setAudioDurations: (audioDurations: AudioDuration[]) => set({ audioDurations }),
+  setTimeIntervals: (timeIntervals: TimeInterval[]) => set({ timeIntervals }),
+  setBlockPositions: (blockPositions: BlockPosition[]) => set({ blockPositions }),
+  setAudioDuration: (audioDuration: AudioDuration) =>
     set((state) => ({ adSettings: { ...state.adSettings, audio_duration: audioDuration } })),
-  setBlockPosition: (blockPosition: AdBlockPosition) =>
+  setBlockPosition: (blockPosition: BlockPosition) =>
     set((state) => ({ adSettings: { ...state.adSettings, block_position: blockPosition } })),
   setMonth: (month: AdMonth) => set((state) => ({ adSettings: { ...state.adSettings, month } })),
   setHourSelection: (hourSelection: boolean) =>
     set((state) => ({ adSettings: { ...state.adSettings, hour_selected_rate: hourSelection } })),
   setOtherPerson: (otherPerson: boolean) =>
-    set((state) => ({ adSettings: { ...state.adSettings, other_person_rate: otherPerson } }))
+    set((state) => ({ adSettings: { ...state.adSettings, other_person_rate: otherPerson } })),
+  setSelectedRadio: (radio: RadioFullModel | null) => {
+    set({ selectedRadio: radio });
+    if (radio && radio.interval_price) {
+      set({ audioDurations: getAudioDurations(radio.interval_price) });
+    }
+  },
+  setSelectedRadioId: (radioId: number | null) => set({ selectedRadioId: radioId })
 }));
 
 export { useAdSettingsStore };

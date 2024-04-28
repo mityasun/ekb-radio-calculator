@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 import s from './radioStationDescription.module.css';
-import { useRadioStore } from 'shared/store';
+import { useAdSettingsStore } from 'shared/store';
 
 const LOGO_IMG_ALT = 'Логотип радиостанции';
 const NO_SATATION_TEXT = 'В этом городе выбор радиостанции пока не доступен!';
 
 export const RadioStationDescription = () => {
-  const { selectedRadio } = useRadioStore();
+  const { selectedRadio } = useAdSettingsStore();
   const markup = { __html: selectedRadio?.description ? selectedRadio?.description : '' };
 
   return (

@@ -1,11 +1,14 @@
-import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
+import { AppSelect } from 'shared/ui/appSelect';
 import { useCityStore, useOrderStore } from 'shared/store';
 import { useDefaultCity } from '../hooks';
+import { AppSelectOption } from 'shared/types';
 
 export const LocationSelect = () => {
-  const { isLoading } = useDefaultCity();
+  const { isLoading, cities } = useDefaultCity();
   const { clearCustomerSelections } = useOrderStore();
-  const { cities, selectedCity, setSelectedCity } = useCityStore();
+  const { selectedCity, setSelectedCity } = useCityStore();
+
+  if (!cities) return;
 
   const options = cities.map((city) => ({ value: city.id.toString(), label: city.name }));
 

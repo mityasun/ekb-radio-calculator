@@ -20,11 +20,6 @@ export type CustomerSelection = {
   audio_duration: number;
 };
 
-export type TimeInterval = {
-  id: number;
-  time_interval: string;
-};
-
 export type AdOrderSettings = {
   city: number;
   station: number;

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import s from './resultsAndSubmission.module.css';
 import { AppButton } from 'shared/ui/appButton';
 import { getResponseOrderPdf } from 'features/getOrderPdf';
-import { useAdSettingsStore, useCityStore, useRadioStore, useOrderStore } from 'shared/store';
+import { useAdSettingsStore, useCityStore, useOrderStore } from 'shared/store';
 import { useMutation } from '@tanstack/react-query';
 import { OrderPdf } from 'shared/types';
 import { getOrderPdf } from '../api';
@@ -33,7 +33,7 @@ const BUTTON_TITLE = {
 export const ResultsAndSubmission = () => {
   const { customer_selection, clearCustomerSelections } = useOrderStore();
   const { selectedCity } = useCityStore();
-  const { selectedRadio } = useRadioStore();
+  const { selectedRadio } = useAdSettingsStore();
   const { adSettings } = useAdSettingsStore();
 
   const mutation = useMutation<void, unknown, OrderPdf>({

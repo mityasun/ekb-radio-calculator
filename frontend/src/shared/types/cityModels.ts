@@ -5,8 +5,6 @@ export interface CityModel {
 }
 
 export interface CityState {
-  cities: CityModel[];
   selectedCity: CityModel | null;
-  setCities: (cities: CityModel[]) => void;
   setSelectedCity: (city: CityModel) => void;
 }

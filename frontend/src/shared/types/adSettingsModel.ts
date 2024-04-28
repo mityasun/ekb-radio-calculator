@@ -1,31 +1,11 @@
+import { AudioDuration, BlockPosition, RadioFullModel, TimeInterval } from './radioModels';
+
 export interface AdSettings {
-  audio_duration?: AdDuration;
-  block_position?: AdBlockPosition;
+  audio_duration?: AudioDuration;
+  block_position?: BlockPosition;
   month?: AdMonth;
   hour_selected_rate?: boolean;
   other_person_rate?: boolean;
-}
-
-export interface AdDuration {
-  id: number;
-  audio_duration: number;
-  default: boolean;
-}
-
-export interface AdBlockPosition {
-  id: number;
-  block_position: number;
-  default: boolean;
-}
-
-export interface AdDurationOptions {
-  value: number;
-  label: string;
-}
-
-export interface AdBlockPositionOptions {
-  value: number;
-  label: string;
 }
 
 export interface AdMonth {
@@ -34,16 +14,21 @@ export interface AdMonth {
   default: boolean;
 }
 
-export interface AdMonthOptions {
-  value: number;
-  label: string;
-}
-
 export interface AdSettingsState {
   adSettings: AdSettings;
+  audioDurations: AudioDuration[] | null;
+  blockPositions: BlockPosition[] | null;
+  timeIntervals: TimeInterval[] | null;
+  selectedRadioId: number | null;
+  selectedRadio: RadioFullModel | null;
+  setSelectedRadio: (radio: RadioFullModel | null) => void;
+  setSelectedRadioId: (radioId: number | null) => void;
   setAdSettings: (adSettings: AdSettings) => void;
-  setAudioDuration: (audioDuration: AdDuration) => void;
-  setBlockPosition: (blockPosition: AdBlockPosition) => void;
+  setAudioDurations: (audioDurations: AudioDuration[]) => void;
+  setBlockPositions: (blockPositions: BlockPosition[]) => void;
+  setTimeIntervals: (timeIntervals: TimeInterval[]) => void;
+  setAudioDuration: (audioDuration: AudioDuration) => void;
+  setBlockPosition: (blockPosition: BlockPosition) => void;
   setMonth: (month: AdMonth) => void;
   setHourSelection: (hourSelection: boolean) => void;
   setOtherPerson: (otherPerson: boolean) => void;

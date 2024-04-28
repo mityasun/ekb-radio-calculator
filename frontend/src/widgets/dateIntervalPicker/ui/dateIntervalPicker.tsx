@@ -4,7 +4,6 @@ import { getDaysInMonth } from 'shared/utils';
 import { useAdSettingsStore, useOrderStore } from 'shared/store';
 import { useQuery } from '@tanstack/react-query';
 import { getTimeIntervals } from '../api';
-import { AdDuration } from 'shared/types';
 import { useMemo } from 'react';
 
 const ROW_HEADERS_HEADER = 'интервал времени';
@@ -14,10 +13,9 @@ const TIMING_QUANTITY = 'общий хронометраж';
 const timeUnit = 'сек';
 
 export const DateIntervalPicker = () => {
-  const { adSettings } = useAdSettingsStore();
+  const { adSettings, audioDurations } = useAdSettingsStore();
   const { customer_selection, setCustomerSelection, deleteCustomerSelection } = useOrderStore();
   const { data: rowHeaders } = useQuery({ queryKey: ['time-intervals'], queryFn: getTimeIntervals });
-  const { data: audioDuration } = useQuery<AdDuration[]>({ queryKey: ['audio-durations'] });
 
   const daysInMonth = getDaysInMonth(adSettings.month?.id);
 
@@ -28,8 +26,8 @@ export const DateIntervalPicker = () => {
   };
 
   const getAudioDurationById = (idAudioDuration?: number) => {
-    if (!audioDuration) return 0;
-    return audioDuration.find((ad) => ad.id === idAudioDuration)?.audio_duration || 0;
+    if (!audioDurations) return 0;
+    return audioDurations.find((ad) => ad.id === idAudioDuration)?.audio_duration || 0;
   };
 
   const rowBroadcastQuantity = useMemo(

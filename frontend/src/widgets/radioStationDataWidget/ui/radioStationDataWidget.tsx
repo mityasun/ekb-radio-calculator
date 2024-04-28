@@ -5,10 +5,10 @@ import ReachDlyIcon from 'shared/assets/icon/people-group-svgrepo-com.svg?react'
 import LocationIcon from 'shared/assets/icon/location-svgrepo-com.svg?react';
 import GenderIcon from 'shared/assets/icon/man-and-woman-svgrepo-com.svg?react';
 import AudienceAgeIcon from 'shared/assets/icon/time-management-svgrepo-com.svg?react';
-import { useRadioStore } from 'shared/store';
+import { useAdSettingsStore } from 'shared/store';
 
 export const RadioStationDataWidget = () => {
-  const { selectedRadio } = useRadioStore();
+  const { selectedRadio } = useAdSettingsStore();
 
   const data = [
     {
