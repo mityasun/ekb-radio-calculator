@@ -68,9 +68,6 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_BACK_IMAGE }}
             docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_FRONT_IMAGE }}
             docker compose stop
-#            docker container rm ekb_radio_frontend
-#            docker container rm ekb_radio_nginx
-#            docker volume rm radio_frontend_value
             docker compose up -d
 
   send_message_prod:
