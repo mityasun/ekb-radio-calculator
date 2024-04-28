@@ -2,8 +2,6 @@ import clsx from 'clsx';
 import s from './dateIntervalPicker.module.css';
 import { getDaysInMonth } from 'shared/utils';
 import { useAdSettingsStore, useOrderStore } from 'shared/store';
-import { useQuery } from '@tanstack/react-query';
-import { getTimeIntervals } from '../api';
 import { useMemo } from 'react';
 
 const ROW_HEADERS_HEADER = 'интервал времени';
@@ -13,9 +11,8 @@ const TIMING_QUANTITY = 'общий хронометраж';
 const timeUnit = 'сек';
 
 export const DateIntervalPicker = () => {
-  const { adSettings, audioDurations } = useAdSettingsStore();
+  const { adSettings, audioDurations, timeIntervals } = useAdSettingsStore();
   const { customer_selection, setCustomerSelection, deleteCustomerSelection } = useOrderStore();
-  const { data: rowHeaders } = useQuery({ queryKey: ['time-intervals'], queryFn: getTimeIntervals });
 
   const daysInMonth = getDaysInMonth(adSettings.month?.id);
 
@@ -93,7 +90,7 @@ export const DateIntervalPicker = () => {
     <div className={clsx(s.dateIntervalPicker)}>
       <div className={clsx(s.rowHeaders)}>
         <div>{ROW_HEADERS_HEADER}</div>
-        {rowHeaders && rowHeaders.map((row) => <div key={row.id}>{row.time_interval}</div>)}
+        {timeIntervals && timeIntervals.map((row) => <div key={row.id}>{row.time_interval}</div>)}
         <div>{ROW_HEADERS_FOOTER}</div>
       </div>
       <div className={clsx(s.scrollContainer)}>
@@ -108,8 +105,8 @@ export const DateIntervalPicker = () => {
           <div className={clsx(s.scrollContainerCounter)}>{BOADCAST_QUANTITY}</div>
           <div className={clsx(s.scrollContainerTotal)}>{TIMING_QUANTITY}</div>
         </div>
-        {rowHeaders &&
-          rowHeaders.map((row) => (
+        {timeIntervals &&
+          timeIntervals.map((row) => (
             <div className={clsx(s.tableRow)} key={row.id}>
               {daysInMonth.map((day) => (
                 <div

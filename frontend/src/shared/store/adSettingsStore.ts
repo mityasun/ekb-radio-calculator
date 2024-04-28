@@ -8,7 +8,7 @@ import {
   TimeInterval,
   RadioFullModel
 } from 'shared/types';
-import { getAudioDurations, getBlockPositions } from 'shared/utils';
+import { getAudioDurations, getBlockPositions, getTimeIntervals } from 'shared/utils';
 
 const initState = {
   hour_selected_rate: false,
@@ -40,6 +40,7 @@ const useAdSettingsStore = create<AdSettingsState>()((set) => ({
     if (radio && radio.interval_price) {
       set({ audioDurations: getAudioDurations(radio.interval_price) });
       set({ blockPositions: getBlockPositions(radio.block_position_rate) });
+      set({ timeIntervals: getTimeIntervals(radio.interval_price) });
     }
   },
   setSelectedRadioId: (radioId: number | null) => set({ selectedRadioId: radioId })
