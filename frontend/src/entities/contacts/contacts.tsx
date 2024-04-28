@@ -60,7 +60,7 @@ export const Contacts: FC<ContactsProps> = (props) => {
             <li className={clsx(s.contactsListItem)}>
               <a
                 className={clsx(s.contactsListLink)}
-                href={`emailto:${systemText.email}`}
+                href={`mailto:${systemText.email}`}
                 style={{ color: textColor }}
                 target="_blank"
                 rel="noreferrer">
