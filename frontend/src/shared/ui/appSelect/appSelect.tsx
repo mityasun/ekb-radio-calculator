@@ -12,6 +12,7 @@ export const AppSelect: FC<AppSelectProps> = ({ maxWidth, ...props }) => {
       styles={{ container: (base) => ({ ...base, maxWidth }) }}
       className="app-select"
       classNamePrefix="app-select"
+      isSearchable={false}
       {...props}
     />
   );
