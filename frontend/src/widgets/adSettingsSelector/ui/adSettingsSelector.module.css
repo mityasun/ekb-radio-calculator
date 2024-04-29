@@ -37,3 +37,14 @@
   align-items: center;
   gap: 10px;
 }
+
+.adSettingsSwitchTitle {
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-left: 3px;
+    fill: var(--primary-color);
+    width: 20px;
+  }
+}
