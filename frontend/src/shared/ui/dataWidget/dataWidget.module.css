@@ -2,10 +2,22 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 35px;
+  padding: 20px 40px;
   border-radius: var(--border-radius);
   background-color: var(--white);
   gap: 10px;
+  height: 100%;
+}
+
+.dataWidget.filled {
+  background: var(--primary-color-gradient);
+  color: var(--white);
+}
+
+.dataWidgetLayout {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
   height: 100%;
 }
 
@@ -13,24 +25,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 75px;
-  height: 75px;
+  min-width:  60px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--primary-color-gradient);
-  
 
   svg {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
   }
+}
+
+.dataWidgetIcon.filled {
+  background: none;
 }
 
 .dataWidgetContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 7px;
+  align-items: end;
+  justify-content: end;
+  gap: 5px;
+  height: 100%;
 }
 
 .dataWidgetTitle {
@@ -38,8 +55,8 @@
   font-weight: 400;
 }
 
-.dataWidgetDataContainer {
-  line-height: 30px;
+.dataWidgetContentData {
+  line-height: 25px;
 
   span {
     font-size: 1.6rem;
