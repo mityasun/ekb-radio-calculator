@@ -5,6 +5,11 @@ import { BlockPosition, AppSelectOption } from 'shared/types';
 
 const maxWidth = '100%';
 
+const BLOCK_POSITION_CONTENT_TEXT = {
+  LOADING: 'Загрузка...',
+  SELECT_POSITION: 'Выберите позиционирование в блоке'
+};
+
 export const AdPositionSelector = () => {
   const { adSettings, blockPositions, setBlockPosition } = useAdSettingsStore();
 
@@ -46,7 +51,7 @@ export const AdPositionSelector = () => {
 
   return (
     <AppSelect
-      placeholder={!blockPositions ? 'Загрузка...' : 'Выберите позиционирование в блоке'}
+      placeholder={!blockPositions ? BLOCK_POSITION_CONTENT_TEXT.LOADING : BLOCK_POSITION_CONTENT_TEXT.SELECT_POSITION}
       maxWidth={maxWidth}
       options={options}
       onChange={onChange}

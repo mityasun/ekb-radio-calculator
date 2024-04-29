@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import s from './resultsAndSubmission.module.css';
 import { AppButton } from 'shared/ui/appButton';
-import { getResponseOrderPdf } from 'features/getOrderPdf';
+import { getResponseOrderPdf } from 'features/getResponseOrderPDF';
 import { useAdSettingsStore, useCityStore, useOrderStore } from 'shared/store';
 import { useMutation } from '@tanstack/react-query';
 import { OrderPdf } from 'shared/types';
@@ -11,24 +11,26 @@ import { useCalculationResults } from 'features/useCalculationResults';
 export type CostAndDiscounts = Record<string, { title: string; value: string | number | null; unit?: string }>;
 
 const BUTTON_TITLE = {
-  reset: 'Сбросить медиаплан',
-  savePDF: 'Сохранить медиаплан в PDF',
-  sendToAproval: 'Отправить на согласование'
+  RESET_TABLE: 'Сбросить медиаплан',
+  SAVE_PDF: 'Сохранить медиаплан в PDF',
+  SENT_TO_APROVAL: 'Отправить на согласование'
 };
 
-const RESULT_CONTENT = {
-  blockPositionRateTitle: 'Коэффициент позиционирования в блоке:',
-  seasonalRateTitle: 'Сезонный коэффициент:',
-  otherPersonRateTitle: 'Коэффициент за упоминание 3-х лиц:',
-  hourSelectedRateTitle: 'Коэффициент за выбор часа:',
-  orderAmountWithRatesTitle: 'Сумма заказа без скидок:',
-  amountDiscountTitle: 'Скидка за сумму заказа:',
-  daysDiscountTitle: 'Скидка за количество дней выходов:',
-  volumeDiscountTitle: 'Скидки за количество выходов в сетке:',
-  totalCostTitle: 'Итого к оплате:',
-  unitRub: 'руб.',
-  unitPrecent: '%'
+const RESULT_CONTENT_TEXT = {
+  BLOCK_POSITION_RATE_TITLE: 'Коэффициент позиционирования в блоке:',
+  SEASONAL_RATE_TITLE: 'Сезонный коэффициент:',
+  OTHER_PERSON_RATE_TITLE: 'Коэффициент за упоминание 3-х лиц:',
+  HOUR_SELECTED_RATE_TITLE: 'Коэффициент за выбор часа:',
+  ORDER_AMOUNT_WITH_RATES_TITLE: 'Сумма заказа без скидок:',
+  AMOUNT_DISCOUNT_TITLE: 'Скидка за сумму заказа:',
+  DAYS_DISCOUNT_TITLE: 'Скидка за количество дней выходов:',
+  VOLUME_DISCOUNT_TITLE: 'Скидки за количество выходов в сетке:',
+  TOTAL_COST_TITLE: 'Итого к оплате:',
+  UNIT_RUB: 'руб.',
+  UNIT_PRECENT: '%'
 };
+
+const NUMBER_DIGIT_REGEXP = /\B(?=(\d{3})+(?!\d))/g;
 
 export const ResultsAndSubmission = () => {
   const { customer_selection, clearCustomerSelections } = useOrderStore();
@@ -48,32 +50,36 @@ export const ResultsAndSubmission = () => {
   } = useCalculationResults();
 
   const costAndDiscounts: CostAndDiscounts = {
-    blockPositionRate: { title: RESULT_CONTENT.blockPositionRateTitle, value: blockPositionRateValue },
-    seasonalRate: { title: RESULT_CONTENT.seasonalRateTitle, value: seasonalRateValue },
-    otherPersonRate: { title: RESULT_CONTENT.otherPersonRateTitle, value: otherPersonRateValue },
-    hourSelectedRate: { title: RESULT_CONTENT.hourSelectedRateTitle, value: hourSelectedRateeValue },
+    blockPositionRate: { title: RESULT_CONTENT_TEXT.BLOCK_POSITION_RATE_TITLE, value: blockPositionRateValue },
+    seasonalRate: { title: RESULT_CONTENT_TEXT.SEASONAL_RATE_TITLE, value: seasonalRateValue },
+    otherPersonRate: { title: RESULT_CONTENT_TEXT.OTHER_PERSON_RATE_TITLE, value: otherPersonRateValue },
+    hourSelectedRate: { title: RESULT_CONTENT_TEXT.HOUR_SELECTED_RATE_TITLE, value: hourSelectedRateeValue },
     orderAmountWithRates: {
-      title: RESULT_CONTENT.orderAmountWithRatesTitle,
-      value: orderAmountWithRates.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '),
-      unit: RESULT_CONTENT.unitRub
+      title: RESULT_CONTENT_TEXT.ORDER_AMOUNT_WITH_RATES_TITLE,
+      value: orderAmountWithRates.toString().replace(NUMBER_DIGIT_REGEXP, ' '),
+      unit: RESULT_CONTENT_TEXT.UNIT_RUB
     },
     amountDiscount: {
-      title: RESULT_CONTENT.amountDiscountTitle,
+      title: RESULT_CONTENT_TEXT.AMOUNT_DISCOUNT_TITLE,
       value: amountDiscount,
-      unit: RESULT_CONTENT.unitPrecent
+      unit: RESULT_CONTENT_TEXT.UNIT_PRECENT
     },
-    daysDiscount: { title: RESULT_CONTENT.daysDiscountTitle, value: daysDiscount, unit: RESULT_CONTENT.unitPrecent },
+    daysDiscount: {
+      title: RESULT_CONTENT_TEXT.DAYS_DISCOUNT_TITLE,
+      value: daysDiscount,
+      unit: RESULT_CONTENT_TEXT.UNIT_PRECENT
+    },
     volumeDiscount: {
-      title: RESULT_CONTENT.volumeDiscountTitle,
+      title: RESULT_CONTENT_TEXT.VOLUME_DISCOUNT_TITLE,
       value: volumeDiscount,
-      unit: RESULT_CONTENT.unitPrecent
+      unit: RESULT_CONTENT_TEXT.UNIT_PRECENT
     }
   };
 
   const totalCost = {
-    title: RESULT_CONTENT.totalCostTitle,
-    value: totalCostValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '),
-    unit: RESULT_CONTENT.unitRub
+    title: RESULT_CONTENT_TEXT.TOTAL_COST_TITLE,
+    value: totalCostValue.toString().replace(NUMBER_DIGIT_REGEXP, ' '),
+    unit: RESULT_CONTENT_TEXT.UNIT_RUB
   };
 
   const mutation = useMutation<void, unknown, OrderPdf>({
@@ -120,12 +126,12 @@ export const ResultsAndSubmission = () => {
       </table>
       <div className={clsx(s.submission)}>
         <AppButton variant={'secondary'} onClick={handlerResetCustomerSelections}>
-          {BUTTON_TITLE.reset}
+          {BUTTON_TITLE.RESET_TABLE}
         </AppButton>
         <AppButton variant={'secondary'} onClick={hanlderSavePDFClick}>
-          {BUTTON_TITLE.savePDF}
+          {BUTTON_TITLE.SAVE_PDF}
         </AppButton>
-        <AppButton variant={'primary'}>{BUTTON_TITLE.sendToAproval}</AppButton>
+        <AppButton variant={'primary'}>{BUTTON_TITLE.SENT_TO_APROVAL}</AppButton>
       </div>
     </div>
   );

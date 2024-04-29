@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { SystemText } from 'shared/types';
 
-const FOOTER_PRIVACY_LINK = '/privacy';
+const FOOTER_PRIVACY_PATH = '/privacy';
 const FOOTER_PRIVACY_LINK_TEXT = 'Политика конфиденциальности';
 
 export const Footer = () => {
@@ -20,7 +20,7 @@ export const Footer = () => {
           <Contacts textColor={'#ffffff'} variant={'primary'} />
         </div>
         <div className={clsx(s.footerPoliticy)}>
-          <Link className={clsx(s.footerLinkPoliticy)} to={FOOTER_PRIVACY_LINK}>
+          <Link className={clsx(s.footerLinkPoliticy)} to={FOOTER_PRIVACY_PATH}>
             {FOOTER_PRIVACY_LINK_TEXT}
           </Link>
           {systemText?.copyright && <p>{systemText.copyright}</p>}

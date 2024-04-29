@@ -5,6 +5,12 @@ import { AudioDuration, AppSelectOption } from 'shared/types';
 
 const maxWidth = '100%';
 
+const AUDIO_DURATION_CONTENT_TEXT = {
+  LOADING: 'Загрузка...',
+  SELECT_DURATION: 'Выберите продолжительность',
+  UNIT_SEC: ' сек'
+};
+
 export const AdDurationSelector = () => {
   const { adSettings, audioDurations, setAudioDuration } = useAdSettingsStore();
 
@@ -21,7 +27,7 @@ export const AdDurationSelector = () => {
   const options =
     audioDurations?.map((duration: AudioDuration) => ({
       value: duration.id.toString(),
-      label: duration.audio_duration + ' сек'
+      label: duration.audio_duration + AUDIO_DURATION_CONTENT_TEXT.UNIT_SEC
     })) || [];
 
   const getValue = useCallback(() => {
@@ -44,7 +50,7 @@ export const AdDurationSelector = () => {
 
   return (
     <AppSelect
-      placeholder={!audioDurations ? 'Загрузка...' : 'Выберите продолжительность'}
+      placeholder={!audioDurations ? AUDIO_DURATION_CONTENT_TEXT.LOADING : AUDIO_DURATION_CONTENT_TEXT.SELECT_DURATION}
       maxWidth={maxWidth}
       options={options}
       onChange={onChange}

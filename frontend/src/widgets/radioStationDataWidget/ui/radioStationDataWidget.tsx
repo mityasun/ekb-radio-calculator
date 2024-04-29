@@ -21,6 +21,8 @@ const DATAWIDGET_CONTENT_TEXT = {
   UNIT_UNDERFINED: '--'
 };
 
+const NUMBER_DIGIT_REGEXP = /\B(?=(\d{3})+(?!\d))/g;
+
 export const RadioStationDataWidget = () => {
   const { selectedRadio } = useAdSettingsStore();
 
@@ -41,7 +43,7 @@ export const RadioStationDataWidget = () => {
         icon={<ReachDlyIcon />}>
         <h4>
           {selectedRadio?.reach_dly
-            ? selectedRadio?.reach_dly.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+            ? selectedRadio?.reach_dly.toString().replace(NUMBER_DIGIT_REGEXP, ' ')
             : DATAWIDGET_CONTENT_TEXT.UNIT_UNDERFINED}
           <span>{DATAWIDGET_CONTENT_TEXT.UNIT_PEOPLE_DAY}</span>
         </h4>

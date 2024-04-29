@@ -14,9 +14,7 @@ export const RadioAdCostCalculator = () => {
 
   return (
     <div className={clsx(s.radioAdCostCalculator)}>
-      <h3 id="radioAdCostCalculator" className={clsx(s.radioAdCostCalculatorTitle)}>
-        {systemText?.title && systemText.title}
-      </h3>
+      <h3 className={clsx(s.radioAdCostCalculatorTitle)}>{systemText?.title && systemText.title}</h3>
       <article className={clsx(s.radioAdCostCalculatorWelcome)} dangerouslySetInnerHTML={markup} />
       <AdSettingsSelector />
       <p>

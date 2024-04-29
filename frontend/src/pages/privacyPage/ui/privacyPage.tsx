@@ -4,6 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { SystemText } from 'shared/types';
 
+const PRIVACY_PAGE_CONTENT_TEXT = {
+  TITLE: 'Политика конфиденциальности и условия обработки персональных данных',
+  TITLE_SEPARATOR: ' | '
+};
+
 export const PrivacyPage = () => {
   const { data: systemText } = useQuery<SystemText>({ queryKey: ['system-text'] });
   const markup = { __html: systemText?.privacy_text ? systemText.privacy_text : '' };
@@ -12,8 +17,10 @@ export const PrivacyPage = () => {
     <div className={clsx(s.privacyPage)}>
       <>
         <Helmet>
-          <title>{`Политика конфиденциальности и условия обработки персональных данных
-          ${systemText?.title && ' | ' + systemText.title}`}</title>
+          <title>
+            {PRIVACY_PAGE_CONTENT_TEXT.TITLE +
+              (systemText?.title && PRIVACY_PAGE_CONTENT_TEXT.TITLE_SEPARATOR + systemText.title)}
+          </title>
         </Helmet>
         <h2>Политика конфиденциальности</h2>
         <article dangerouslySetInnerHTML={markup} />

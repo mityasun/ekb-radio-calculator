@@ -1,3 +1,3 @@
 export { useCityStore } from './useCityStore';
-export { useAdSettingsStore } from './adSettingsStore';
-export { useOrderStore } from './orderStore';
+export { useAdSettingsStore } from './useAdSettingsStore';
+export { useOrderStore } from './useOrderStore';

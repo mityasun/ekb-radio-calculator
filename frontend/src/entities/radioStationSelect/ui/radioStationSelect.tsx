@@ -1,6 +1,15 @@
-import { AppSelect, AppSelectOption } from 'shared/ui/appSelect';
+import { AppSelect } from 'shared/ui/appSelect';
 import { useOrderStore, useAdSettingsStore } from 'shared/store';
 import { useDefaultRadios } from '../hooks';
+import { AppSelectOption } from 'shared/types';
+
+const maxWidth = '100%';
+
+const RADIO_STATION_CONTENT_TEXT = {
+  LOADING: 'Загрузка...',
+  SELECT_RADIO: 'Выберите радио',
+  NO_AVAILABLE: 'Нет доступных'
+};
 
 export const RadioStationSelect = () => {
   const { radios, isLoading } = useDefaultRadios();
@@ -25,8 +34,14 @@ export const RadioStationSelect = () => {
 
   return (
     <AppSelect
-      placeholder={isLoading ? 'Загрузка ...' : options.length ? 'Выберите радио' : 'Нет доступных'}
-      maxWidth={'100%'}
+      placeholder={
+        isLoading
+          ? RADIO_STATION_CONTENT_TEXT.LOADING
+          : options.length
+            ? RADIO_STATION_CONTENT_TEXT.SELECT_RADIO
+            : RADIO_STATION_CONTENT_TEXT.NO_AVAILABLE
+      }
+      maxWidth={maxWidth}
       options={options}
       onChange={onChange}
       value={getValue()}

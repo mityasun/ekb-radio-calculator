@@ -4,11 +4,13 @@ import { getDaysInMonth } from 'shared/utils';
 import { useAdSettingsStore, useOrderStore } from 'shared/store';
 import { useMemo } from 'react';
 
-const ROW_HEADERS_HEADER = 'интервал времени';
-const ROW_HEADERS_FOOTER = 'итого';
-const BOADCAST_QUANTITY = 'количество трансляций';
-const TIMING_QUANTITY = 'общий хронометраж';
-const timeUnit = 'сек';
+const DATA_INTERVAL_PICKER_CONTENT_TEXT = {
+  ROW_HEADERS_HEADER: 'интервал времени',
+  ROW_HEADERS_FOOTER: 'итого',
+  BOADCAST_QUANTITY: 'количество трансляций',
+  TIMING_QUANTITY: 'общий хронометраж',
+  UNIT_SECONDS: 'сек'
+};
 
 export const DateIntervalPicker = () => {
   const { adSettings, audioDurations, timeIntervals } = useAdSettingsStore();
@@ -89,9 +91,9 @@ export const DateIntervalPicker = () => {
   return (
     <div className={clsx(s.dateIntervalPicker)}>
       <div className={clsx(s.rowHeaders)}>
-        <div>{ROW_HEADERS_HEADER}</div>
+        <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_HEADER}</div>
         {timeIntervals && timeIntervals.map((row) => <div key={row.id}>{row.time_interval}</div>)}
-        <div>{ROW_HEADERS_FOOTER}</div>
+        <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_FOOTER}</div>
       </div>
       <div className={clsx(s.scrollContainer)}>
         <div className={clsx(s.columHeaders)}>
@@ -102,8 +104,8 @@ export const DateIntervalPicker = () => {
               {day.dayOfWeek}
             </div>
           ))}
-          <div className={clsx(s.scrollContainerCounter)}>{BOADCAST_QUANTITY}</div>
-          <div className={clsx(s.scrollContainerTotal)}>{TIMING_QUANTITY}</div>
+          <div className={clsx(s.scrollContainerCounter)}>{DATA_INTERVAL_PICKER_CONTENT_TEXT.BOADCAST_QUANTITY}</div>
+          <div className={clsx(s.scrollContainerTotal)}>{DATA_INTERVAL_PICKER_CONTENT_TEXT.TIMING_QUANTITY}</div>
         </div>
         {timeIntervals &&
           timeIntervals.map((row) => (
@@ -122,7 +124,9 @@ export const DateIntervalPicker = () => {
                 </div>
               ))}
               <div className={clsx(s.tableCellCounter)}>{rowBroadcastQuantity(row.id)}</div>
-              <div className={clsx(s.tableCellTotal)}>{rowTimingQuantity(row.id) + ' ' + timeUnit}</div>
+              <div className={clsx(s.tableCellTotal)}>
+                {rowTimingQuantity(row.id) + ' ' + DATA_INTERVAL_PICKER_CONTENT_TEXT.UNIT_SECONDS}
+              </div>
             </div>
           ))}
         <div className={clsx(s.tableRowTotal)}>
@@ -132,7 +136,9 @@ export const DateIntervalPicker = () => {
             </div>
           ))}
           <div className={clsx(s.tableCellCounter)}>{totalBroadcastQuantity()}</div>
-          <div className={clsx(s.tableCellTotal)}>{totalTimingQuantity() + ' ' + timeUnit}</div>
+          <div className={clsx(s.tableCellTotal)}>
+            {totalTimingQuantity() + ' ' + DATA_INTERVAL_PICKER_CONTENT_TEXT.UNIT_SECONDS}
+          </div>
         </div>
       </div>
     </div>

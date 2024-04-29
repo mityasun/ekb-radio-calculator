@@ -8,18 +8,21 @@ import { useAdSettingsStore } from 'shared/store';
 import { Tooltip } from 'react-tooltip';
 import InformationIcon from 'shared/assets/icon/information.svg?react';
 
-const SELECT_DURATION_LABEL = 'Длительность ролика';
-const SELECT_POSITION_LABEL = 'Позиционирование в рекламном блоке';
-const SELECT_MONTH_LABEL = 'Месяц размешения';
-const SWITCH_GUARANTEED_HOUR_LABEL = 'Гарантированный выбор часа';
-const SWITCH_THIRD_PARTY_LABEL = 'Упоминание 3-их лиц';
 const onColor = '#05bb75';
 
+const AD_SETTINGS_CONTENT_TEXT = {
+  SELECT_DURATION_LABEL: 'Длительность ролика',
+  SELECT_POSITION_LABEL: 'Позиционирование в рекламном блоке',
+  SELECT_MONTH_LABEL: 'Месяц размешения',
+  SWITCH_HOUR_LABEL: 'Гарантированный выбор часа',
+  SWITCH_OTHER_PERSON_LABEL: 'Упоминание 3-их лиц'
+};
+
 const DATA_TOOLTIP_TEXT = {
-  SWITCH_THIRD_PARTY:
+  SWITCH_OTHER_PERSON:
     // eslint-disable-next-line max-len
     'Выберите эту опцию, если в рекламном ролике дополнительно к вашему бренду будут задействованы также бренды других рекламодателей.',
-  SWITCH_GUARANTEED_HOUR:
+  SWITCH_HOUR:
     // eslint-disable-next-line max-len
     'Эта опция обеспечивает выход роликов в нужный вам часовой интервал. Если не выбрать эту опцию, то радиостанция оставляет за собой право сдвинуть выходы роликов в соседние временные блоки, т.к. выбранные вами блоки могут быть уже заняты.'
 };
@@ -39,26 +42,23 @@ export const AdSettingsSelector = () => {
     <div className={clsx(s.adSettings)}>
       <div className={clsx(s.adSettingsSelector)}>
         <div>
-          <p>{SELECT_DURATION_LABEL}</p>
+          <p>{AD_SETTINGS_CONTENT_TEXT.SELECT_DURATION_LABEL}</p>
           <AdDurationSelector />
         </div>
         <div>
-          <p>{SELECT_POSITION_LABEL}</p>
+          <p>{AD_SETTINGS_CONTENT_TEXT.SELECT_POSITION_LABEL}</p>
           <AdPositionSelector />
         </div>
         <div>
-          <p>{SELECT_MONTH_LABEL}</p>
+          <p>{AD_SETTINGS_CONTENT_TEXT.SELECT_MONTH_LABEL}</p>
           <AdMonthSelector />
         </div>
       </div>
       <div className={clsx(s.adSettingsSwitch)}>
         <div>
           <p className={clsx(s.adSettingsSwitchTitle)}>
-            {SWITCH_GUARANTEED_HOUR_LABEL}{' '}
-            <InformationIcon
-              data-tooltip-id="guaranteed-hour"
-              data-tooltip-content={DATA_TOOLTIP_TEXT.SWITCH_GUARANTEED_HOUR}
-            />
+            {AD_SETTINGS_CONTENT_TEXT.SWITCH_HOUR_LABEL}{' '}
+            <InformationIcon data-tooltip-id="guaranteed-hour" data-tooltip-content={DATA_TOOLTIP_TEXT.SWITCH_HOUR} />
           </p>
           <Tooltip
             id="guaranteed-hour"
@@ -76,10 +76,10 @@ export const AdSettingsSelector = () => {
         </div>
         <div>
           <p className={clsx(s.adSettingsSwitchTitle)}>
-            {SWITCH_THIRD_PARTY_LABEL}{' '}
+            {AD_SETTINGS_CONTENT_TEXT.SWITCH_OTHER_PERSON_LABEL}{' '}
             <InformationIcon
               data-tooltip-id="other-person"
-              data-tooltip-content={DATA_TOOLTIP_TEXT.SWITCH_THIRD_PARTY}
+              data-tooltip-content={DATA_TOOLTIP_TEXT.SWITCH_OTHER_PERSON}
             />
           </p>
           <Tooltip

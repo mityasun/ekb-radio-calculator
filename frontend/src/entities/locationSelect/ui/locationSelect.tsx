@@ -3,6 +3,14 @@ import { useCityStore, useOrderStore } from 'shared/store';
 import { useDefaultCity } from '../hooks';
 import { AppSelectOption } from 'shared/types';
 
+const maxWidth = '100%';
+
+const LOCATION_CONTENT_TEXT = {
+  LOADING: 'Загрузка...',
+  SELECT_LOCATION: 'Выберите город',
+  NO_AVAILABLE: 'Нет доступных'
+};
+
 export const LocationSelect = () => {
   const { isLoading, cities } = useDefaultCity();
   const { clearCustomerSelections } = useOrderStore();
@@ -26,8 +34,14 @@ export const LocationSelect = () => {
 
   return (
     <AppSelect
-      placeholder={isLoading ? 'Загрузка ...' : options.length ? 'Выберите город' : 'Нет доступных'}
-      maxWidth={'100%'}
+      placeholder={
+        isLoading
+          ? LOCATION_CONTENT_TEXT.LOADING
+          : options.length
+            ? LOCATION_CONTENT_TEXT.SELECT_LOCATION
+            : LOCATION_CONTENT_TEXT.NO_AVAILABLE
+      }
+      maxWidth={maxWidth}
       options={options}
       onChange={onChange}
       value={getValue()}
