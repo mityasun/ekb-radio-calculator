@@ -30,6 +30,10 @@
   gap: 25px;
 }
 
+.footerContacts > * {
+  justify-content: start;
+}
+
 .footerPoliticy {
   width: 100%;
   display: flex;

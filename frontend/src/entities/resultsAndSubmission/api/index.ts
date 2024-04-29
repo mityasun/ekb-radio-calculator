@@ -8,8 +8,16 @@ export const getOrderPdf = (orderPdf: OrderPdf) =>
     url: `${apiBaseUrl}/api/order-pdf/`,
     data: orderPdf,
     method: 'POST',
-    responseType: 'blob'
+    responseType: 'blob',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
   }).then((response) => {
     const file = new Blob([response.data], { type: 'application/pdf' });
-    saveAs(file, 'TaksaOrderPreviw.pdf');
+    const timeString = new Date()
+      .toLocaleString('ru', { dateStyle: 'short', timeStyle: 'medium' })
+      .replace(/:/g, '.')
+      .replace(/, /g, '_');
+    saveAs(file, `Taksa_Radio_${timeString}.pdf`);
   });

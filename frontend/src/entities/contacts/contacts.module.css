@@ -20,7 +20,6 @@
   @media screen and (max-width: 480px) {
     display: flex;
     align-items: center;
-    justify-content: end;
     flex-wrap: wrap;
     gap: 15px;
   }
@@ -63,5 +62,6 @@
 @media screen and (max-width: 480px) {
   .addressHeader {
     display: none;
+    justify-content: end;
   }
 }

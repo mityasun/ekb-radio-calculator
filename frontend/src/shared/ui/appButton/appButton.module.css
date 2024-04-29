@@ -12,12 +12,14 @@
   cursor: pointer;
 }
 
-.button:hover {
-  box-shadow: none;
-  color: var(--white);
-  transition: all 0.5s;
-  border: 1px solid var(--primary-color-hover);
-  background-color: var(--primary-color-hover);
+@media (hover:hover) {
+  .button:hover {
+    box-shadow: none;
+    color: var(--white);
+    transition: all 0.5s;
+    border: 1px solid var(--primary-color-hover);
+    background-color: var(--primary-color-hover);
+  }
 }
 
 .secondary {
