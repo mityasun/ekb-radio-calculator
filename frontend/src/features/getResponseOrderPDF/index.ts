@@ -1,2 +1,2 @@
 export { getResponseOrderPdf } from './getResponseOrderPDF';
-export type { GetOrderPdfProps } from './getResponseOrderPDF';
+export type { postOrderPdfProps } from './getResponseOrderPDF';

@@ -1,0 +1,58 @@
+.orderModal {
+  display: flex;
+  width: 100%;
+  max-width: 450px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 300;
+  gap: 10px;
+}
+
+.orderForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 5px;
+
+  input {
+    width: 100%;
+    border: 1px solid #c9c9c9;
+    border-radius: 15px;
+    padding: 15px 20px;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    outline: none;
+  }
+
+  p {
+    color: #f95d51;
+    font-weight: 600;
+    width: 100%;
+    min-height: 16px;
+    font-size: 1.2rem;
+    text-align: left;
+  }
+
+  .isInvalid {
+    border: 1px solid #f95d51;
+  }
+}
+
+.orderButton {
+  width: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .orderModal {
+    max-width: 350px;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .orderModal {
+    max-width: 300px;
+  }
+}

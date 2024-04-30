@@ -1,6 +1,6 @@
 import { AdSettings, CityModel, CustomerSelection, OrderPdf, RadioModel } from 'shared/types';
 
-export type GetOrderPdfProps = {
+export type postOrderPdfProps = {
   selectedCity?: CityModel | null;
   selectedRadio?: RadioModel | null;
   adSettings?: AdSettings;
@@ -12,7 +12,7 @@ export const getResponseOrderPdf = ({
   selectedRadio,
   adSettings,
   customer_selection
-}: GetOrderPdfProps) => {
+}: postOrderPdfProps) => {
   if (
     !selectedCity ||
     !selectedRadio ||

@@ -5,8 +5,11 @@ import { getResponseOrderPdf } from 'features/getResponseOrderPDF';
 import { useAdSettingsStore, useCityStore, useOrderStore } from 'shared/store';
 import { useMutation } from '@tanstack/react-query';
 import { OrderPdf } from 'shared/types';
-import { getOrderPdf } from '../api';
+import { postOrderPdf } from '../api';
 import { useCalculationResults } from 'features/useCalculationResults';
+import { useState } from 'react';
+import { OrderModal } from 'widgets/orderModal';
+import { Tooltip } from 'react-tooltip';
 
 export type CostAndDiscounts = Record<string, { title: string; value: string | number | null; unit?: string }>;
 
@@ -32,10 +35,16 @@ const RESULT_CONTENT_TEXT = {
 
 const NUMBER_DIGIT_REGEXP = /\B(?=(\d{3})+(?!\d))/g;
 
+const toolTipStyle = { maxWidth: '300px', backgroundColor: '#05bb75', color: '#ffffff', zIndex: 9999 };
+
+const DATA_TOOLTIP_TEXT = 'Выберите хотябы одну дату в месяце.';
+
 export const ResultsAndSubmission = () => {
   const { customer_selection, clearCustomerSelections } = useOrderStore();
   const { selectedCity } = useCityStore();
   const { adSettings, selectedRadio } = useAdSettingsStore();
+  const [isOrderModalOpen, setOrderModalOpen] = useState<boolean>(false);
+  const isDisabled = customer_selection.length === 0;
 
   const {
     blockPositionRateValue,
@@ -83,8 +92,16 @@ export const ResultsAndSubmission = () => {
   };
 
   const mutation = useMutation<void, unknown, OrderPdf>({
-    mutationFn: getOrderPdf
+    mutationFn: postOrderPdf
   });
+
+  const handleOpenOrderModal = () => {
+    setOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = () => {
+    setOrderModalOpen(false);
+  };
 
   const hanlderSavePDFClick = async () => {
     const response = getResponseOrderPdf({ selectedCity, selectedRadio, adSettings, customer_selection });
@@ -97,42 +114,59 @@ export const ResultsAndSubmission = () => {
   };
 
   return (
-    <div className={clsx(s.resultsAndSubmission)}>
-      <table className={clsx(s.results)}>
-        <tbody>
-          {Object.keys(costAndDiscounts).map((key) => (
-            <tr key={key}>
-              <th>{costAndDiscounts[key as keyof typeof costAndDiscounts].title}</th>
+    <>
+      <div className={clsx(s.resultsAndSubmission)}>
+        <table className={clsx(s.results)}>
+          <tbody>
+            {Object.keys(costAndDiscounts).map((key) => (
+              <tr key={key}>
+                <th>{costAndDiscounts[key as keyof typeof costAndDiscounts].title}</th>
+                <td>
+                  <strong>{costAndDiscounts[key as keyof typeof costAndDiscounts].value}</strong>
+                  {' ' +
+                    (costAndDiscounts[key as keyof typeof costAndDiscounts].unit
+                      ? costAndDiscounts[key as keyof typeof costAndDiscounts].unit
+                      : '')}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>
+                <strong>{totalCost.title}</strong>
+              </th>
               <td>
-                <strong>{costAndDiscounts[key as keyof typeof costAndDiscounts].value}</strong>
-                {' ' +
-                  (costAndDiscounts[key as keyof typeof costAndDiscounts].unit
-                    ? costAndDiscounts[key as keyof typeof costAndDiscounts].unit
-                    : '')}
+                <strong>{totalCost.value + ' ' + totalCost.unit}</strong>
               </td>
             </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th>
-              <strong>{totalCost.title}</strong>
-            </th>
-            <td>
-              <strong>{totalCost.value + ' ' + totalCost.unit}</strong>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-      <div className={clsx(s.submission)}>
-        <AppButton variant={'secondary'} onClick={handlerResetCustomerSelections}>
-          {BUTTON_TITLE.RESET_TABLE}
-        </AppButton>
-        <AppButton variant={'secondary'} onClick={hanlderSavePDFClick}>
-          {BUTTON_TITLE.SAVE_PDF}
-        </AppButton>
-        <AppButton variant={'primary'}>{BUTTON_TITLE.SENT_TO_APROVAL}</AppButton>
+          </tfoot>
+        </table>
+        <div className={clsx(s.submission)}>
+          <AppButton variant={'secondary'} onClick={handlerResetCustomerSelections}>
+            {BUTTON_TITLE.RESET_TABLE}
+          </AppButton>
+          <AppButton
+            variant={'secondary'}
+            onClick={hanlderSavePDFClick}
+            disabled={isDisabled}
+            data-tooltip-id="order-button"
+            data-tooltip-content={DATA_TOOLTIP_TEXT}>
+            {BUTTON_TITLE.SAVE_PDF}
+          </AppButton>
+          {isDisabled && <Tooltip id="order-button" place="left" style={toolTipStyle} />}
+          <AppButton
+            variant={'primary'}
+            onClick={handleOpenOrderModal}
+            disabled={isDisabled}
+            data-tooltip-id="order-button"
+            data-tooltip-content={DATA_TOOLTIP_TEXT}>
+            {BUTTON_TITLE.SENT_TO_APROVAL}
+          </AppButton>
+          {isDisabled && <Tooltip id="order-button" place="left" style={toolTipStyle} />}
+        </div>
       </div>
-    </div>
+      <OrderModal isOpen={isOrderModalOpen} onClose={handleCloseOrderModal} />
+    </>
   );
 };

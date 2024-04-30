@@ -12,6 +12,8 @@
     "preview": "vite --port 8000 preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@react-input/mask": "^1.2.0",
     "@tanstack/react-query": "^5.32.0",
     "axios": "^1.6.8",
     "classnames": "^2.5.1",
@@ -21,10 +23,13 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
     "react-helmet-async": "^2.0.4",
+    "react-hook-form": "^7.51.3",
+    "react-input-mask": "^2.0.4",
     "react-router-dom": "^6.22.3",
     "react-select": "^5.8.0",
     "react-switch": "^7.0.0",
     "react-tooltip": "^5.26.4",
+    "yup": "^1.4.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

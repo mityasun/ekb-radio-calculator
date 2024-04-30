@@ -8,10 +8,10 @@ export interface OrderPdf extends AdOrderSettings {
 }
 
 export type Customer = {
-  company_name: string;
+  company_name?: string;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
 };
 
 export type CustomerSelection = {

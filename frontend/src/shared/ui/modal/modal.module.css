@@ -1,0 +1,39 @@
+.modal {
+  padding: 40px 45px;
+  border: 0;
+  position: relative;
+  border-radius: 20px;
+  position: fixed;
+  box-shadow: #0000001a 0 0 0.5rem 0.25rem;
+  border: 1px solid #cccccc;
+
+  a {
+    color: var(--primary-color);
+  }
+}
+
+.modal::backdrop {
+  background: #00000080;
+}
+
+.modalCloseButton {
+  font-size: 0.75em;
+  background-color: transparent;
+  border: none;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+@media (hover:hover) {
+  .modalCloseButton:hover {
+    svg {
+        g {
+          fill: var(--primary-color);
+          transition: all 0.5s;
+        }
+      }
+  }
+}
+

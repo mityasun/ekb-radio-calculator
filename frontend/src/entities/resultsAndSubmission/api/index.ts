@@ -3,7 +3,7 @@ import saveAs from 'file-saver';
 import { apiBaseUrl } from 'shared/constants/apiBaseUrl';
 import { OrderPdf } from 'shared/types';
 
-export const getOrderPdf = (orderPdf: OrderPdf) =>
+export const postOrderPdf = (orderPdf: OrderPdf) =>
   axios({
     url: `${apiBaseUrl}/api/order-pdf/`,
     data: orderPdf,
