@@ -28,6 +28,7 @@ export const useDefaultRadios = () => {
       setSelectedRadioId(defaultRadio.id);
     } else {
       setSelectedRadioId(null);
+      setSelectedRadio(null);
     }
   }, [radios]);
 

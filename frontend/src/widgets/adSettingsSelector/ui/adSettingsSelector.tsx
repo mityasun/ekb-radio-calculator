@@ -27,6 +27,8 @@ const DATA_TOOLTIP_TEXT = {
     'Эта опция обеспечивает выход роликов в нужный вам часовой интервал. Если не выбрать эту опцию, то радиостанция оставляет за собой право сдвинуть выходы роликов в соседние временные блоки, т.к. выбранные вами блоки могут быть уже заняты.'
 };
 
+const toolTipStyle = { maxWidth: '300px', backgroundColor: '#05bb75', color: '#ffffff', zIndex: 9999 };
+
 export const AdSettingsSelector = () => {
   const { adSettings, setHourSelection, setOtherPerson } = useAdSettingsStore();
 
@@ -60,11 +62,7 @@ export const AdSettingsSelector = () => {
             {AD_SETTINGS_CONTENT_TEXT.SWITCH_HOUR_LABEL}{' '}
             <InformationIcon data-tooltip-id="guaranteed-hour" data-tooltip-content={DATA_TOOLTIP_TEXT.SWITCH_HOUR} />
           </p>
-          <Tooltip
-            id="guaranteed-hour"
-            place="bottom"
-            style={{ maxWidth: '300px', backgroundColor: '#05bb75', color: '#ffffff' }}
-          />
+          <Tooltip id="guaranteed-hour" place="bottom" style={toolTipStyle} />
           <Switch
             onChange={handleHourSelectionChange}
             checked={adSettings.hour_selected_rate || false}
@@ -82,11 +80,7 @@ export const AdSettingsSelector = () => {
               data-tooltip-content={DATA_TOOLTIP_TEXT.SWITCH_OTHER_PERSON}
             />
           </p>
-          <Tooltip
-            id="other-person"
-            place="bottom"
-            style={{ maxWidth: '300px', backgroundColor: '#05bb75', color: '#ffffff' }}
-          />
+          <Tooltip id="other-person" place="bottom" style={toolTipStyle} />
           <Switch
             onChange={handleOtherPersonChange}
             checked={adSettings.other_person_rate || false}
