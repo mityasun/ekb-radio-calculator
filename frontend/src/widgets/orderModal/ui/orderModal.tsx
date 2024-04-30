@@ -119,7 +119,7 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
           <InputMask
             className={clsx(errors.phone && s.isInvalid)}
             type="text"
-            placeholder={'Номер телефона'}
+            placeholder={'Номер телефона*'}
             mask="+7 (___) ___-__-__"
             replacement={{ _: /\d/ }}
             {...register('phone')}
