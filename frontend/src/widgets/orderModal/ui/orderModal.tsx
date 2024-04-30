@@ -84,7 +84,7 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
     if (!response) return;
 
     mutation.mutate(response);
-    onClose();
+    //    onClose();
   };
 
   useEffect(() => {
@@ -95,6 +95,12 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
       }, 0);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      setTimeout(onClose, 3000);
+    }
+  }, [mutation.isSuccess]);
 
   return (
     <Modal hasCloseButton={true} isOpen={isOpen} onClose={onClose}>
@@ -134,6 +140,9 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
           <p>{errors.email?.message}</p>
           <AppButton variant={'primary'}>{ORDER_MODAL_CONTENT_TEXT.BUTTON_TEXT}</AppButton>
         </form>
+        <h4 className={clsx(s.isSuccess)}>
+          {mutation.isSuccess && 'Ваша заявка отправлена, мы свяжемся с вами для подтверждения заявки'}
+        </h4>
         <p>
           {ORDER_MODAL_CONTENT_TEXT.DISCLAIMER}
           <Link to={'/privacy'}>{ORDER_MODAL_CONTENT_TEXT.PRIVACY_POLICY}</Link>
