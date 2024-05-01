@@ -28,6 +28,9 @@
   --select-color-hover: #0000001a;
   --select-color-is-selected: #05bb7572;
 
+  --input-color-border: #c9c9c9;
+  --input-color-invalid: #f95d51;
+
   --border-radius: 20px;
 
   --paragraph-mb: 10px;

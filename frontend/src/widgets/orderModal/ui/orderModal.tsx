@@ -7,45 +7,17 @@ import { Link } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { InputMask } from '@react-input/mask';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { Customer, Order } from 'shared/types';
+import { Customer } from 'shared/types';
 import { useAdSettingsStore, useCityStore, useOrderStore } from 'shared/store';
 import { useMutation } from '@tanstack/react-query';
 import { postOrder } from '../api';
+import { ORDER_MODAL_CONTENT_TEXT, PHONE_MASK, SCHEMA_VALIDATION } from '../constants';
+import { submitOrder } from '../utils';
 
 interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const schema = yup
-  .object({
-    company_name: yup.string().max(100, 'Максимальная длина 100 символов'),
-    name: yup
-      .string()
-      .max(100, 'Максимальная длина 100 символов')
-      .matches(/^[A-Za-zА-Яа-я\s-]*$/, 'Допустимы только буквы, пробелы и дефисы')
-      .required('Обязательное поле'),
-    phone: yup
-      .string()
-      .max(18, 'Максимальная длина 18 символов')
-      .matches(/^[0-9()\-\s+]*$/, 'Допустимы только цифры, скобки, пробелы и дефисы')
-      .required('Обязательное поле'),
-    email: yup
-      .string()
-      .email('Введите корректный e-mail')
-      .matches(/^[A-Za-z0-9\-._@]*$/, 'Недопустимые символы. Разрешены только A-Za-z0-9.-_@')
-      .max(100, 'Максимальная длина 100 символов')
-  })
-  .required();
-
-const ORDER_MODAL_CONTENT_TEXT = {
-  TITLE: 'Отправить на согласование',
-  DESCRIPTION: 'Менеджер свяжется с вами в течение часа и проконсультирует по всем вопросам',
-  BUTTON_TEXT: 'Отправить',
-  DISCLAIMER: 'Нажимая на кнопку, вы даете согласие на обработку персональных данных и соглашаетесь c ',
-  PRIVACY_POLICY: 'политикой конфиденциальности'
-};
 
 export const OrderModal: FC<OrderModalProps> = (props) => {
   const { isOpen, onClose } = props;
@@ -55,7 +27,7 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
     formState: { errors },
     reset
   } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(SCHEMA_VALIDATION)
   });
   const focusInputRef = useRef<HTMLInputElement | null>(null);
   const { customer_selection } = useOrderStore();
@@ -66,25 +38,7 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
   });
 
   const submit: SubmitHandler<Customer> = (data) => {
-    const customer = Object.fromEntries(Object.entries(data).filter(([_, value]) => value !== '')) as Customer;
-
-    if (!selectedRadio || !adSettings.month || !adSettings.block_position || !selectedCity) return;
-
-    const response: Order = {
-      customer,
-      station: selectedRadio.id,
-      month: adSettings.month.id,
-      block_position: adSettings.block_position.id,
-      other_person_rate: adSettings.other_person_rate,
-      hour_selected_rate: adSettings.hour_selected_rate,
-      city: selectedCity.id,
-      customer_selection
-    };
-
-    if (!response) return;
-
-    mutation.mutate(response);
-    //    onClose();
+    submitOrder(data, customer_selection, selectedCity, selectedRadio, adSettings, mutation);
   };
 
   useEffect(() => {
@@ -111,22 +65,22 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
           <input
             className={clsx(errors.company_name && s.isInvalid)}
             type="text"
-            placeholder={'Название организации'}
+            placeholder={ORDER_MODAL_CONTENT_TEXT.FORM_PLACEHOLDER_COMPANY_NAME}
             {...register('company_name')}
           />
           <p>{errors.company_name?.message}</p>
           <input
             className={clsx(errors.name && s.isInvalid)}
             type="text"
-            placeholder={'Контактное лицо*'}
+            placeholder={ORDER_MODAL_CONTENT_TEXT.FORM_PLACEHOLDER_NAME}
             {...register('name')}
           />
           <p>{errors.name?.message}</p>
           <InputMask
             className={clsx(errors.phone && s.isInvalid)}
             type="text"
-            placeholder={'Номер телефона*'}
-            mask="+7 (___) ___-__-__"
+            placeholder={ORDER_MODAL_CONTENT_TEXT.FORM_PLACEHOLDER_PHONE}
+            mask={PHONE_MASK}
             replacement={{ _: /\d/ }}
             {...register('phone')}
           />
@@ -134,15 +88,13 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
           <input
             className={clsx(errors.email && s.isInvalid)}
             type="text"
-            placeholder={'Электронная почта'}
+            placeholder={ORDER_MODAL_CONTENT_TEXT.FORM_PLACEHOLDER_EMAIL}
             {...register('email')}
           />
           <p>{errors.email?.message}</p>
           <AppButton variant={'primary'}>{ORDER_MODAL_CONTENT_TEXT.BUTTON_TEXT}</AppButton>
         </form>
-        <h4 className={clsx(s.isSuccess)}>
-          {mutation.isSuccess && 'Ваша заявка отправлена, мы свяжемся с вами для подтверждения заявки'}
-        </h4>
+        <h4 className={clsx(s.isSuccess)}>{mutation.isSuccess && ORDER_MODAL_CONTENT_TEXT.SUCCESS}</h4>
         <p>
           {ORDER_MODAL_CONTENT_TEXT.DISCLAIMER}
           <Link to={'/privacy'}>{ORDER_MODAL_CONTENT_TEXT.PRIVACY_POLICY}</Link>
