@@ -83,3 +83,25 @@ def reduce_image(img, max_size, image_name):
         output, 'ImageField', f'{image_name}_{max_size}.jpg',
         'image/jpg', output.getbuffer().nbytes, None
     )
+
+
+def normalize_phone(phone):
+    """
+    Normalize a given phone number to a standard format.
+    Parameters:
+        phone (str): The phone number to be normalized.
+    Returns:
+        str or None: The normalized phone number if it matches the expected
+        pattern, otherwise returns None.
+    """
+
+    numbers_only = re.sub(r'\D', '', phone)
+    pattern = r'^(\+?7|8)(\d{3})(\d{3})(\d{2})(\d{2})$'
+    match = re.match(pattern, numbers_only)
+
+    if match:
+        groups = match.groups()
+        normalized = f"+7 ({groups[1]}) {groups[2]}-{groups[3]}-{groups[4]}"
+        return normalized
+    else:
+        return None

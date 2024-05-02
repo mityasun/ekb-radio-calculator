@@ -169,7 +169,7 @@ AUTH_USER_MODEL = 'users.User'
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
     
     'DEFAULT_PERMISSION_CLASSES': [
@@ -207,6 +207,7 @@ MIN_DAY: int = 1
 MAX_DAY: int = 31
 MIN_VOLUME_ORDER: int = 1
 MAX_VOLUME_ORDER: int = 496
+MIN_PHONE: int = 11
 PHONE: int = 18
 MIN_EMAIL: int = 6
 EMAIL: int = 100

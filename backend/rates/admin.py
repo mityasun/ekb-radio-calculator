@@ -5,5 +5,5 @@ from rates.models import BlockPosition
 
 @admin.register(BlockPosition)
 class BlockPositionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'block_position')
+    list_display = ('id', 'block_position', 'default')
     search_fields = ('block_position',)

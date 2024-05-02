@@ -29,6 +29,7 @@ class StationViewSet(ReadOnlyViewSet):
     filter_backends = (
         NameFilter, DjangoFilterBackend, CaseInsensitiveOrderingFilter
     )
+    ordering = ('name',)
     search_fields = ('@name',)
     ordering_fields = ('id', 'name')
 

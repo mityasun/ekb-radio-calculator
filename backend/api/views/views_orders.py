@@ -20,7 +20,7 @@ from settings.models import WeekDay
 
 
 class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    """ViewSet for Order"""
+    """ViewSet for create pdf by order"""
 
     queryset = Order.objects.prefetch_related(
         'customer', 'city', 'station', 'block_position', 'month', 'station'
@@ -88,13 +88,13 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 unique_dates.add(date)
             order_volume += 1
 
-        order_amount_with_rates = (
+        order_amount_with_rates = round((
                 order_amount
                 * block_position_rate
                 * month_rate
                 * other_person_rate
                 * hour_selected_rate
-        )
+        ))
 
         order_amount_discount = get_discount_value(
             AmountDiscount.objects.filter(
@@ -114,20 +114,21 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             ), '-order_volume', 'discount'
         )
 
-        final_order_amount = (
+        final_order_amount = round((
                 order_amount_with_rates
                 * (1 - order_amount_discount / 100.0)
                 * (1 - order_days_discount / 100.0)
                 * (1 - order_volume_discount / 100.0)
-        )
+        ))
 
         try:
             pdf = create_pdf(
                 city, station, month, block_position, block_position_rate,
                 month_rate, other_person_rate, hour_selected_rate,
-                order_amount_with_rates, order_amount_discount, total_days,
-                order_days_discount, order_volume, order_volume_discount,
-                final_order_amount, customer_selection_data, False
+                order_amount_with_rates, order_amount_discount,
+                total_days, order_days_discount, order_volume,
+                order_volume_discount, final_order_amount,
+                customer_selection_data, False
             )
         except Exception as e:
             return Response(
@@ -240,22 +241,24 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             order_customer_selections = OrderCustomerSelection.objects.filter(
                 order=order
             )
-            order_amount = order_customer_selections.aggregate(
-                total_interval_price=Sum('interval_price')
-            )['total_interval_price'] or 0
+            order_amount = round(
+                order_customer_selections.aggregate(
+                    total_interval_price=Sum('interval_price')
+                )['total_interval_price'] or 0
+            )
             order_volume = len(order_customer_selections)
 
             order.order_amount = order_amount
             order.total_days = total_days
             order.order_volume = order_volume
 
-            order_amount_with_rates = (
+            order_amount_with_rates = round((
                     order_amount
                     * block_position_rate
                     * month_rate
                     * other_person_rate
                     * hour_selected_rate
-            )
+            ))
 
             order_amount_discount = get_discount_value(
                 AmountDiscount.objects.filter(
@@ -279,12 +282,12 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             order.order_days_discount = order_days_discount
             order.order_volume_discount = order_volume_discount
 
-            final_order_amount = (
+            final_order_amount = round((
                     order_amount_with_rates
                     * (1 - order_amount_discount / 100.0)
                     * (1 - order_days_discount / 100.0)
                     * (1 - order_volume_discount / 100.0)
-            )
+            ))
 
             order.final_order_amount = final_order_amount
             order.save()
@@ -298,9 +301,10 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             pdf_file_path = create_pdf(
                 city, station, month, block_position, block_position_rate,
                 month_rate, other_person_rate, hour_selected_rate,
-                order_amount_with_rates, order_amount_discount, total_days,
-                order_days_discount, order_volume, order_volume_discount,
-                final_order_amount, customer_selection_data, True
+                order_amount_with_rates, order_amount_discount,
+                total_days, order_days_discount, order_volume,
+                order_volume_discount, final_order_amount,
+                customer_selection_data, True
             )
         except Exception as e:
             return Response(
@@ -319,5 +323,4 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 {'error': f'Ошибка отправки заявки в Telegram: {e}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
         return Response(status=status.HTTP_201_CREATED)
