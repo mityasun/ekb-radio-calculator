@@ -19,5 +19,14 @@ export default defineConfig({
       shared: '/src/shared',
       widgets: '/src/widgets'
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'axios']
+        }
+      }
+    }
   }
 });

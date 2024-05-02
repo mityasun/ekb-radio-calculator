@@ -37,3 +37,22 @@
   }
 }
 
+@media (max-width: 768px) {
+  .modalCloseButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    svg {
+      g {
+        fill: var(--primary-color);
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 40px 20px;
+  }
+}

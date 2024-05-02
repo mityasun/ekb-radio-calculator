@@ -44,7 +44,7 @@ html,
 #root {
   margin: 0;
   height: 100%;
-  font-family: 'Mulish';
+  font-family: 'Mulish', sans-serif;
   font-size: 10px;
   font-weight: 400;
   color: var(--primary-text-color);
