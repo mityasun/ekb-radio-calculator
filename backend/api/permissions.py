@@ -20,5 +20,5 @@ class AllowAnyPost(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Allow POST requests (create) to this view
+
         return request.method == 'POST'
