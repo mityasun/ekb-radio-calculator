@@ -2,11 +2,13 @@ from functools import partial
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from utils.abstract_models import DefaultOneMixin
-from utils.validators import (validate_text, validate_email, validate_phone)
+from utils.validators import (validate_text, validate_email, validate_phone,
+                              validate_excel_file)
 
 
 class SystemText(models.Model):
@@ -78,8 +80,8 @@ class SystemText(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if not SystemText.objects.filter(
-                pk=self.pk).exists() and SystemText.objects.exists():
+        if (not SystemText.objects.filter(pk=self.pk).exists() and
+                SystemText.objects.exists()):
             raise ValidationError(
                 'There can be only one instance of this model'
             )
@@ -260,3 +262,37 @@ class AudienceAge(models.Model):
 
     def __str__(self):
         return f'{self.age}'
+
+
+class ExcelImport(models.Model):
+    """Excel import model."""
+
+    created_at = models.DateTimeField(
+        'Дата и время', auto_now=True
+    )
+    excel_file = models.FileField(
+        'excel файл', upload_to='import/', validators=[validate_excel_file]
+    )
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Импорт данных'
+        verbose_name_plural = 'Импорт данных'
+
+    def __str__(self):
+        return f'{self.created_at.strftime("%d.%m.%Y %H:%M")}'
+
+    def save(self, *args, **kwargs):
+
+        if (not ExcelImport.objects.filter(pk=self.pk).exists() and
+                ExcelImport.objects.exists()):
+            raise ValidationError(
+                'There can be only one instance of this model'
+            )
+        if self.pk:
+            old_instance = ExcelImport.objects.get(pk=self.pk)
+            default_storage.delete(old_instance.excel_file.name)
+            self.excel_file.name = 'import.xlsx'
+        else:
+            self.excel_file.name = 'import.xlsx'
+        super().save(*args, **kwargs)

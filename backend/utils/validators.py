@@ -163,3 +163,10 @@ def validate_search_query(query):
         settings.MIN_LENGTH, settings.MAX_SEARCH
     )
     return query
+
+
+def validate_excel_file(value):
+    """Validate excel file."""
+
+    allowed_extensions = ['xls', 'xlsx']
+    return FileExtensionValidator(allowed_extensions=allowed_extensions)(value)
