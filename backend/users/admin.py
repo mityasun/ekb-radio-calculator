@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import Group
 
 from .forms import MyUserChangeForm
@@ -25,3 +26,6 @@ class MyUserAdmin(admin.ModelAdmin):
         if groups:
             return ','.join([group.name for group in groups])
         return 'Обычный пользователь'
+
+
+admin.site.register(Group, GroupAdmin)

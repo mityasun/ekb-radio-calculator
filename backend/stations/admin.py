@@ -79,7 +79,8 @@ class VolumeDiscountInline(admin.TabularInline):
 @admin.register(RadioStation)
 class StationsAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'name', 'city', 'reach_dly', 'reach_dly_percent'
+        'id', 'name', 'city', 'reach_dly', 'reach_dly_percent',
+        'other_person_rate', 'hour_selected_rate', 'default'
     )
     search_fields = ('id', 'name', 'city', 'description')
     list_filter = ('city',)

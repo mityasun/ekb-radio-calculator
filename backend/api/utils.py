@@ -163,10 +163,10 @@ def create_pdf(
         block_position: BlockPosition,
         block_position_rate: float, month_rate: float,
         other_person_rate: float,
-        hour_selected_rate: float, order_amount: float,
+        hour_selected_rate: float, order_amount: int,
         order_amount_discount: float,
-        total_days: int, order_days_discount: float, order_volume: float,
-        order_volume_discount: float, final_order_amount: float,
+        total_days: int, order_days_discount: float, order_volume: int,
+        order_volume_discount: float, final_order_amount: int,
         customer_selection: list, save_option: bool
 ) -> Union[HttpResponse, str]:
     """
@@ -226,16 +226,22 @@ def create_pdf(
     company_data = [
         'ООО "РА "Такса"',
         f'{company.address}',
-        'ekbradio.ru',
+        'ekb-radio.ru',
         f'{company.email}',
         f'{company.phone}'
     ]
     draw_lines(560, 330, 15, page, company_data)
 
+    current_month = datetime.now().month
+    year = (
+        datetime.now().year if month.id >= current_month
+        else datetime.now().year + 1
+    )
+
     header_text = [
         f'Город: {city}',
         f'Радиостанция: {station}',
-        f'Месяц: {month}',
+        f'Месяц: {month}, {year}',
         f'Дата составления: {datetime.now().strftime("%d.%m.%Y %H:%M")}'
     ]
     draw_lines(510, 30, 15, page, header_text)
@@ -296,7 +302,7 @@ def create_pdf(
         f'Коэффициент за упоминание 3-х лиц: {other_person_rate}',
         f'Коэффициент за выбор часа: {hour_selected_rate}',
         f'Сумма заказа без скидок: {
-            '{:,}'.format(int(order_amount)).replace(',', ' ')
+            '{:,}'.format(order_amount).replace(',', ' ')
         } руб.',
     ]
     draw_lines(100, 30, 15, page, rates_block)
@@ -304,12 +310,11 @@ def create_pdf(
     final_block = [
         f'Скидка за сумму заказа: {order_amount_discount}%',
         f'Количество дней выходов: {total_days} дней',
-        f'Скидка за количество дней выходов: '
-        f'{order_days_discount}%',
+        f'Скидка за количество дней выходов: {order_days_discount}%',
         f'Количество выходов в сетке: {order_volume}',
-        f'Скидка за количество выходов в сетке: {int(order_volume_discount)}%',
+        f'Скидка за количество выходов в сетке: {order_volume_discount}%',
         f'Итого к оплате: {
-            '{:,}'.format(int(final_order_amount)).replace(',', ' ')
+            '{:,}'.format(final_order_amount).replace(',', ' ')
         } руб.'
     ]
     draw_lines(100, 400, 15, page, final_block)
@@ -353,6 +358,7 @@ async def send_pdf_to_group(order_info: str, pdf_file_path: str):
                 chat_id=os.getenv('CHAT_ID', default='default-value'),
                 document=pdf_file, caption=order_info
             )
+        os.remove(pdf_file_path)
     except TelegramError as e:
         print(f"An error occurred while sending the message: {e}")
     return send_pdf_to_group
