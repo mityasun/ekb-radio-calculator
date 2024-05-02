@@ -1,22 +1,21 @@
 import { useMemo } from 'react';
-import { useOrderStore, useAdSettingsStore } from 'shared/store';
+import { useStore } from 'shared/store';
 
 export const useCalculationResults = () => {
-  const { customer_selection } = useOrderStore();
-  const { adSettings, selectedRadio } = useAdSettingsStore();
+  const { appSettings, selectedRadio, customer_selection } = useStore();
 
   return useMemo(() => {
     const blockPositionRateValue =
-      selectedRadio?.block_position_rate.find((rate) => rate.block_position.id === adSettings?.block_position?.id)
+      selectedRadio?.block_position_rate.find((rate) => rate.block_position.id === appSettings?.block_position?.id)
         ?.rate || 1.0;
 
-    const seasonalRateValue = selectedRadio?.month_rate.find((rate) => rate.id === adSettings?.month?.id)?.rate || 1;
+    const seasonalRateValue = selectedRadio?.month_rate.find((rate) => rate.id === appSettings?.month?.id)?.rate || 1;
 
     const otherPersonRateValue =
-      (adSettings?.other_person_rate && adSettings?.other_person_rate && selectedRadio?.other_person_rate) || 1;
+      (appSettings?.other_person_rate && appSettings?.other_person_rate && selectedRadio?.other_person_rate) || 1;
 
     const hourSelectedRateeValue =
-      (adSettings?.other_person_rate && adSettings?.hour_selected_rate && selectedRadio?.hour_selected_rate) || 1;
+      (appSettings?.other_person_rate && appSettings?.hour_selected_rate && selectedRadio?.hour_selected_rate) || 1;
 
     const orderAmount = customer_selection.reduce(
       (acc, curr) =>
@@ -64,5 +63,5 @@ export const useCalculationResults = () => {
       daysDiscount,
       volumeDiscount
     };
-  }, [customer_selection, adSettings, selectedRadio]);
+  }, [customer_selection, appSettings, selectedRadio]);
 };

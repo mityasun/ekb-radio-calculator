@@ -1,12 +1,11 @@
 import clsx from 'clsx';
 import s from './radioAdCostCalculator.module.css';
-import { AdSettingsSelector } from 'widgets/adSettingsSelector';
-import { DateIntervalPicker } from 'widgets/dateIntervalPicker';
+import { AppSettingsSelector } from 'widgets/appSettingsSelector';
+import { DateIntervalPicker } from 'entities/dateIntervalPicker';
 import { ResultsAndSubmission } from 'entities/resultsAndSubmission';
 import { useQuery } from '@tanstack/react-query';
 import { SystemText } from 'shared/types';
-
-const DATE_INTERVAL_PICKER_TITLE = 'Выберите интервал времени';
+import { DATE_INTERVAL_PICKER_TITLE } from '../configs';
 
 export const RadioAdCostCalculator = () => {
   const { data: systemText } = useQuery<SystemText>({ queryKey: ['system-text'] });
@@ -16,7 +15,7 @@ export const RadioAdCostCalculator = () => {
     <div className={clsx(s.radioAdCostCalculator)}>
       <h3 className={clsx(s.radioAdCostCalculatorTitle)}>{systemText?.title && systemText.title}</h3>
       <article className={clsx(s.radioAdCostCalculatorWelcome)} dangerouslySetInnerHTML={markup} />
-      <AdSettingsSelector />
+      <AppSettingsSelector />
       <p>
         <b>{DATE_INTERVAL_PICKER_TITLE}</b>
       </p>

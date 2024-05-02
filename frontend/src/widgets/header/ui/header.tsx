@@ -3,6 +3,7 @@ import s from './header.module.css';
 import HeaderLogo from 'shared/assets/logo/taksa_header_logo.svg?react';
 import { Contacts } from 'entities/contacts';
 import { Link } from 'react-router-dom';
+import { CONTACT_TEXT_COLOR } from '../configs';
 
 export const Header = () => {
   return (
@@ -12,7 +13,7 @@ export const Header = () => {
           <Link to="/">
             <HeaderLogo className={clsx(s.headerIcon)} />
           </Link>
-          <Contacts textColor={'#2b3140'} variant={'header'} />
+          <Contacts textColor={CONTACT_TEXT_COLOR.BLACK} variant={'header'} />
         </div>
       </div>
     </header>

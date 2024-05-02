@@ -3,11 +3,7 @@ import s from './privacyPage.module.css';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { SystemText } from 'shared/types';
-
-const PRIVACY_PAGE_CONTENT_TEXT = {
-  TITLE: 'Политика конфиденциальности и условия обработки персональных данных',
-  TITLE_SEPARATOR: ' | '
-};
+import { PRIVACY_PAGE_CONTENT_TEXT } from '../configs';
 
 export const PrivacyPage = () => {
   const { data: systemText } = useQuery<SystemText>({ queryKey: ['system-text'] });

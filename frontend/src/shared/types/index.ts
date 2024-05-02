@@ -14,7 +14,7 @@ export type {
   VolumeDiscount,
   RadioFullModel
 } from './radioModels';
-export type { AdSettingsState, AdSettings, AdMonth } from './adSettingsModel';
-export type { Order, Customer, CustomerSelection, AdOrderSettings, OrderState, OrderPdf } from './orderModel';
+export type { StoreState, AppSettings, AdMonth } from './storeModel';
+export type { Order, Customer, CustomerSelection, OrderPdf } from './orderModel';
 export type { AppSelectOption } from './appSelectModel';
 export type { SystemText } from './systemTextModel';

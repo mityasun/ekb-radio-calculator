@@ -11,10 +11,10 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWind
 
 export const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <ErrorBoundary fallback={<p>Something went wrong</p>}>{children}</ErrorBoundary>
-      </HelmetProvider>
-    </QueryClientProvider>
+    <ErrorBoundary fallback={<p>Something went wrong</p>}>
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>{children}</HelmetProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };

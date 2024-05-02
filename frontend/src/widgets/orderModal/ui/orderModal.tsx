@@ -8,10 +8,10 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { InputMask } from '@react-input/mask';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Customer } from 'shared/types';
-import { useAdSettingsStore, useCityStore, useOrderStore } from 'shared/store';
+import { useStore } from 'shared/store';
 import { useMutation } from '@tanstack/react-query';
 import { postOrder } from '../api';
-import { ORDER_MODAL_CONTENT_TEXT, PHONE_MASK, SCHEMA_VALIDATION } from '../constants';
+import { ORDER_MODAL_CONTENT_TEXT, PHONE_MASK, SCHEMA_VALIDATION } from '../configs';
 import { submitOrder } from '../utils';
 
 interface OrderModalProps {
@@ -30,15 +30,13 @@ export const OrderModal: FC<OrderModalProps> = (props) => {
     resolver: yupResolver(SCHEMA_VALIDATION)
   });
   const focusInputRef = useRef<HTMLInputElement | null>(null);
-  const { customer_selection } = useOrderStore();
-  const { adSettings, selectedRadio } = useAdSettingsStore();
-  const { selectedCity } = useCityStore();
+  const { appSettings, selectedRadio, selectedCity, customer_selection } = useStore();
   const mutation = useMutation({
     mutationFn: postOrder
   });
 
   const submit: SubmitHandler<Customer> = (data) => {
-    submitOrder(data, customer_selection, selectedCity, selectedRadio, adSettings, mutation);
+    submitOrder(data, customer_selection, selectedCity, selectedRadio, appSettings, mutation);
   };
 
   useEffect(() => {

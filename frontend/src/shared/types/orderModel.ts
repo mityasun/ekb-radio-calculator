@@ -1,11 +1,15 @@
-export interface Order extends AdOrderSettings {
+export interface Order {
   customer: Customer;
   customer_selection: CustomerSelection[];
+  city: number;
+  station: number;
+  month: number;
+  block_position: number;
+  other_person_rate?: boolean;
+  hour_selected_rate?: boolean;
 }
 
-export interface OrderPdf extends AdOrderSettings {
-  customer_selection: CustomerSelection[];
-}
+export type OrderPdf = Omit<Order, 'customer'>;
 
 export type Customer = {
   company_name?: string;
@@ -19,23 +23,3 @@ export type CustomerSelection = {
   time_interval: number;
   audio_duration: number;
 };
-
-export type AdOrderSettings = {
-  city: number;
-  station: number;
-  month: number;
-  block_position: number;
-  other_person_rate?: boolean;
-  hour_selected_rate?: boolean;
-};
-
-export interface OrderState {
-  customer: Customer | null;
-  adOrderSettings: AdOrderSettings | null;
-  customer_selection: CustomerSelection[] | [];
-  setCustomer: (customer: Customer) => void;
-  setAdOrderSettings: (adOrderSettings: AdOrderSettings) => void;
-  setCustomerSelection: (customer_selection: CustomerSelection) => void;
-  deleteCustomerSelection: (customer_selection: CustomerSelection) => void;
-  clearCustomerSelections: () => void;
-}

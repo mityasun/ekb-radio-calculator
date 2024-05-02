@@ -20,7 +20,6 @@ export const postOrder = async (order: Order): Promise<AxiosResponse<void, ApiOr
     data: order,
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
+      'Content-Type': 'application/json'
     }
   });
