@@ -3,6 +3,7 @@ from functools import partial
 from django.conf import settings
 from django.db import models
 
+from utils.utils import normalize_phone
 from utils.validators import (validate_text, validate_phone,
                               validate_email, validate_user_first_or_last_name)
 
@@ -28,9 +29,14 @@ class Customer(models.Model):
     )
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('-id',)
         verbose_name = 'Покупатель'
         verbose_name_plural = 'Покупатели'
 
     def __str__(self):
         return f'{self.name} | {self.phone}'
+
+    def save(self, *args, **kwargs):
+
+        self.phone = normalize_phone(self.phone)
+        super().save(*args, **kwargs)

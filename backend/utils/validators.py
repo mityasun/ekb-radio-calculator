@@ -68,11 +68,11 @@ def validate_email(email):
 
 
 def validate_phone(phone):
-    """Validator for email"""
+    """Validator for phone"""
 
     validate_value(
         phone, 'телефоне', 'телефона', r'^[-\d+() ]+$', r'[^-\d+() ]',
-        settings.PHONE, settings.PHONE
+        settings.MIN_PHONE, settings.PHONE
     )
 
 
