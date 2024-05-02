@@ -19,7 +19,7 @@
 
   input {
     width: 100%;
-    border: 1px solid #c9c9c9;
+    border: 1px solid var(--input-color-border);
     border-radius: 15px;
     padding: 15px 20px;
     font-size: 1.6rem;
@@ -28,7 +28,7 @@
   }
 
   p {
-    color: #f95d51;
+    color: var(--input-color-invalid);
     font-weight: 600;
     width: 100%;
     min-height: 16px;
@@ -37,7 +37,7 @@
   }
 
   .isInvalid {
-    border: 1px solid #f95d51;
+    border: 1px solid var(--input-color-invalid);
   }
 }
 

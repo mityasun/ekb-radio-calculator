@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getDefaultRadio, getRadioStations } from '../api';
-import { useAdSettingsStore, useCityStore } from 'shared/store';
+import { useStore } from 'shared/store';
 import { RadioModel } from 'shared/types';
 
 export const useDefaultRadios = () => {
-  const cityId = useCityStore((state) => state.selectedCity)?.id as number | null;
-  const { selectedRadioId, setSelectedRadio, setSelectedRadioId } = useAdSettingsStore();
+  const { selectedCity, selectedRadioId, setSelectedRadio, setSelectedRadioId } = useStore();
+
+  const cityId = selectedCity?.id as number | null;
 
   const { data: radios, isLoading } = useQuery({
     queryKey: ['radios', cityId],

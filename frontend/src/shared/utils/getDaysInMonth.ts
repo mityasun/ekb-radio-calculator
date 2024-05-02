@@ -1,6 +1,6 @@
 export const getDaysInMonth = (month: number = 1) => {
   const currentMonth = new Date().getMonth() + 1;
-  const year = currentMonth < month ? new Date().getFullYear() : new Date().getFullYear() + 1;
+  const year = currentMonth <= month ? new Date().getFullYear() : new Date().getFullYear() + 1;
   const date = new Date(year, month - 1, 1);
   const days = [];
   const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];

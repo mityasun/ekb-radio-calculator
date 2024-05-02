@@ -1,20 +1,12 @@
 import { AppSelect } from 'shared/ui/appSelect';
-import { useCityStore, useOrderStore } from 'shared/store';
+import { useStore } from 'shared/store';
 import { useDefaultCity } from '../hooks';
 import { AppSelectOption } from 'shared/types';
-
-const maxWidth = '100%';
-
-const LOCATION_CONTENT_TEXT = {
-  LOADING: 'Загрузка...',
-  SELECT_LOCATION: 'Выберите город',
-  NO_AVAILABLE: 'Нет доступных'
-};
+import { LOCATION_CONTENT_TEXT, maxWidth } from '../configs';
 
 export const LocationSelect = () => {
   const { isLoading, cities } = useDefaultCity();
-  const { clearCustomerSelections } = useOrderStore();
-  const { selectedCity, setSelectedCity } = useCityStore();
+  const { selectedCity, setSelectedCity, clearCustomerSelections } = useStore();
 
   if (!cities) return;
 

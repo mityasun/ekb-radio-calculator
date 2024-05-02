@@ -1,0 +1,50 @@
+:root {
+  --onColor: #05bb75;
+}
+
+.appSettings {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.appSettingsSelector {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.appSettingsSelector > * {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  p {
+    margin-bottom: var(--paragraph-mb);
+  }
+}
+
+.appSettingsSwitch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.appSettingsSwitch > * {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.appSettingsSwitchTitle {
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-left: 3px;
+    fill: var(--primary-color);
+    width: 20px;
+  }
+}

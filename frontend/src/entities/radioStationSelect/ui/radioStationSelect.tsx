@@ -1,20 +1,12 @@
 import { AppSelect } from 'shared/ui/appSelect';
-import { useOrderStore, useAdSettingsStore } from 'shared/store';
+import { useStore } from 'shared/store';
 import { useDefaultRadios } from '../hooks';
 import { AppSelectOption } from 'shared/types';
-
-const maxWidth = '100%';
-
-const RADIO_STATION_CONTENT_TEXT = {
-  LOADING: 'Загрузка...',
-  SELECT_RADIO: 'Выберите радио',
-  NO_AVAILABLE: 'Нет доступных'
-};
+import { RADIO_STATION_CONTENT_TEXT, maxWidth } from '../configs';
 
 export const RadioStationSelect = () => {
   const { radios, isLoading } = useDefaultRadios();
-  const { clearCustomerSelections } = useOrderStore();
-  const { selectedRadioId, setSelectedRadioId } = useAdSettingsStore();
+  const { selectedRadioId, setSelectedRadioId, clearCustomerSelections } = useStore();
 
   if (!radios) return null;
 
