@@ -10,4 +10,4 @@ COPY . .
 
 LABEL project='backend' version=1.0
 
-CMD ["gunicorn", "backend.wsgi:application", "--bind", "0:8000", "--timeout", "120"]
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0:8000", "--timeout", "180"]
