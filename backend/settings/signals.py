@@ -1,10 +1,18 @@
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from rates.models import BlockPosition
-from settings.models import SystemText, City, AudioDuration, TimeInterval, \
-    AudienceAge, AudienceSex, Month
-from utils.utils import clear_cache
+from rates.models import (BlockPosition)
+from settings.models import (SystemText, City, AudioDuration, TimeInterval,
+                             AudienceAge, AudienceSex, Month, ExcelImport)
+from utils.utils import clear_cache, ImportFromXLSX
+
+
+@receiver(post_save, sender=ExcelImport)
+def import_data_from_excel(sender, instance, **kwargs):
+
+    excel_file_path = instance.excel_file.path
+    assistant = ImportFromXLSX(excel_file_path)
+    assistant.process_all()
 
 
 @receiver(post_save, sender=SystemText)

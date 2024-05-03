@@ -3,7 +3,7 @@ from django.contrib.admin import sites
 
 from settings.models import (
     City, AudioDuration, TimeInterval, AudienceSex, AudienceAge, Month,
-    SystemText, WeekDay
+    SystemText, WeekDay, ExcelImport
 )
 
 
@@ -41,7 +41,11 @@ admin.site.site_header = 'ekb-radio calculator'
 @admin.register(SystemText)
 class SystemTextAdmin(admin.ModelAdmin):
     list_display = ('id',)
-    search_fields = ('id',)
+
+
+@admin.register(ExcelImport)
+class ExcelImport(admin.ModelAdmin):
+    list_display = ('id',)
 
 
 @admin.register(City)
