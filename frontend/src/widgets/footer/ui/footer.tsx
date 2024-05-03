@@ -10,6 +10,8 @@ import { CONTACT_TEXT_COLOR, FOOTER_PRIVACY_LINK_TEXT, FOOTER_PRIVACY_PATH } fro
 export const Footer = () => {
   const { data: systemText } = useQuery<SystemText>({ queryKey: ['system-text'] });
 
+  if (window.self !== window.top) return null;
+
   return (
     <footer className={clsx(s.footer)}>
       <div className={clsx(s.footerWrapper)}>
