@@ -80,8 +80,10 @@ class SystemText(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if (not SystemText.objects.filter(pk=self.pk).exists() and
-                SystemText.objects.exists()):
+        if (
+                not SystemText.objects.filter(pk=self.pk).exists()
+                and SystemText.objects.exists()
+        ):
             raise ValidationError(
                 'There can be only one instance of this model'
             )
@@ -284,8 +286,10 @@ class ExcelImport(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if (not ExcelImport.objects.filter(pk=self.pk).exists() and
-                ExcelImport.objects.exists()):
+        if (
+                not ExcelImport.objects.filter(pk=self.pk).exists()
+                and ExcelImport.objects.exists()
+        ):
             raise ValidationError(
                 'There can be only one instance of this model'
             )
