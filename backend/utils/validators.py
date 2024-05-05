@@ -166,7 +166,7 @@ def validate_search_query(query):
 
 
 def validate_excel_file(value):
-    """Validate excel file."""
+    """Validate excel file extension."""
 
     allowed_extensions = ['xls', 'xlsx']
     return FileExtensionValidator(allowed_extensions=allowed_extensions)(value)

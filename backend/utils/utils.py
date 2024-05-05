@@ -1,6 +1,8 @@
 import math
 import re
+import sys
 from io import BytesIO
+from io import StringIO
 from typing import List, Union, Any
 
 import pandas as pd
@@ -8,11 +10,12 @@ from PIL import Image as PilImage
 from django.apps import apps
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django_redis import get_redis_connection
 
 from settings.models import (City, AudioDuration, TimeInterval,
-                             AudienceAge, AudienceSex, Month)
+                             AudienceAge, AudienceSex, Month, WeekDay)
 
 
 def clear_cache(patterns):
@@ -116,9 +119,22 @@ def normalize_phone(phone):
 
 
 class ImportFromXLSX:
+    """
+    A class to import data from an Excel file into Django models.
+
+    Parameters:
+    - file_path (str): The path to the Excel file.
+
+    Attributes:
+    - file_path (str): The path to the Excel file.
+    - radio_station_model (Django model): The RadioStation model.
+    - output_buffer (StringIO): Buffer for storing output messages.
+    """
+
     def __init__(self, file_path: str):
         self.file_path = file_path
         self.radio_station_model = apps.get_model('stations', 'RadioStation')
+        self.output_buffer = StringIO()
 
     def read_excel_sheet(
             self, usecols, skiprows: int, nrows: int, sheet_name=None
@@ -138,21 +154,28 @@ class ImportFromXLSX:
         """
 
         if sheet_name is None:
-            data = pd.read_excel(
+            return pd.read_excel(
                 self.file_path, usecols=usecols, skiprows=skiprows,
                 nrows=nrows, header=None
             )
         else:
-            data = pd.read_excel(
+            return pd.read_excel(
                 self.file_path, usecols=usecols, skiprows=skiprows,
                 nrows=nrows, sheet_name=sheet_name, header=None
             )
 
-        return data
-
     @staticmethod
     def extract_int(string: str) -> Union[int, None]:
-        """regular expression to extract numeric part from the string"""
+        """
+        Extract numeric part from a string.
+
+        Parameters:
+        - string (str): Input string.
+
+        Returns:
+        - Union[int, None]: Extracted integer value or None if no integer
+        found.
+        """
 
         match = re.search(r'\d+', string)
         if match:
@@ -162,16 +185,33 @@ class ImportFromXLSX:
 
     @staticmethod
     def decimal_to_percent(value: float) -> float:
+        """
+        Convert a decimal value to a percentage.
+
+        Parameters:
+        - value (float): Input decimal value.
+
+        Returns:
+        - float: Percentage value.
+        """
 
         return round(value * 100, 2)
 
     @staticmethod
     def filter_non_nan_values(lst: List) -> List:
-        """Filter out None and NaN values from a list."""
+        """
+        Filter out None and NaN values from a list.
+
+        Parameters:
+        - lst (List): Input list.
+
+        Returns:
+        - List: Filtered list without None and NaN values.
+        """
 
         return [
             value for value in lst if value is not None and not (
-                    isinstance(value, float) and math.isnan(value)
+                isinstance(value, float) and math.isnan(value)
             )
         ]
 
@@ -179,10 +219,19 @@ class ImportFromXLSX:
     def convert_to_type_or_none(
             value: Any, value_type: Any
     ) -> Union[Any, None]:
+        """
+        Convert a value to a specified type or None.
+
+        Parameters:
+        - value (Any): Input value.
+        - value_type (Any): Desired type for conversion.
+
+        Returns:
+        - Union[Any, None]: Converted value or None if conversion fails.
+        """
 
         if value is None or not pd.notna(value):
             return None
-
         try:
             if value_type == float:
                 return round(value * 100, 2)
@@ -191,21 +240,131 @@ class ImportFromXLSX:
         except (ValueError, TypeError):
             return None
 
+    @staticmethod
+    def create_update_mixin(
+            radio_station,
+            obj_to_create: list,
+            obj_to_update: list,
+            model,
+            field: str
+    ) -> None:
+        """
+        Helper function for bulk creation and updating of objects.
+
+        Parameters:
+        - radio_station: Radio station object.
+        - obj_to_create (list): List of objects to create.
+        - obj_to_update (list): List of objects to update.
+        - model: Django model class.
+        - field (str): Field to update.
+
+        Returns:
+        - None
+        """
+
+        with transaction.atomic():
+            if obj_to_create:
+                objs = model.objects.bulk_create(obj_to_create)
+                print(
+                    f'{radio_station}: created {model.__name__} - '
+                    f'{len(objs)} pieces.'
+                )
+            if obj_to_update:
+                objs = model.objects.bulk_update(obj_to_update, [field])
+                print(
+                    f'{radio_station}: updated {model.__name__} - '
+                    f'{objs} times.'
+                )
+            elif not obj_to_create or not obj_to_update:
+                print(
+                    f'{radio_station}: no {model.__name__} '
+                    f'objects were updated.'
+                )
+
     def process_main_data(self, sheet_name: str) -> None:
+        """
+        Process main data from the Excel sheet.
+
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+
+        Returns:
+        - None
+        """
+
+        months_data = self.read_excel_sheet('K:V', 48, 1, sheet_name)
+        existing_months = set(Month.objects.values_list('month', flat=True))
+        new_months = [
+            month.strip().capitalize()
+            for month in months_data.astype(str).values.flatten()
+            if month.strip().capitalize() not in existing_months
+        ]
+        if new_months:
+            objs = Month.objects.bulk_create([
+                Month(month=month) for month in new_months
+            ])
+            print(f'Created {Month.__name__}: {[obj.month for obj in objs]}')
+
+        existing_weekdays = set(
+            WeekDay.objects.values_list('week_day', flat=True)
+        )
+        new_weekdays = [
+            day for day, label in WeekDay.WEEK_DAY_LIST
+            if day not in existing_weekdays
+        ]
+        if new_weekdays:
+            objs = WeekDay.objects.bulk_create([
+                WeekDay(week_day=day) for day in new_weekdays
+            ])
+            print(
+                f'Created {WeekDay.__name__}: {[obj.week_day for obj in objs]}'
+            )
 
         time_intervals = self.read_excel_sheet('A', 1, 16, sheet_name)
-        for time_interval in time_intervals[0].astype(str).values:
-            TimeInterval.objects.get_or_create(
-                time_interval=time_interval.strip()
+        existing_intervals = set(
+            TimeInterval.objects.values_list('time_interval', flat=True)
+        )
+        new_intervals = [
+            TimeInterval(time_interval=time_interval.strip())
+            for time_interval in time_intervals[0].astype(str).values
+            if time_interval.strip() not in existing_intervals
+        ]
+        if new_intervals:
+            objs = TimeInterval.objects.bulk_create(new_intervals)
+            print(
+                f'Created {TimeInterval.__name__}: '
+                f'{[obj.time_interval for obj in objs]}'
             )
 
         audio_durations = self.read_excel_sheet('B:F', 0, 1, sheet_name)
-        for audio_duration in audio_durations.astype(str).values.flatten():
-            AudioDuration.objects.get_or_create(
-                audio_duration=self.extract_int(audio_duration)
+        existing_durations = set(
+            AudioDuration.objects.values_list('audio_duration', flat=True)
+        )
+        new_durations = [
+            self.extract_int(audio_duration)
+            for audio_duration in audio_durations.astype(str).values.flatten()
+            if self.extract_int(audio_duration) not in existing_durations
+        ]
+        if new_durations:
+            objs = AudioDuration.objects.bulk_create([
+                AudioDuration(audio_duration=duration)
+                for duration in new_durations
+            ])
+            print(
+                f'Created {AudioDuration.__name__}: '
+                f'{[obj.audio_duration for obj in objs]}'
             )
 
     def process_stations(self, sheet_name: str):
+        """
+        Process station data from the Excel sheet.
+
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+
+        Returns:
+        - None
+        """
 
         station_data = (
             self.read_excel_sheet('B', 19, 6, sheet_name)
@@ -215,34 +374,48 @@ class ImportFromXLSX:
             self.read_excel_sheet('K', 50, 2, sheet_name)
         ).values.flatten()
 
-        reach_dly = self.convert_to_type_or_none(station_data[4], int)
-        reach_dly_percent = self.convert_to_type_or_none(station_data[5], float)
-
         try:
             city_obj, created = City.objects.get_or_create(
                 name=str(station_data[2])
             )
             if created:
                 print(f'Created {City.__name__}: {city_obj}')
-
-            obj, created = self.radio_station_model.objects.update_or_create(
-                name=str(station_data[0]),
-                defaults={
-                    # 'title': str(station_data[0]),
-                    # 'description': str(station_data[1]),
-                    'city': city_obj,
-                    # 'broadcast_zone': str(station_data[3]),
-                    'reach_dly': reach_dly,
-                    'reach_dly_percent': reach_dly_percent,
-                    'other_person_rate': round(float(rates_data[0]), 2),
-                    'hour_selected_rate': round(float(rates_data[1]), 2),
-                }
+            defaults = {
+                'city': city_obj,
+                'broadcast_zone': str(station_data[3]),
+                'reach_dly': self.convert_to_type_or_none(
+                    station_data[4], int
+                ),
+                'reach_dly_percent': self.convert_to_type_or_none(
+                    station_data[5], float
+                ),
+                'other_person_rate': round(float(rates_data[0]), 2),
+                'hour_selected_rate': round(float(rates_data[1]), 2),
+            }
+            obj, created = self.radio_station_model.objects.get_or_create(
+                name=str(station_data[0]), defaults=defaults
             )
-            if created:
+            attributes_changed = any(
+                getattr(obj, attr) != value for attr, value in defaults.items()
+            )
+            if attributes_changed:
+                obj.__dict__.update(defaults)
+                obj.save()
+                if created:
+                    print(
+                        f'{obj.name}: created '
+                        f'{self.radio_station_model.__name__}'
+                    )
+                else:
+                    print(
+                        f'{obj.name}: updated '
+                        f'{self.radio_station_model.__name__}'
+                    )
+            else:
                 print(
-                    f'Created {self.radio_station_model.__name__}: {obj.name}'
+                    f'{obj.name}: no changes for '
+                    f'{self.radio_station_model.__name__}'
                 )
-            print(f'Updated {self.radio_station_model.__name__}: {obj.name}')
             return obj
         except Exception as e:
             raise RuntimeError(
@@ -250,10 +423,19 @@ class ImportFromXLSX:
                 f'{str(station_data[0])}: {e}'
             )
 
-    def process_social(
-            self, sheet_name: str, station_name
-    ) -> None:
+    def process_social(self, sheet_name: str, station_name) -> None:
+        """
+        Process social data from the Excel sheet.
 
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+        - station_name: Name of the station.
+
+        Returns:
+        - None
+        """
+
+        radio_station = self.radio_station_model.objects.get(name=station_name)
         social_types = [
             (
                 AudienceSex,
@@ -266,68 +448,135 @@ class ImportFromXLSX:
                 'B:C', 27, 1, 'age'
             ),
         ]
-
-        for model1, model2, usecols, skiprows, nrows, model_field in social_types:
+        for (
+                model1, model2, usecols, skiprows, nrows, model_field
+        ) in social_types:
             social_data = self.read_excel_sheet(
                 usecols, skiprows, nrows, sheet_name
             )
-            for index, row in social_data.iterrows():
-                string = self.convert_to_type_or_none(row[1], str)
-                percent = self.convert_to_type_or_none(row[2], float)
-
-                try:
-                    obj, created = model1.objects.get_or_create(
+            try:
+                obj_to_update = []
+                obj_to_create = []
+                for index, row in social_data.iterrows():
+                    string = self.convert_to_type_or_none(row[1], str)
+                    percent = self.convert_to_type_or_none(row[2], float)
+                    social_obj, created = model1.objects.get_or_create(
                         **{model_field: string}
                     )
                     if created:
-                        print(f'Created {model1.__name__}: {obj}')
-                    obj, created = model2.objects.update_or_create(
-                        station=self.radio_station_model.objects.get(
-                            name=station_name
-                        ),
-                        **{model_field: obj},
-                        defaults={'percent': percent}
-                    )
-                    if created:
-                        print(f'Created {model2.__name__}: {obj}')
-                    print(f'Updated {model2.__name__}: {obj}')
-                except Exception as e:
-                    raise RuntimeError(
-                        f'Error processing {model2.__name__} {station_name} '
-                        f'in string {string}: {e}'
-                    )
+                        print(
+                            f'{radio_station}: created {model1.__name__} - '
+                            f'{social_obj}'
+                        )
+                    obj = model2.objects.filter(
+                        station=radio_station, **{model_field: social_obj}
+                    ).first()
+                    if obj:
+                        if obj.percent == percent:
+                            continue
+                        obj.percent = percent
+                        obj_to_update.append(obj)
+                    else:
+                        obj_to_create.append(
+                            model2(
+                                station=radio_station,
+                                **{model_field: social_obj},
+                                percent=percent
+                            )
+                        )
+                self.create_update_mixin(
+                    radio_station, obj_to_create, obj_to_update,
+                    model2, 'percent'
+                )
+            except Exception as e:
+                raise RuntimeError(
+                    f'Error processing {model2.__name__} for '
+                    f'{radio_station}: {e}'
+                )
 
-    def process_rates(
-            self, sheet_name: str, station_name
-    ) -> None:
+    def process_rates(self, sheet_name: str, station_name) -> None:
+        """
+        Process rate data from the Excel sheet.
+
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+        - station_name: Name of the station.
+
+        Returns:
+        - None
+        """
 
         radio_station = self.radio_station_model.objects.get(name=station_name)
+        self.process_interval_prices(sheet_name, radio_station)
+        self.process_month_rates(sheet_name, radio_station)
+        self.process_block_position_rates(sheet_name, radio_station)
 
-        price_data = self.read_excel_sheet('B:F', 1, 16, sheet_name)
+    def process_interval_prices(self, sheet_name: str, radio_station) -> None:
+        """
+        Process interval price data from the Excel sheet for a given radio
+        station.
 
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+        - station_name: Name of the station.
+
+        Returns:
+        - None
+        """
+
+        interval_price_model = apps.get_model('rates', 'IntervalPrice')
         try:
+            price_data = self.read_excel_sheet('B:F', 1, 16, sheet_name)
             time_intervals = TimeInterval.objects.all()
             audio_durations = AudioDuration.objects.all()
-            interval_price_model = apps.get_model('rates', 'IntervalPrice')
+            obj_to_update = []
+            obj_to_create = []
             for row_index, row in price_data.iterrows():
                 time_interval = time_intervals[row_index]
                 for col_index, price in enumerate(row):
                     audio_duration = audio_durations[col_index]
-                    obj, created = interval_price_model.objects.update_or_create(
+                    obj = interval_price_model.objects.filter(
                         station=radio_station,
                         time_interval=time_interval,
-                        audio_duration=audio_duration,
-                        defaults={'interval_price': price}
-                    )
-                    if created:
-                        print(f'Created IntervalPrice: {obj}')
+                        audio_duration=audio_duration
+                    ).first()
+                    if obj:
+                        if obj.interval_price == price:
+                            continue
+                        obj.interval_price = price
+                        obj_to_update.append(obj)
                     else:
-                        print(f'Updated IntervalPrice: {obj}')
-        except Exception as e:
+                        obj_to_create.append(
+                            interval_price_model(
+                                station=radio_station,
+                                time_interval=time_interval,
+                                audio_duration=audio_duration,
+                                interval_price=price,
+                            )
+                        )
+            self.create_update_mixin(
+                radio_station, obj_to_create, obj_to_update,
+                interval_price_model, 'interval_price'
+            )
+        except RuntimeError as e:
             raise RuntimeError(
-                f'Error processing IntervalPrice {radio_station}: {e}'
+                f'Error processing {interval_price_model.__name__} for '
+                f'{radio_station}: {e}'
             )
 
+    def process_month_rates(self, sheet_name: str, radio_station) -> None:
+        """
+        Process month rate data from the Excel sheet for a given radio station.
+
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+        - station_name: Name of the station.
+
+        Returns:
+        - None
+        """
+
+        month_rate_model = apps.get_model('rates', 'MonthRate')
         try:
             season_rates = self.read_excel_sheet('K:V', 48, 2, sheet_name)
             months = [
@@ -335,40 +584,68 @@ class ImportFromXLSX:
                 season_rates.iloc[0].values.tolist()
             ]
             month_rates = season_rates.iloc[1].values.tolist()
-            month_rate_model = apps.get_model('rates', 'MonthRate')
+            obj_to_update = []
+            obj_to_create = []
             for month_name, month_rate in zip(months, month_rates):
                 month_obj = get_object_or_404(Month, month=month_name)
-                obj, created = month_rate_model.objects.update_or_create(
+                obj = month_rate_model.objects.filter(
                     station=radio_station,
                     month=month_obj,
-                    defaults={'rate': month_rate}
-                )
-                if created:
-                    print(f'Created {month_rate_model.__name__}: {obj}')
+                ).first()
+                if obj:
+                    if obj.rate == month_rate:
+                        continue
+                    obj.rate = month_rate
+                    obj_to_update.append(obj)
                 else:
-                    print(f'Updated {month_rate_model.__name__}: {obj}')
+                    obj_to_create.append(
+                        month_rate_model(
+                            station=radio_station,
+                            month=month_obj,
+                            rate=month_rate
+                        )
+                    )
+            self.create_update_mixin(
+                radio_station, obj_to_create, obj_to_update,
+                month_rate_model, 'rate'
+            )
         except Exception as e:
             raise RuntimeError(
-                f'Error processing MontRate {radio_station}: {e}'
+                f'Error processing {month_rate_model.__name__} for '
+                f'{radio_station}: {e}'
             )
 
+    def process_block_position_rates(
+            self, sheet_name: str, radio_station
+    ) -> None:
+        """
+        Process block position rate data from the Excel sheet for a given
+        radio station.
+
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+        - station_name: Name of the station.
+
+        Returns:
+        - None
+        """
+
+        block_position_model = apps.get_model('rates', 'BlockPosition')
+        block_position_rate_model = apps.get_model(
+            'rates', 'BlockPositionRate'
+        )
         try:
             block_position_rates = self.read_excel_sheet(
                 'K:V', 52, 2, sheet_name
             )
-
             block_positions = self.filter_non_nan_values(
                 block_position_rates.iloc[0].values.tolist()
             )
             block_position_rates = self.filter_non_nan_values(
                 block_position_rates.iloc[1].values.tolist()
             )
-
-            block_position_model = apps.get_model('rates', 'BlockPosition')
-            block_position_rate_model = apps.get_model(
-                'rates', 'BlockPositionRate'
-            )
-
+            obj_to_update = []
+            obj_to_create = []
             for block_position, block_position_rate in zip(
                     block_positions, block_position_rates
             ):
@@ -377,30 +654,50 @@ class ImportFromXLSX:
                 )
                 if created:
                     print(
-                        f'Created {block_position_model.__name__}: '
+                        f'{radio_station}: created '
+                        f'{block_position_model.__name__} - '
                         f'{block_position_obj}'
                     )
-                obj, created = block_position_rate_model.objects.update_or_create(
+                obj = block_position_rate_model.objects.filter(
                     station=radio_station,
                     block_position=block_position_obj,
-                    defaults={'rate': block_position_rate}
-                )
-                if created:
-                    print(
-                        f'Created {block_position_rate_model.__name__}: {obj}'
-                    )
+                ).first()
+                if obj:
+                    if obj.rate == block_position_rate:
+                        continue
+                    obj.rate = block_position_rate
+                    obj_to_update.append(obj)
                 else:
-                    print(
-                        f'Updated {block_position_rate_model.__name__}: {obj}'
+                    obj_to_create.append(
+                        block_position_rate_model(
+                            station=radio_station,
+                            block_position=block_position_obj,
+                            rate=block_position_rate
+                        )
                     )
+            self.create_update_mixin(
+                radio_station, obj_to_create, obj_to_update,
+                block_position_rate_model, 'rate'
+            )
         except Exception as e:
             raise RuntimeError(
-                f'Error processing BlockPositionRate {radio_station}: {e}'
+                f'Error processing {block_position_rate_model.__name__} for '
+                f'{radio_station}: {e}'
             )
 
-    def process_discounts(
-            self, sheet_name: str, station_name
-    ) -> None:
+    def process_discounts(self, sheet_name: str, station_name) -> None:
+        """
+        Process discount data from the Excel sheet.
+
+        Parameters:
+        - sheet_name (str): Name of the sheet.
+        - station_name: Name of the station.
+
+        Returns:
+        - None
+        """
+
+        radio_station = self.radio_station_model.objects.get(name=station_name)
 
         discount_types = [
             (
@@ -417,45 +714,68 @@ class ImportFromXLSX:
             )
         ]
 
-        for model, usecols, skiprows, nrows, amount_field, discount_field in discount_types:
+        for (
+                model, usecols, skiprows, nrows, amount_field, discount_field
+        ) in discount_types:
             discounts_data = self.read_excel_sheet(
                 usecols, skiprows, nrows, sheet_name
             )
-            for index, row in discounts_data.iterrows():
-                order_value = self.convert_to_type_or_none(row[7], int)
-                order_discount = self.convert_to_type_or_none(row[8], float)
-
-                if isinstance(order_value, int) and order_value > 0:
-                    try:
-                        obj, created = model.objects.update_or_create(
-                            station=self.radio_station_model.objects.get(
-                                name=station_name
-                            ),
+            try:
+                obj_to_update = []
+                obj_to_create = []
+                for index, row in discounts_data.iterrows():
+                    order_value = self.convert_to_type_or_none(row[7], int)
+                    order_discount = self.convert_to_type_or_none(
+                        row[8], float
+                    )
+                    if isinstance(order_value, int) and order_value > 0:
+                        obj = model.objects.filter(
+                            station=radio_station,
                             **{amount_field: order_value},
-                            defaults={f'{discount_field}': order_discount}
-                        )
-                        if created:
-                            print(f'Created {model.__name__}: {obj}')
+                        ).first()
+                        if obj:
+                            if obj.discount == order_discount:
+                                continue
+                            obj.discount = order_discount
+                            obj_to_update.append(obj)
                         else:
-                            print(f'Updated {model.__name__}: {obj}')
-                    except Exception as e:
-                        raise RuntimeError(
-                            f'Error processing {model.__name__} station_name '
-                            f'in string {row}: {e}'
-                        )
-                else:
-                    print(f'Not filled {model.__name__} {index}')
+                            obj_to_create.append(
+                                model(
+                                    station=radio_station,
+                                    **{amount_field: order_value},
+                                    discount=order_discount
+                                )
+                            )
+                self.create_update_mixin(
+                    radio_station, obj_to_create, obj_to_update,
+                    model, 'discount'
+                )
+            except Exception as e:
+                raise RuntimeError(
+                    f'Error processing {model.__name__} for '
+                    f'{radio_station}: {e}'
+                )
 
-    def process_all(self):
+    def process_all(self) -> Union[str, None]:
+        """
+        Process all data from the Excel file.
+
+        Returns:
+        - Union[str, None]: Output messages or None if no data to process.
+        """
 
         try:
+            sys.stdout = self.output_buffer
             df_dict = pd.read_excel(self.file_path, sheet_name=None)
             sheet_names = list(df_dict.keys())
             if len(sheet_names) < 2:
-                print('No additional sheets to process after the first sheet.')
-                return
+                print(
+                    'No additional sheets to process after the '
+                    'first sheet.'
+                )
+                return None
             remaining_sheet_names = sheet_names[1:]
-            # self.process_main_data(sheet_names[1])
+            self.process_main_data(sheet_names[1])
             processed_stations = {}
             for sheet_name in remaining_sheet_names:
                 station = self.process_stations(sheet_name)
@@ -466,3 +786,9 @@ class ImportFromXLSX:
                     self.process_discounts(sheet_name, station)
         except Exception as e:
             raise RuntimeError(f'Ошибка импорта: {e}')
+        finally:
+            sys.stdout = sys.__stdout__
+            output_text = self.output_buffer.getvalue()
+            self.output_buffer.close()
+            output_lines = output_text.split('\n')
+            return '\n'.join(output_lines)

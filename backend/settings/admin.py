@@ -1,10 +1,12 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import sites
+from django.utils.html import format_html
 
 from settings.models import (
     City, AudioDuration, TimeInterval, AudienceSex, AudienceAge, Month,
     SystemText, WeekDay, ExcelImport
 )
+from utils.utils import ImportFromXLSX
 
 
 class MyAdminSite(admin.AdminSite):
@@ -46,6 +48,16 @@ class SystemTextAdmin(admin.ModelAdmin):
 @admin.register(ExcelImport)
 class ExcelImport(admin.ModelAdmin):
     list_display = ('id',)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        excel_file_path = obj.excel_file.path
+        assistant = ImportFromXLSX(excel_file_path)
+        printed_text = assistant.process_all()
+        formatted_printed_text = printed_text.replace('\n', '<br>')
+        self.message_user(
+            request, format_html(formatted_printed_text), level=messages.INFO
+        )
 
 
 @admin.register(City)
