@@ -18,8 +18,12 @@ export const SCHEMA_VALIDATION = yup
       .string()
       .email('Введите корректный e-mail')
       .matches(/^[A-Za-z0-9\-._@]*$/, 'Недопустимые символы. Разрешены только A-Za-z0-9.-_@')
-      .min(6, 'Минимальная длина 6 символов')
       .max(100, 'Максимальная длина 100 символов')
+      .test(
+        'optional-email',
+        'Минимальная длина 6 символов',
+        (value) => !value || (typeof value === 'string' && value.length >= 6)
+      )
   })
   .required();
 

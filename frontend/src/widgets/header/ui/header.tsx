@@ -6,17 +6,17 @@ import { Link } from 'react-router-dom';
 import { CONTACT_TEXT_COLOR } from '../configs';
 
 export const Header = () => {
-  if (window.self !== window.top) return null;
-
   return (
     <header className={clsx(s.header)}>
       <div className={clsx(s.headerWrapper)}>
-        <div className={clsx(s.headerContainer)}>
-          <Link to="/">
-            <HeaderLogo className={clsx(s.headerIcon)} />
-          </Link>
-          <Contacts textColor={CONTACT_TEXT_COLOR.BLACK} variant={'header'} />
-        </div>
+        {window.self === window.top && (
+          <div className={clsx(s.headerContainer)}>
+            <Link to="/">
+              <HeaderLogo className={clsx(s.headerIcon)} />
+            </Link>
+            <Contacts textColor={CONTACT_TEXT_COLOR.BLACK} variant={'header'} />
+          </div>
+        )}
       </div>
     </header>
   );
