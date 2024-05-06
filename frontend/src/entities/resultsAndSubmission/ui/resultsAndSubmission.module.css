@@ -24,6 +24,7 @@
 
 .submission {
   display: flex;
+  min-width: 270px;
   flex-direction: column;
   gap: 10px;
 }

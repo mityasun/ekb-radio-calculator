@@ -46,8 +46,17 @@
 }
 
 .isSuccess {
+  width: 100%;
   padding: 10px;
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.isError {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--input-color-invalid);
+  color: var(--white);
 }
 
 

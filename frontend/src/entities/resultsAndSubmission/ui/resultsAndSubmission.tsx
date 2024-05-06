@@ -122,10 +122,10 @@ export const ResultsAndSubmission = () => {
           <AppButton
             variant={'secondary'}
             onClick={hanlderSavePDFClick}
-            disabled={isDisabled}
+            disabled={isDisabled || mutation.isPending}
             data-tooltip-id="order-button"
             data-tooltip-content={DATA_TOOLTIP_TEXT}>
-            {BUTTON_TITLE.SAVE_PDF}
+            {mutation.isPending ? BUTTON_TITLE.SAVE_PDF_IS_PANDING : BUTTON_TITLE.SAVE_PDF}
           </AppButton>
           {isDisabled && <Tooltip id="order-button" place="left" style={toolTipStyle} />}
           <AppButton

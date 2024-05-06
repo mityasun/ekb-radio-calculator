@@ -16,12 +16,24 @@ export const Modal: FC<ModalProps> = (props) => {
   const { isOpen, hasCloseButton, onClose, children } = props;
   const [isModalOpen, setModalOpen] = useState(isOpen);
   const modalRef = useRef<HTMLDialogElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const mouseDownTarget = useRef<EventTarget | null>(null);
 
   const handleCloseModal = () => {
     if (onClose) {
       onClose();
     }
     setModalOpen(false);
+  };
+
+  const handleMouseDown = (event: MouseEvent) => {
+    mouseDownTarget.current = event.target;
+  };
+
+  const handleMouseUp = (event: MouseEvent) => {
+    if (event.target === mouseDownTarget.current && !overlayRef.current?.contains(event.target as Node)) {
+      handleCloseModal();
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDialogElement>) => {
@@ -40,20 +52,26 @@ export const Modal: FC<ModalProps> = (props) => {
     if (modalElement) {
       if (isModalOpen) {
         modalElement.showModal();
+        document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mouseup', handleMouseUp);
       } else {
         modalElement.close();
+        document.removeEventListener('mousedown', handleMouseDown);
+        document.removeEventListener('mouseup', handleMouseUp);
       }
     }
   }, [isModalOpen]);
 
   return (
     <dialog ref={modalRef} onKeyDown={handleKeyDown} className={clsx(s.modal)}>
-      {hasCloseButton && (
-        <button className={clsx(s.modalCloseButton)} onClick={handleCloseModal}>
-          {CLOSE_BUTTON_CONTENT}
-        </button>
-      )}
-      {children}
+      <div ref={overlayRef} className={clsx(s.modalOverlay)}>
+        {hasCloseButton && (
+          <button className={clsx(s.modalCloseButton)} onClick={handleCloseModal}>
+            {CLOSE_BUTTON_CONTENT}
+          </button>
+        )}
+        {children}
+      </div>
     </dialog>
   );
 };

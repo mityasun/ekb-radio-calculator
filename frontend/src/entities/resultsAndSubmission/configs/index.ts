@@ -1,6 +1,7 @@
 export const BUTTON_TITLE = {
   RESET_TABLE: 'Сбросить медиаплан',
   SAVE_PDF: 'Сохранить медиаплан в PDF',
+  SAVE_PDF_IS_PANDING: 'Формируется PDF файл...',
   SENT_TO_APROVAL: 'Отправить на согласование'
 };
 
