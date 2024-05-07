@@ -1,5 +1,6 @@
 import re
 
+from PIL import Image
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.images import get_image_dimensions
@@ -8,8 +9,9 @@ from rest_framework import serializers
 
 
 def validate_value(
-        value, name_1, name_2, regex_1, regex_2, min_length, max_length
-):
+    value: str, name_1: str, name_2: str, regex_1: str, regex_2: str,
+    min_length: int, max_length: int
+) -> str:
     """Validator for values."""
 
     pattern = re.compile(regex_1)
@@ -28,10 +30,10 @@ def validate_value(
     return value
 
 
-def validate_text(name, max_length):
+def validate_text(name: str, max_length: int) -> str:
     """Validator for text."""
 
-    validate_value(
+    return validate_value(
         name, 'тексте', 'названия',
         r'^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]+$',
         r'[^[A-Za-zА-ЯЁа-яё\d№&,!?."+ -:—|©@<>«»;:–\n\s]',
@@ -39,44 +41,50 @@ def validate_text(name, max_length):
     )
 
 
-def validate_user_first_or_last_name(name):
+def validate_user_first_or_last_name(name: str) -> str:
     """Validator for user firstname and lastname"""
 
-    validate_value(
+    return validate_value(
         name, 'имени или фамилии', 'имени или фамилии',
         r'^[A-Za-zА-ЯЁа-яё -]+$', r'[^A-Za-zА-ЯЁа-яё -]',
         settings.MIN_LENGTH, settings.FIRST_NAME
     )
 
 
-def validate_username(username):
+def validate_username(username: str) -> str:
     """Validate username"""
 
-    validate_value(
+    return validate_value(
         username, 'никнейме', 'никнейма', r'^[A-Za-z-\d]+$', r'[^A-Za-z-\d]',
         settings.MIN_USERNAME, settings.USERNAME
     )
 
 
-def validate_email(email):
+def validate_email(email: str) -> str:
     """Validator for email"""
 
-    validate_value(
+    return validate_value(
         email, 'email', 'email', r'^[A-Za-z-.@\d_]+$', r'[^A-Za-z-.@\d_]',
         settings.MIN_EMAIL, settings.EMAIL
     )
 
 
-def validate_phone(phone):
+def validate_phone(value: str) -> str:
     """Validator for phone"""
 
-    validate_value(
-        phone, 'телефоне', 'телефона', r'^[-\d+() ]+$', r'[^-\d+() ]',
+    phone = validate_value(
+        value, 'телефоне', 'телефона', r'^[-\d+() ]+$', r'[^-\d+() ]',
         settings.MIN_PHONE, settings.PHONE
     )
+    if len(re.sub(r'[ +()-]', '', phone)) == 11:
+        return phone
+    else:
+        raise ValidationError(
+            f'Номер должен содержать {settings.MIN_PHONE} цифр'
+        )
 
 
-def validate_password(password):
+def validate_password(password: str) -> str:
     """Validate password"""
 
     if len(password) < settings.MIN_PASSWORD or len(
@@ -105,7 +113,7 @@ def validate_password(password):
     return password
 
 
-def get_available_image_extensions():
+def get_available_image_extensions() -> list[str]:
     try:
         from PIL import Image
     except ImportError:
@@ -116,12 +124,12 @@ def get_available_image_extensions():
         return allowed_extensions
 
 
-def validate_image_file_extension(value):
+def validate_image_file_extension(value: str) -> str:
     allowed_extensions = get_available_image_extensions()
     return FileExtensionValidator(allowed_extensions=allowed_extensions)(value)
 
 
-def validate_image(image):
+def validate_image(image) -> Image:
     """Validate images"""
 
     validate_image_file_extension(image)
@@ -151,7 +159,7 @@ def validate_image(image):
     return image
 
 
-def validate_search_query(query):
+def validate_search_query(query: str) -> str:
     """Validate search query."""
 
     if query == "" or query.isspace():
@@ -165,7 +173,7 @@ def validate_search_query(query):
     return query
 
 
-def validate_excel_file(value):
+def validate_excel_file(value: str) -> str:
     """Validate excel file extension."""
 
     allowed_extensions = ['xls', 'xlsx']
