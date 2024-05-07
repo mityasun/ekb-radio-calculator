@@ -42,7 +42,7 @@ export const AppRouter = () => {
         <meta name="description" content={systemText?.seo_description && systemText.seo_description} />
         <meta name="keywords" content={systemText?.seo_keywords && systemText.seo_keywords} />
       </Helmet>
-      <div ref={appRef}>
+      <div style={{ height: 'fit-content' }} ref={appRef}>
         <RouterProvider router={router} />
       </div>
     </>

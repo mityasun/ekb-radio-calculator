@@ -1,6 +1,9 @@
 .radioStationDataWidget {
+  display: -webkit-grid;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  -webkit-grid-template-columns: repeat(3, 1fr);
+
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -10,19 +13,25 @@
 
 .DataWidget1 {
   grid-column-start: 1;
+  -webkit-grid-column-start: 1;
   grid-column-end: 1;
+  -webkit-grid-column-end: 1;
   grid-row-start: 1;
+  -webkit-grid-row-start: 1;
   grid-row-end: 3;
+  -webkit-grid-row-end: 3;
 }
 
 @media (max-width: 1100px) {
   .radioStationDataWidget {
     grid-template-columns: repeat(2, 1fr);
+    -webkit-grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 550px) {
   .radioStationDataWidget {
     grid-template-columns: 1fr;
+    -webkit-grid-template-columns: 1fr;
   }
 }
