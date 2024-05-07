@@ -52,11 +52,15 @@ class ExcelImport(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         assistant = ImportFromXLSX(obj.excel_file.path)
-        printed_text = assistant.process_all()
+        printed_text, error_message = assistant.process_all()
         formatted_printed_text = printed_text.replace('\n', '<br>')
-        self.message_user(
-            request, format_html(formatted_printed_text), level=messages.INFO
-        )
+        if printed_text:
+            self.message_user(
+                request, format_html(formatted_printed_text),
+                level=messages.INFO
+            )
+        if error_message:
+            self.message_user(request, error_message, level=messages.ERROR)
 
 
 @admin.register(City)

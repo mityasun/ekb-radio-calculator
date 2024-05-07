@@ -1,11 +1,13 @@
 import re
 import sys
+import traceback
 from io import BytesIO
 from io import StringIO
 from typing import List, Union, Any, Dict, Type
 
 import pandas as pd
 from PIL import Image as PilImage
+from PIL.Image import Resampling
 from django.apps import apps
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -21,7 +23,9 @@ def clear_cache(patterns):
     """Clear Redis cache by create or updating objects."""
 
     cache_name = 'default'
-    if settings.CACHES[cache_name]['BACKEND'] == 'django_redis.cache.RedisCache':
+    if settings.CACHES[cache_name][
+        'BACKEND'
+    ] == 'django_redis.cache.RedisCache':
         redis_conn = get_redis_connection(cache_name)
         for pattern in patterns:
             keys = redis_conn.keys(pattern)
@@ -33,12 +37,18 @@ def generate_redis_key(self, prefix):
     """Generate key for redis cache"""
 
     user_id = 'anonymous'
-
     return f'{prefix}:{user_id}'
 
 
-def to_translit(text):
-    """Translator cyrillic letters into Latin."""
+def to_translit(text: str) -> str:
+    """
+    Transliterate Cyrillic letters into Latin characters.
+
+    Args:
+        text (str): The input text containing Cyrillic characters.
+    Returns:
+        str: The transliterated text converted into Latin characters.
+    """
 
     translit_dict = {
         u'а': 'a', u'б': 'b', u'в': 'v', u'г': 'g', u'д': 'd',
@@ -58,13 +68,25 @@ def to_translit(text):
         if item not in translit_dict.values():
             translit_text[translit_text.index(item)] = '-'
     translit_text = ''.join(translit_text)
-    slug = re.sub(r'[-]+', '-', translit_text.replace(' ', '-'))
-    cut_slug = slug[:settings.NAME]
-    return cut_slug
+    replaced_text = re.sub(r'-+', '-', translit_text.replace(' ', '-'))
+    cut_text = replaced_text[:settings.NAME]
+    return cut_text
 
 
-def reduce_image(img, max_size, image_name):
-    """Reduce image to different sizes with minimum size requirement."""
+def reduce_image(
+        img: PilImage.Image, max_size: int, image_name: str
+) -> InMemoryUploadedFile:
+    """
+    Reduce image to fit within a maximum size while maintaining aspect ratio.
+
+    Args:
+    - img (PilImage.Image): The input image.
+    - max_size (int): The maximum size for either width or height.
+    - image_name (str): The name of the image.
+
+    Returns:
+    - InMemoryUploadedFile: The reduced image file.
+    """
 
     width, height = img.size
     if width < max_size and height < max_size:
@@ -73,16 +95,16 @@ def reduce_image(img, max_size, image_name):
             ratio = max_size / max_dim
             new_width = int((float(width) * float(ratio)))
             new_height = int((float(height) * float(ratio)))
-            img = img.resize((new_width, new_height), PilImage.LANCZOS)
+            img = img.resize((new_width, new_height), Resampling.LANCZOS)
     else:
         if width > height:
             ratio = max_size / float(width)
             new_height = int((float(height) * float(ratio)))
-            img = img.resize((max_size, new_height), PilImage.LANCZOS)
+            img = img.resize((max_size, new_height), Resampling.LANCZOS)
         else:
             ratio = max_size / float(height)
             new_width = int((float(width) * float(ratio)))
-            img = img.resize((new_width, max_size), PilImage.LANCZOS)
+            img = img.resize((new_width, max_size), Resampling.LANCZOS)
     output = BytesIO()
     img.save(
         output, format='JPEG', quality=settings.PHOTO_QUALITY,
@@ -134,34 +156,6 @@ class ImportFromXLSX:
         self.file_path = file_path
         self.radio_station_model = apps.get_model('stations', 'RadioStation')
         self.output_buffer = StringIO()
-
-    def read_excel_sheet(
-            self, usecols, skiprows: int, nrows: int, sheet_name=None
-    ) -> pd.DataFrame:
-        """
-        Read data from an Excel sheet with optional sheet name.
-
-        Parameters:
-        - usecols (str or list-like): Columns to read.
-        - skiprows (int or list-like): Rows to skip from the beginning.
-        - nrows (int): Number of rows to read.
-        - sheet_name (str, optional): Name of the sheet to read.
-        Defaults to None (reads the first sheet).
-
-        Returns:
-        - pd.DataFrame: DataFrame containing the read data.
-        """
-
-        if sheet_name is None:
-            return pd.read_excel(
-                self.file_path, usecols=usecols, skiprows=skiprows,
-                nrows=nrows, header=None
-            )
-        else:
-            return pd.read_excel(
-                self.file_path, usecols=usecols, skiprows=skiprows,
-                nrows=nrows, sheet_name=sheet_name, header=None
-            )
 
     @staticmethod
     def extract_int(string: str) -> Union[int, None]:
@@ -318,14 +312,14 @@ class ImportFromXLSX:
         ]
         self.create_if_not_exists(new_weekdays, WeekDay, 'week_day')
 
-        time_intervals = df.iloc[0:16, 0]
+        time_intervals = df.iloc[1:17, 0]
         new_intervals = [
             {'time_interval': time_interval.strip()}
             for time_interval in time_intervals.astype(str).values
         ]
         self.create_if_not_exists(new_intervals, TimeInterval, 'time_interval')
 
-        audio_durations = df.columns[1:6].tolist()
+        audio_durations = df.iloc[0, 1:6].tolist()
         new_durations = [
             {'audio_duration': self.extract_int(duration)}
             for duration in audio_durations
@@ -334,7 +328,7 @@ class ImportFromXLSX:
             new_durations, AudioDuration, 'audio_duration'
         )
 
-        block_positions = df.iloc[51, 10:22].dropna().tolist()
+        block_positions = df.iloc[52, 10:22].dropna().tolist()
         block_position_model = apps.get_model('rates', 'BlockPosition')
         new_block_positions = [
             {'block_position': block_position}
@@ -737,17 +731,20 @@ class ImportFromXLSX:
                     f'{radio_station}: {e}'
                 )
 
-    def process_all(self) -> Union[str, None]:
+    def process_all(self) -> tuple[str, str | None] | None:
+        """Returns a tuple containing:
+        - Output messages (str)
+        - Error message if an error occurred, otherwise None (str | None)
+        If there's no data to process, returns None.
         """
-        Process all data from the Excel file.
 
-        Returns:
-        - Union[str, None]: Output messages or None if no data to process.
-        """
-
+        error_message = None
         try:
             sys.stdout = self.output_buffer
-            df_dict = pd.read_excel(self.file_path, sheet_name=None)
+            df_dict = pd.read_excel(
+                self.file_path, usecols='A:V', skiprows=0, nrows=55,
+                sheet_name=None, header=None
+            )
             sheet_names = list(df_dict.keys())
             if len(sheet_names) < 2:
                 print(
@@ -755,11 +752,10 @@ class ImportFromXLSX:
                     'first sheet.'
                 )
                 return None
-            remaining_sheet_names = sheet_names[1:]
             self.process_main_data(df_dict[sheet_names[1]])
             processed_stations = {}
-            for sheet_name in remaining_sheet_names:
-                sheet_data = self.read_excel_sheet('A:V', 0, 55, sheet_name)
+            for sheet_name in sheet_names[1:]:
+                sheet_data = df_dict[sheet_name]
                 station = self.process_stations(sheet_data)
                 if station and station.name:
                     processed_stations[station.name] = station
@@ -767,10 +763,11 @@ class ImportFromXLSX:
                     self.process_rates(sheet_data, station)
                     self.process_discounts(sheet_data, station)
         except Exception as e:
-            raise RuntimeError(f'Ошибка импорта: {e}')
+            trace = traceback.format_exc()
+            error_message = f'Ошибка импорта: {e}\n{trace}'
         finally:
             sys.stdout = sys.__stdout__
             output_text = self.output_buffer.getvalue()
             self.output_buffer.close()
             output_lines = output_text.split('\n')
-            return '\n'.join(output_lines)
+            return '\n'.join(output_lines), error_message
