@@ -51,8 +51,7 @@ class ExcelImport(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        excel_file_path = obj.excel_file.path
-        assistant = ImportFromXLSX(excel_file_path)
+        assistant = ImportFromXLSX(obj.excel_file.path)
         printed_text = assistant.process_all()
         formatted_printed_text = printed_text.replace('\n', '<br>')
         self.message_user(

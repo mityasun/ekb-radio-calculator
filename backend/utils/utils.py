@@ -1,9 +1,8 @@
-import math
 import re
 import sys
 from io import BytesIO
 from io import StringIO
-from typing import List, Union, Any
+from typing import List, Union, Any, Dict, Type
 
 import pandas as pd
 from PIL import Image as PilImage
@@ -11,7 +10,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import transaction
-from django.shortcuts import get_object_or_404
+from django.db.models import Model
 from django_redis import get_redis_connection
 
 from settings.models import (City, AudioDuration, TimeInterval,
@@ -198,24 +197,6 @@ class ImportFromXLSX:
         return round(value * 100, 2)
 
     @staticmethod
-    def filter_non_nan_values(lst: List) -> List:
-        """
-        Filter out None and NaN values from a list.
-
-        Parameters:
-        - lst (List): Input list.
-
-        Returns:
-        - List: Filtered list without None and NaN values.
-        """
-
-        return [
-            value for value in lst if value is not None and not (
-                isinstance(value, float) and math.isnan(value)
-            )
-        ]
-
-    @staticmethod
     def convert_to_type_or_none(
             value: Any, value_type: Any
     ) -> Union[Any, None]:
@@ -241,11 +222,46 @@ class ImportFromXLSX:
             return None
 
     @staticmethod
+    def create_if_not_exists(
+            objects_to_create: List[Dict[str, Any]],
+            model_class: Type[Model],
+            field_name: str
+    ) -> None:
+        """
+        Create objects if they do not already exist in the database.
+
+        Parameters:
+        - objects_to_create (List[Dict[str, Any]]):
+        A list of dictionaries representing the objects to create. Each
+        dictionary should contain the field name and its corresponding value.
+        - model_class (Type[Model]): The Django model class of the objects to
+        create.
+        - field_name (str): The name of the field to check for existence in
+        the database.
+
+        Returns:
+        - None
+        """
+
+        existing_values = set(
+            model_class.objects.values_list(field_name, flat=True)
+        )
+        new_objects = [
+            obj for obj in objects_to_create
+            if obj[field_name] not in existing_values
+        ]
+        if new_objects:
+            objs = model_class.objects.bulk_create([
+                model_class(**obj) for obj in new_objects
+            ])
+            print(f'Created {model_class.__name__}: {[obj for obj in objs]}')
+
+    @staticmethod
     def create_update_mixin(
-            radio_station,
+            radio_station: Type[Model],
             obj_to_create: list,
             obj_to_update: list,
-            model,
+            model: Type[Model],
             field: str
     ) -> None:
         """
@@ -281,98 +297,66 @@ class ImportFromXLSX:
                     f'objects were updated.'
                 )
 
-    def process_main_data(self, sheet_name: str) -> None:
+    def process_main_data(self, df: pd.DataFrame) -> None:
         """
         Process main data from the Excel sheet.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
 
         Returns:
         - None
         """
 
-        months_data = self.read_excel_sheet('K:V', 48, 1, sheet_name)
-        existing_months = set(Month.objects.values_list('month', flat=True))
         new_months = [
-            month.strip().capitalize()
-            for month in months_data.astype(str).values.flatten()
-            if month.strip().capitalize() not in existing_months
+            {'month': month} for month, label in Month.MONTH_LIST
         ]
-        if new_months:
-            objs = Month.objects.bulk_create([
-                Month(month=month) for month in new_months
-            ])
-            print(f'Created {Month.__name__}: {[obj.month for obj in objs]}')
+        self.create_if_not_exists(new_months, Month, 'month')
 
-        existing_weekdays = set(
-            WeekDay.objects.values_list('week_day', flat=True)
-        )
         new_weekdays = [
-            day for day, label in WeekDay.WEEK_DAY_LIST
-            if day not in existing_weekdays
+            {'week_day': day} for day, label in WeekDay.WEEK_DAY_LIST
         ]
-        if new_weekdays:
-            objs = WeekDay.objects.bulk_create([
-                WeekDay(week_day=day) for day in new_weekdays
-            ])
-            print(
-                f'Created {WeekDay.__name__}: {[obj.week_day for obj in objs]}'
-            )
+        self.create_if_not_exists(new_weekdays, WeekDay, 'week_day')
 
-        time_intervals = self.read_excel_sheet('A', 1, 16, sheet_name)
-        existing_intervals = set(
-            TimeInterval.objects.values_list('time_interval', flat=True)
-        )
+        time_intervals = df.iloc[0:16, 0]
         new_intervals = [
-            TimeInterval(time_interval=time_interval.strip())
-            for time_interval in time_intervals[0].astype(str).values
-            if time_interval.strip() not in existing_intervals
+            {'time_interval': time_interval.strip()}
+            for time_interval in time_intervals.astype(str).values
         ]
-        if new_intervals:
-            objs = TimeInterval.objects.bulk_create(new_intervals)
-            print(
-                f'Created {TimeInterval.__name__}: '
-                f'{[obj.time_interval for obj in objs]}'
-            )
+        self.create_if_not_exists(new_intervals, TimeInterval, 'time_interval')
 
-        audio_durations = self.read_excel_sheet('B:F', 0, 1, sheet_name)
-        existing_durations = set(
-            AudioDuration.objects.values_list('audio_duration', flat=True)
-        )
+        audio_durations = df.columns[1:6].tolist()
         new_durations = [
-            self.extract_int(audio_duration)
-            for audio_duration in audio_durations.astype(str).values.flatten()
-            if self.extract_int(audio_duration) not in existing_durations
+            {'audio_duration': self.extract_int(duration)}
+            for duration in audio_durations
         ]
-        if new_durations:
-            objs = AudioDuration.objects.bulk_create([
-                AudioDuration(audio_duration=duration)
-                for duration in new_durations
-            ])
-            print(
-                f'Created {AudioDuration.__name__}: '
-                f'{[obj.audio_duration for obj in objs]}'
-            )
+        self.create_if_not_exists(
+            new_durations, AudioDuration, 'audio_duration'
+        )
 
-    def process_stations(self, sheet_name: str):
+        block_positions = df.iloc[51, 10:22].dropna().tolist()
+        block_position_model = apps.get_model('rates', 'BlockPosition')
+        new_block_positions = [
+            {'block_position': block_position}
+            for block_position in block_positions
+        ]
+        self.create_if_not_exists(
+            new_block_positions, block_position_model, 'block_position'
+        )
+
+    def process_stations(self, df: pd.DataFrame):
         """
         Process station data from the Excel sheet.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
 
         Returns:
         - None
         """
 
-        station_data = (
-            self.read_excel_sheet('B', 19, 6, sheet_name)
-        ).values.flatten()
-
-        rates_data = (
-            self.read_excel_sheet('K', 50, 2, sheet_name)
-        ).values.flatten()
+        station_data = df.iloc[19:25, 1].tolist()
+        rates_data = df.iloc[50:52, 10].tolist()
 
         try:
             city_obj, created = City.objects.get_or_create(
@@ -395,22 +379,21 @@ class ImportFromXLSX:
             obj, created = self.radio_station_model.objects.get_or_create(
                 name=str(station_data[0]), defaults=defaults
             )
+            if created:
+                print(
+                    f'{obj.name}: created '
+                    f'{self.radio_station_model.__name__}'
+                )
             attributes_changed = any(
                 getattr(obj, attr) != value for attr, value in defaults.items()
             )
             if attributes_changed:
                 obj.__dict__.update(defaults)
                 obj.save()
-                if created:
-                    print(
-                        f'{obj.name}: created '
-                        f'{self.radio_station_model.__name__}'
-                    )
-                else:
-                    print(
-                        f'{obj.name}: updated '
-                        f'{self.radio_station_model.__name__}'
-                    )
+                print(
+                    f'{obj.name}: updated '
+                    f'{self.radio_station_model.__name__}'
+                )
             else:
                 print(
                     f'{obj.name}: no changes for '
@@ -423,12 +406,12 @@ class ImportFromXLSX:
                 f'{str(station_data[0])}: {e}'
             )
 
-    def process_social(self, sheet_name: str, station_name) -> None:
+    def process_social(self, df: pd.DataFrame, station_name) -> None:
         """
         Process social data from the Excel sheet.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
         - station_name: Name of the station.
 
         Returns:
@@ -436,24 +419,21 @@ class ImportFromXLSX:
         """
 
         radio_station = self.radio_station_model.objects.get(name=station_name)
+        sex_data = df.iloc[25:27, 1:3]
+        age_data = df.iloc[27:28, 1:3]
         social_types = [
             (
                 AudienceSex,
                 apps.get_model('stations', 'AudienceSexStation'),
-                'B:C', 25, 2, 'sex'
+                sex_data, 'sex'
             ),
             (
                 AudienceAge,
                 apps.get_model('stations', 'AudienceAgeStation'),
-                'B:C', 27, 1, 'age'
+                age_data, 'age'
             ),
         ]
-        for (
-                model1, model2, usecols, skiprows, nrows, model_field
-        ) in social_types:
-            social_data = self.read_excel_sheet(
-                usecols, skiprows, nrows, sheet_name
-            )
+        for model1, model2, social_data, model_field in social_types:
             try:
                 obj_to_update = []
                 obj_to_create = []
@@ -494,12 +474,12 @@ class ImportFromXLSX:
                     f'{radio_station}: {e}'
                 )
 
-    def process_rates(self, sheet_name: str, station_name) -> None:
+    def process_rates(self, df: pd.DataFrame, station_name) -> None:
         """
         Process rate data from the Excel sheet.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
         - station_name: Name of the station.
 
         Returns:
@@ -507,17 +487,17 @@ class ImportFromXLSX:
         """
 
         radio_station = self.radio_station_model.objects.get(name=station_name)
-        self.process_interval_prices(sheet_name, radio_station)
-        self.process_month_rates(sheet_name, radio_station)
-        self.process_block_position_rates(sheet_name, radio_station)
+        self.process_interval_prices(df, radio_station)
+        self.process_month_rates(df, radio_station)
+        self.process_block_position_rates(df, radio_station)
 
-    def process_interval_prices(self, sheet_name: str, radio_station) -> None:
+    def process_interval_prices(self, df: pd.DataFrame, radio_station) -> None:
         """
         Process interval price data from the Excel sheet for a given radio
         station.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
         - station_name: Name of the station.
 
         Returns:
@@ -526,15 +506,24 @@ class ImportFromXLSX:
 
         interval_price_model = apps.get_model('rates', 'IntervalPrice')
         try:
-            price_data = self.read_excel_sheet('B:F', 1, 16, sheet_name)
-            time_intervals = TimeInterval.objects.all()
-            audio_durations = AudioDuration.objects.all()
+            price_data = df.iloc[0:17, 0:6]
+            time_intervals = {
+                interval.time_interval: interval for interval in
+                TimeInterval.objects.all()
+            }
+            audio_durations = {
+                duration.audio_duration: duration for duration in
+                AudioDuration.objects.all()
+            }
             obj_to_update = []
             obj_to_create = []
-            for row_index, row in price_data.iterrows():
-                time_interval = time_intervals[row_index]
-                for col_index, price in enumerate(row):
-                    audio_duration = audio_durations[col_index]
+            for index, row in price_data.iloc[1:].iterrows():
+                time_interval = time_intervals.get(row[0])
+                for col_index in range(1, len(row)):
+                    audio_duration = audio_durations.get(
+                        self.extract_int(price_data.iloc[0, col_index])
+                    )
+                    price = row[col_index]
                     obj = interval_price_model.objects.filter(
                         station=radio_station,
                         time_interval=time_interval,
@@ -564,12 +553,12 @@ class ImportFromXLSX:
                 f'{radio_station}: {e}'
             )
 
-    def process_month_rates(self, sheet_name: str, radio_station) -> None:
+    def process_month_rates(self, df: pd.DataFrame, radio_station) -> None:
         """
         Process month rate data from the Excel sheet for a given radio station.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
         - station_name: Name of the station.
 
         Returns:
@@ -578,16 +567,20 @@ class ImportFromXLSX:
 
         month_rate_model = apps.get_model('rates', 'MonthRate')
         try:
-            season_rates = self.read_excel_sheet('K:V', 48, 2, sheet_name)
+            season_rates = df.iloc[48:50, 10:22]
             months = [
                 month.strip().capitalize() for month in
                 season_rates.iloc[0].values.tolist()
             ]
             month_rates = season_rates.iloc[1].values.tolist()
+            month_objs = {
+                month.month: month for month in
+                Month.objects.filter(month__in=months)
+            }
             obj_to_update = []
             obj_to_create = []
             for month_name, month_rate in zip(months, month_rates):
-                month_obj = get_object_or_404(Month, month=month_name)
+                month_obj = month_objs.get(month_name)
                 obj = month_rate_model.objects.filter(
                     station=radio_station,
                     month=month_obj,
@@ -616,14 +609,14 @@ class ImportFromXLSX:
             )
 
     def process_block_position_rates(
-            self, sheet_name: str, radio_station
+            self, df: pd.DataFrame, radio_station
     ) -> None:
         """
         Process block position rate data from the Excel sheet for a given
         radio station.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
         - station_name: Name of the station.
 
         Returns:
@@ -635,29 +628,18 @@ class ImportFromXLSX:
             'rates', 'BlockPositionRate'
         )
         try:
-            block_position_rates = self.read_excel_sheet(
-                'K:V', 52, 2, sheet_name
-            )
-            block_positions = self.filter_non_nan_values(
-                block_position_rates.iloc[0].values.tolist()
-            )
-            block_position_rates = self.filter_non_nan_values(
-                block_position_rates.iloc[1].values.tolist()
-            )
+            block_positions = df.iloc[52, 10:22].dropna().tolist()
+            block_position_rates = df.iloc[53, 10:22].dropna().tolist()
+            block_positions_dict = {
+                block.block_position: block for block in
+                block_position_model.objects.all()
+            }
             obj_to_update = []
             obj_to_create = []
             for block_position, block_position_rate in zip(
                     block_positions, block_position_rates
             ):
-                block_position_obj, created = block_position_model.objects.get_or_create(
-                    block_position=block_position
-                )
-                if created:
-                    print(
-                        f'{radio_station}: created '
-                        f'{block_position_model.__name__} - '
-                        f'{block_position_obj}'
-                    )
+                block_position_obj = block_positions_dict.get(block_position)
                 obj = block_position_rate_model.objects.filter(
                     station=radio_station,
                     block_position=block_position_obj,
@@ -685,12 +667,12 @@ class ImportFromXLSX:
                 f'{radio_station}: {e}'
             )
 
-    def process_discounts(self, sheet_name: str, station_name) -> None:
+    def process_discounts(self, df: pd.DataFrame, station_name) -> None:
         """
         Process discount data from the Excel sheet.
 
         Parameters:
-        - sheet_name (str): Name of the sheet.
+        - df (pd.DataFrame): DataFrame with data from sheet.
         - station_name: Name of the station.
 
         Returns:
@@ -699,27 +681,26 @@ class ImportFromXLSX:
 
         radio_station = self.radio_station_model.objects.get(name=station_name)
 
+        order_amount_discount = df.iloc[2:22, 7:9]
+        order_days_discount = df.iloc[23:29, 7:9]
+        order_volume_discount = df.iloc[32:39, 7:9]
+
         discount_types = [
             (
                 apps.get_model('discounts', 'AmountDiscount'),
-                'H:I', 2, 19, 'order_amount', 'discount'
+                order_amount_discount, 'order_amount'
             ),
             (
                 apps.get_model('discounts', 'DaysDiscount'),
-                'H:I', 23, 6, 'total_days', 'discount'
+                order_days_discount, 'total_days'
             ),
             (
                 apps.get_model('discounts', 'VolumeDiscount'),
-                'H:I', 32, 7, 'order_volume', 'discount'
+                order_volume_discount, 'order_volume'
             )
         ]
 
-        for (
-                model, usecols, skiprows, nrows, amount_field, discount_field
-        ) in discount_types:
-            discounts_data = self.read_excel_sheet(
-                usecols, skiprows, nrows, sheet_name
-            )
+        for model, discounts_data, amount_field in discount_types:
             try:
                 obj_to_update = []
                 obj_to_create = []
@@ -775,15 +756,16 @@ class ImportFromXLSX:
                 )
                 return None
             remaining_sheet_names = sheet_names[1:]
-            self.process_main_data(sheet_names[1])
+            self.process_main_data(df_dict[sheet_names[1]])
             processed_stations = {}
             for sheet_name in remaining_sheet_names:
-                station = self.process_stations(sheet_name)
+                sheet_data = self.read_excel_sheet('A:V', 0, 55, sheet_name)
+                station = self.process_stations(sheet_data)
                 if station and station.name:
                     processed_stations[station.name] = station
-                    self.process_social(sheet_name, station)
-                    self.process_rates(sheet_name, station)
-                    self.process_discounts(sheet_name, station)
+                    self.process_social(sheet_data, station)
+                    self.process_rates(sheet_data, station)
+                    self.process_discounts(sheet_data, station)
         except Exception as e:
             raise RuntimeError(f'Ошибка импорта: {e}')
         finally:
