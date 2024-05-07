@@ -6,7 +6,6 @@
   border-radius: var(--border-radius);
   background-color: var(--white);
   gap: 10px;
-  height: 100%;
 }
 
 .dataWidget.filled {
