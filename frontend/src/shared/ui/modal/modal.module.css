@@ -40,7 +40,7 @@
 
 
 @media (max-width: 480px) {
-  .modal {
+  .modalOverlay {
     padding: 40px 20px;
   }
 }
