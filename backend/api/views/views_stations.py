@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models import Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.vary import vary_on_cookie
@@ -11,6 +12,7 @@ from api.filters import StationFilterSet
 from api.mixins import ReadOnlyViewSet
 from api.serializers.serializers_stations import (StationsSerializer,
                                                   StationsShortSerializer)
+from rates.models import IntervalPrice
 from stations.models import RadioStation
 from utils.utils import generate_redis_key
 
@@ -20,6 +22,10 @@ class StationViewSet(ReadOnlyViewSet):
 
     serializer_class = StationsSerializer
     queryset = RadioStation.objects.select_related('city').prefetch_related(
+        Prefetch(
+            'intervalprice_set',
+            queryset=IntervalPrice.objects.order_by('time_interval__id')
+        ),
         'audiencesexstation_set__sex', 'audienceagestation_set__age',
         'monthrate_set__month', 'blockpositionrate_set__block_position',
         'intervalprice_set__time_interval',
