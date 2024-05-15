@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cp config.production .env && vite --port 8000 --host",
+    "dev": "vite --port 8000",
     "build-dev": "cp config.development .env && vite build ",
     "build-prod": "cp config.production .env && vite build",
     "build": "tsc && vite build",
