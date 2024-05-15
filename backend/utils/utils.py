@@ -742,7 +742,7 @@ class ImportFromXLSX:
         try:
             sys.stdout = self.output_buffer
             df_dict = pd.read_excel(
-                self.file_path, usecols='A:V', skiprows=0, nrows=55,
+                self.file_path, skiprows=0, nrows=55,
                 sheet_name=None, header=None
             )
             sheet_names = list(df_dict.keys())

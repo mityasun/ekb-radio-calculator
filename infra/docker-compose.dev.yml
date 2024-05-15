@@ -7,7 +7,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - .env.dev
+      - .env
     networks:
       - db_network
     expose:
@@ -21,14 +21,16 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     env_file:
-      - .env.dev
+      - .env
     networks:
       - db_network
       - pgadmin_network
     depends_on:
       - postgres
+    ports:
+      - ${PG_ADMIN_PORT}:${PG_ADMIN_PORT}
     expose:
-      - 1043
+      - ${PG_ADMIN_PORT}
     container_name: ekb_radio_pgadmin
 
   redis:
@@ -55,7 +57,7 @@ services:
       - media_value:/backend/media/
       - api_docs_value:/backend/static/docs/
     env_file:
-      - .env.dev
+      - .env
     networks:
       - db_network
       - redis_network
@@ -87,9 +89,8 @@ services:
       - media_value:/usr/share/nginx/html/media/
       - api_docs_value:/usr/share/nginx/html/api/docs/
     ports:
-      - "80:80"
+      - ${NGINX_PORT}:${NGINX_PORT}
     networks:
-      - redis_network
       - backend_network
       - pgadmin_network
     depends_on:

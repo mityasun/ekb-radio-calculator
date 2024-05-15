@@ -157,3 +157,4 @@ frontend/node_modules
 /infra/nginx.conf
 /infra/init-letsencrypt.sh
 /backend/db.sqlite3
+/backend/static/docs/ekb-radio-calculator-dev.yaml
