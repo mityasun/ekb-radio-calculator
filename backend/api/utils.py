@@ -4,6 +4,8 @@ from datetime import datetime
 from io import BytesIO
 from typing import List, Tuple, Any, Union
 
+from django.conf import settings
+from django.core.mail import EmailMessage
 from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -339,9 +341,35 @@ def create_pdf(
         return response
 
 
+def send_email_with_order(order_info: str, pdf_file_path: str) -> None:
+    """
+    Sends email with pdf file.
+
+    Parameters:
+        order_info (str): The order information to send.
+        pdf_file_path (str): The file path of the PDF to send.
+
+    Returns None
+    """
+
+    try:
+        subject = (
+            f'Заказ с сайта ekbradio.ru: '
+            f'{datetime.now().strftime("%d.%m.%Y_%H.%M.%S")}'
+        )
+        email = EmailMessage(
+            subject, order_info,
+            settings.DEFAULT_FROM_EMAIL, [settings.ORDER_TO_EMAIL]
+        )
+        email.attach_file(pdf_file_path)
+        email.send()
+    except Exception as e:
+        print(f'Error sending email: {e}')
+
+
 async def send_pdf_to_group(order_info: str, pdf_file_path: str):
     """
-    Sends a PDF file to a Telegram group using the given file path.
+    Sends message and pdf file to a Telegram group using the given file path.
 
     Parameters:
         order_info (str): The order information to send.
@@ -358,7 +386,6 @@ async def send_pdf_to_group(order_info: str, pdf_file_path: str):
                 chat_id=os.getenv('CHAT_ID', default='default-value'),
                 document=pdf_file, caption=order_info
             )
-        os.remove(pdf_file_path)
     except TelegramError as e:
-        print(f"An error occurred while sending the message: {e}")
+        print(f'An error occurred while sending the message: {e}')
     return send_pdf_to_group

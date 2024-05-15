@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from django.db import transaction
 from django.db.models import Sum
@@ -11,7 +12,7 @@ from api.serializers.serializers_orders import (OrderCreateSerializer,
                                                 CustomerSelectionSerializer,
                                                 OrderPdfSerializer)
 from api.utils import (get_day_name, get_discount_value, create_pdf,
-                       send_pdf_to_group)
+                       send_email_with_order, send_pdf_to_group)
 from customers.models import Customer
 from discounts.models import AmountDiscount, DaysDiscount, VolumeDiscount
 from orders.models import Order, OrderCustomerSelection
@@ -311,16 +312,31 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 {'error': f'Ошибка генерации pdf: {e}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+        order_info = (f'Заказ:\n'
+                      f'Название компании: {customer.company_name}\n'
+                      f'Имя: {customer.name}\n'
+                      f'Телефон: {customer.phone}\n'
+                      f'email: {customer.email}')
         try:
-            order_info = (f'Заказ:\n'
-                          f'Название компании: {customer.company_name}\n'
-                          f'Имя: {customer.name}\n'
-                          f'Телефон: {customer.phone}\n'
-                          f'email: {customer.email}')
             asyncio.run(send_pdf_to_group(order_info, pdf_file_path))
         except Exception as e:
             return Response(
                 {'error': f'Ошибка отправки заявки в Telegram: {e}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+        try:
+            send_email_with_order(order_info, pdf_file_path)
+        except Exception as e:
+            return Response(
+                {'error': f'Ошибка отправки заявки на почту: {e}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        try:
+            os.remove(pdf_file_path)
+        except Exception as e:
+            print(f'Ошибка удаления pdf файла: {e}')
+
         return Response(status=status.HTTP_201_CREATED)
