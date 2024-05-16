@@ -20,13 +20,19 @@
 ---
 
 ### Технологии
+#### Backend:
 ![Python](https://img.shields.io/badge/Python-3.12.3-%23254F72?style=for-the-badge&logo=python&logoColor=yellow&labelColor=254f72)
 ![Django](https://img.shields.io/badge/Django-5.0.4-0C4B33?style=for-the-badge&logo=django&logoColor=white&labelColor=0C4B33)
 ![Django REST](https://img.shields.io/badge/Django%20REST-3.15.1-802D2D?style=for-the-badge&logo=django&logoColor=white&labelColor=802D2D)
-![REACT](https://img.shields.io/badge/React-18.2.0-23272F?style=for-the-badge&logo=react&logoColor=58C4DC&labelColor=23272F)
 ![PostGres](https://img.shields.io/badge/PostGres-31648D?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=31648D)
 ![Redis](https://img.shields.io/badge/Redis-D5362B?style=for-the-badge&logo=redis&logoColor=white&labelColor=D5362B)
 ![Nginx](https://img.shields.io/badge/Nginx-009400?style=for-the-badge&logo=nginx&logoColor=white&labelColor=009400)
+#### Frontend:
+![REACT](https://img.shields.io/badge/React-18.2.0-23272F?style=for-the-badge&logo=react&logoColor=58C4DC&labelColor=23272F)
+![REACT-QUERY](https://img.shields.io/badge/React--Query-5.32.0-9333EA?style=for-the-badge&logo=reactQuery&logoColor=FF4154&labelColor=9333EA)
+![AXIOS](https://img.shields.io/badge/Axios-1.6.8-373747?style=for-the-badge&logo=axios&logoColor=5A29E4&labelColor=373747)
+![REACT-HOOK-FORM](https://img.shields.io/badge/React--hook--form-7.51.3-EC5990?style=for-the-badge&logo=reacthookform&logoColor=FFFFFF&labelColor=EC5990)
+![ZUSTAND](https://img.shields.io/badge/Zustand-4.5.2-23272F?style=for-the-badge&labelColor=23272F)
 
 ---
 
