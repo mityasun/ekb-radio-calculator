@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='default-value')
 
-DEBUG = os.getenv('DEBUG', default=True)
+DEBUG = os.getenv('DEBUG', default=False)
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
@@ -195,14 +195,16 @@ MIN_AUDIO_DURATION: int = 1
 MAX_AUDIO_DURATION: int = 100
 MIN_RATE: int = 0
 MAX_RATE: int = 100
+MIN_REACH_DLY: int = 0
+MAX_REACH_DLY: int = 10000000
 MIN_PERCENT: int = 0
 MAX_PERCENT: int = 100
 MIN_PRICE: int = 0
 MAX_PRICE: int = 10000000
 MIN_DAY: int = 1
-MAX_DAY: int = 31
+MAX_DAY: int = 180
 MIN_VOLUME_ORDER: int = 1
-MAX_VOLUME_ORDER: int = 496
+MAX_VOLUME_ORDER: int = 527
 MIN_PHONE: int = 11
 PHONE: int = 18
 MIN_EMAIL: int = 6
