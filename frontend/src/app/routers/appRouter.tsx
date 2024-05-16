@@ -12,6 +12,7 @@ export const AppRouter = () => {
   const { data: systemText } = useQuery({ queryKey: ['system-text'], queryFn: getSystemText });
   const { selectedRadioId } = useStore();
   const appRef = useRef<HTMLDivElement | null>(null);
+  const appStyle = window.self !== window.top ? { height: 'auto' } : { height: '100vh' };
 
   useEffect(() => {
     if (appRef.current) {
@@ -22,11 +23,7 @@ export const AppRouter = () => {
   }, [appRef.current?.scrollHeight, selectedRadioId]);
 
   const routers = createRoutesFromElements(
-    <Route
-      path="/"
-      element={<Layout />}
-      handle={{ crumb: <Link to="/">Home</Link> }}
-      errorElement={<p>Something went wrong</p>}>
+    <Route path="/" element={<Layout />} handle={{ crumb: <Link to="/">Home</Link> }} errorElement={<p>404</p>}>
       <Route index element={<MainPage />} />
       <Route path="privacy" handle={{ crumb: <Link to="/privacy">Privacy</Link> }}>
         <Route index element={<PrivacyPage />} />
@@ -42,7 +39,7 @@ export const AppRouter = () => {
         <meta name="description" content={systemText?.seo_description && systemText.seo_description} />
         <meta name="keywords" content={systemText?.seo_keywords && systemText.seo_keywords} />
       </Helmet>
-      <div style={{ height: 'fit-content' }} ref={appRef}>
+      <div style={appStyle} ref={appRef}>
         <RouterProvider router={router} />
       </div>
     </>

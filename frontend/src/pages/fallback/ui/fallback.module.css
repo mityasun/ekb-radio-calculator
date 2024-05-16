@@ -1,0 +1,30 @@
+.fallback {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.fallbackTitle {
+  padding: 10px;
+  font-size: 2.2rem;
+}
+
+.fallbackDescribe {
+  padding: 10px;
+  font-size: 1.8rem;
+}
+
+.fallbackDescribeError {
+  color: var(--input-color-invalid);
+  font-size: 2.0rem;
+}
+
+.fallbackLink {
+  color: var(--primary-color);
+  padding: 10px;
+  font-size: 1.6rem;
+}
+

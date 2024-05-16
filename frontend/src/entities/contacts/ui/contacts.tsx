@@ -17,10 +17,12 @@ export const Contacts: FC<ContactsProps> = (props) => {
   const { textColor, variant = 'primary' } = props;
   const { data: systemText } = useQuery<SystemText>({ queryKey: ['system-text'] });
 
-  const phoneTextToLink = `tel:+${systemText?.phone
-    .split('')
-    .filter((item) => Number(item))
-    .join('')}`;
+  const phoneTextToLink = systemText?.phone
+    ? `tel:+${systemText?.phone
+        .split('')
+        .filter((item) => Number(item))
+        .join('')}`
+    : '';
 
   const getCity = () => {
     if (!systemText?.address) return;
