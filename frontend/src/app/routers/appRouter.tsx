@@ -7,6 +7,7 @@ import { getSystemText } from './api';
 import { Helmet } from 'react-helmet-async';
 import { useStore } from 'shared/store';
 import { useEffect, useRef } from 'react';
+import { ErrorRoutePage } from 'pages/errorRoutePage';
 
 export const AppRouter = () => {
   const { data: systemText } = useQuery({ queryKey: ['system-text'], queryFn: getSystemText });
@@ -23,7 +24,7 @@ export const AppRouter = () => {
   }, [appRef.current?.scrollHeight, selectedRadioId]);
 
   const routers = createRoutesFromElements(
-    <Route path="/" element={<Layout />} handle={{ crumb: <Link to="/">Home</Link> }} errorElement={<p>404</p>}>
+    <Route path="/" element={<Layout />} handle={{ crumb: <Link to="/">Home</Link> }} errorElement={<ErrorRoutePage />}>
       <Route index element={<MainPage />} />
       <Route path="privacy" handle={{ crumb: <Link to="/privacy">Privacy</Link> }}>
         <Route index element={<PrivacyPage />} />
