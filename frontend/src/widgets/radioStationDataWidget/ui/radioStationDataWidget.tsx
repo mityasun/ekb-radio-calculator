@@ -44,25 +44,25 @@ export const RadioStationDataWidget = () => {
           <span>{DATAWIDGET_CONTENT_TEXT.UNIT_PRECENT}</span>
         </h4>
       </DataWidget>
-      <DataWidget className={clsx(s.DataWidget4)} title={DATAWIDGET_CONTENT_TEXT.AUDIENCE_SEX} icon={<GenderIcon />}>
-        <h4>
-          <span>{selectedRadio?.audience_sex[1]?.sex || DATAWIDGET_CONTENT_TEXT.AUDIENCE_SEX_FEMAL} </span>
-          {selectedRadio?.audience_sex[1]?.percent || DATAWIDGET_CONTENT_TEXT.UNIT_UNDERFINED}
-          <span>{DATAWIDGET_CONTENT_TEXT.UNIT_PRECENT}</span>
-        </h4>
+      <DataWidget className={clsx(s.DataWidget4)} title={DATAWIDGET_CONTENT_TEXT.AUDIENCE_SEX} icon={<GenderIcon/>}>
         <h4>
           <span>{selectedRadio?.audience_sex[0]?.sex || DATAWIDGET_CONTENT_TEXT.AUDIENCE_SEX_MEN} </span>
           {selectedRadio?.audience_sex[0]?.percent || DATAWIDGET_CONTENT_TEXT.UNIT_UNDERFINED}
+          <span>{DATAWIDGET_CONTENT_TEXT.UNIT_PRECENT}</span>
+        </h4>
+        <h4>
+          <span>{selectedRadio?.audience_sex[1]?.sex || DATAWIDGET_CONTENT_TEXT.AUDIENCE_SEX_FEMAL} </span>
+          {selectedRadio?.audience_sex[1]?.percent || DATAWIDGET_CONTENT_TEXT.UNIT_UNDERFINED}
           <span>{DATAWIDGET_CONTENT_TEXT.UNIT_PRECENT}</span>
         </h4>
       </DataWidget>
       <DataWidget
         className={clsx(s.DataWidget5)}
         title={DATAWIDGET_CONTENT_TEXT.AUDIENCE_AGE}
-        icon={<AudienceAgeIcon />}>
+        icon={<AudienceAgeIcon/>}>
         <h4>
           <span>{DATAWIDGET_CONTENT_TEXT.AUDIENCE_CORE}</span>
-          <br />
+          <br/>
           {selectedRadio?.audience_age[0]?.age || DATAWIDGET_CONTENT_TEXT.UNIT_UNDERFINED}
         </h4>
         <h4>

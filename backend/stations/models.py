@@ -37,14 +37,14 @@ class RadioStation(DefaultOneMixin, models.Model):
         validators=[partial(validate_text, max_length=settings.BROADCAST_ZONE)]
     )
     reach_dly = models.IntegerField(
-        'Reach Dly, чел', blank=True, null=True,
+        'Reach Dly, чел',
         validators=[
             MinValueValidator(settings.MIN_REACH_DLY),
             MaxValueValidator(settings.MAX_REACH_DLY)
         ]
     )
     reach_dly_percent = models.FloatField(
-        'Reach Dly, %', blank=True, null=True,
+        'Reach Dly, %',
         validators=[
             MinValueValidator(settings.MIN_PERCENT),
             MaxValueValidator(settings.MAX_PERCENT)

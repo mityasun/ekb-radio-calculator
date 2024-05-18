@@ -53,18 +53,6 @@ class SystemText(models.Model):
         'SEO keywords', max_length=settings.SEO_KEYWORDS,
         validators=[partial(validate_text, max_length=settings.SEO_KEYWORDS)]
     )
-    google_analytics_id = models.CharField(
-        'Google analytics ID', max_length=settings.NAME, blank=True, null=True
-    )
-    google_tag_id = models.CharField(
-        'Google Tag ID', max_length=settings.NAME, blank=True, null=True
-    )
-    yandex_counter_id = models.CharField(
-        'Яндекс метрика ID', max_length=settings.NAME, blank=True, null=True
-    )
-    mailru_counter = models.CharField(
-        'Mail ru метрика ID', max_length=settings.NAME, blank=True, null=True
-    )
     privacy_text = models.TextField(
         'Политика конфиденциальности', max_length=settings.BIG_TEXT,
         validators=[partial(validate_text, max_length=settings.BIG_TEXT)]

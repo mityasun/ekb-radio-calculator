@@ -59,7 +59,6 @@ cd ekb-radio-calculator/infra/
 
 ```
 SECRET_KEY=Секретный ключ Django
-DEBUG=False для прода и True для тестов
 ALLOWED_HOSTS=Список разрешенных хостов backend приложения
 CSRF_TRUSTED_ORIGINS=Список разрешенных хостов для CSRF
 CORS_ALLOWED_ORIGINS=Список разрешенных хостов для CORS

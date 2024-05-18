@@ -1,4 +1,5 @@
 import calendar
+import logging
 import os
 from datetime import datetime
 from io import BytesIO
@@ -26,6 +27,7 @@ from settings.models import SystemText, TimeInterval, AudioDuration, City, Month
 from stations.models import RadioStation
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 def get_discount_value(
@@ -364,7 +366,7 @@ def send_email_with_order(order_info: str, pdf_file_path: str) -> None:
         email.attach_file(pdf_file_path)
         email.send()
     except Exception as e:
-        print(f'Error sending email: {e}')
+        logger.error(f'Error sending email: {e}')
 
 
 async def send_pdf_to_group(order_info: str, pdf_file_path: str):
@@ -387,5 +389,5 @@ async def send_pdf_to_group(order_info: str, pdf_file_path: str):
                 document=pdf_file, caption=order_info
             )
     except TelegramError as e:
-        print(f'An error occurred while sending the message: {e}')
+        logger.error(f'An error occurred while sending the message: {e}')
     return send_pdf_to_group

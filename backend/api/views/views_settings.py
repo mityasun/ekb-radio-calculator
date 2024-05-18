@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.vary import vary_on_cookie
 from django_filters.rest_framework import DjangoFilterBackend
+from django_ratelimit.decorators import ratelimit
 
 from api.filters import NameFilter, CaseInsensitiveOrderingFilter
 from api.mixins import ReadOnlyViewSet
@@ -24,6 +25,7 @@ class SystemTextViewSet(ReadOnlyViewSet):
 
     @method_decorator(vary_on_cookie)
     @method_decorator(cache_control(no_cache=True, must_revalidate=True))
+    @method_decorator(ratelimit(key='ip', rate='1/s', block=True))
     def dispatch(self, *args, **kwargs):
         return cache_page(
             settings.CACHE_TTL,
@@ -44,6 +46,7 @@ class CityViewSet(ReadOnlyViewSet):
 
     @method_decorator(vary_on_cookie)
     @method_decorator(cache_control(no_cache=True, must_revalidate=True))
+    @method_decorator(ratelimit(key='ip', rate='1/s', block=True))
     def dispatch(self, *args, **kwargs):
         return cache_page(
             settings.CACHE_TTL,

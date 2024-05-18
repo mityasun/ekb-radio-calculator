@@ -1,5 +1,7 @@
+from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin import sites
+from django.db import models
 from django.utils.html import format_html
 
 from settings.models import (
@@ -43,6 +45,17 @@ admin.site.site_header = 'ekb-radio calculator'
 @admin.register(SystemText)
 class SystemTextAdmin(admin.ModelAdmin):
     list_display = ('id',)
+    formfield_overrides = {
+        models.CharField: {
+            'widget': forms.Textarea(attrs={'rows': 1, 'cols': 150})
+        },
+        models.TextField: {
+            'widget': forms.Textarea(attrs={'rows': 10, 'cols': 150})
+        },
+        models.EmailField: {
+            'widget': forms.Textarea(attrs={'rows': 1, 'cols': 150})
+        },
+    }
 
 
 @admin.register(ExcelImport)

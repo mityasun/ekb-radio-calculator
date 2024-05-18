@@ -90,11 +90,12 @@ services:
       - api_docs_value:/usr/share/nginx/html/api/docs/
     ports:
       - ${NGINX_PORT}:${NGINX_PORT}
+    depends_on:
+      - backend
+      - pgadmin
     networks:
       - backend_network
       - pgadmin_network
-    depends_on:
-      - backend
     container_name: ekb_radio_nginx
 
 networks:

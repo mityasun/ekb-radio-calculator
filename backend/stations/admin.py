@@ -1,4 +1,6 @@
+from django import forms
 from django.contrib import admin
+from django.db import models
 
 from discounts.models import (VolumeDiscount, DaysDiscount,
                               AmountDiscount)
@@ -85,19 +87,20 @@ class StationsAdmin(admin.ModelAdmin):
     search_fields = ('id', 'name', 'city', 'description')
     list_filter = ('city',)
     autocomplete_fields = ('city',)
-    # prepopulated_fields = {
-    #     'slug': ['name'], 'seo_title': ['name'], 'seo_img_alt': ['name'],
-    #     'seo_description': ['description']
-    # }
-    # readonly_fields = ('avg_rating', 'amount_votes', 'images_preview')
-    # formfield_overrides = {
-    #     models.CharField: {
-    #         'widget': forms.Textarea(attrs={'rows': 1, 'cols': 150})
-    #     },
-    #     models.TextField: {
-    #         'widget': forms.Textarea(attrs={'rows': 10, 'cols': 150})
-    #     },
-    # }
+    formfield_overrides = {
+        models.CharField: {
+            'widget': forms.Textarea(attrs={'rows': 1, 'cols': 150})
+        },
+        models.TextField: {
+            'widget': forms.Textarea(attrs={'rows': 10, 'cols': 150})
+        },
+        models.IntegerField: {
+            'widget': forms.Textarea(attrs={'rows': 1, 'cols': 150})
+        },
+        models.FloatField: {
+            'widget': forms.Textarea(attrs={'rows': 1, 'cols': 150})
+        },
+    }
     inlines = [
         AudienceSexStationInline, AudienceAgeStationInline,
         MonthRateInline, BlockPositionRateInline, IntervalPriceInline,

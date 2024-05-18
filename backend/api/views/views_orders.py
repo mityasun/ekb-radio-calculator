@@ -1,9 +1,12 @@
 import asyncio
+import logging
 import os
 
 from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 
@@ -19,6 +22,8 @@ from orders.models import Order, OrderCustomerSelection
 from rates.models import BlockPositionRate, MonthRate, IntervalPrice
 from settings.models import WeekDay
 
+logger = logging.getLogger(__name__)
+
 
 class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """ViewSet for create pdf by order"""
@@ -30,6 +35,7 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     serializer_class = OrderPdfSerializer
     permission_classes = [AllowAnyPost]
 
+    @method_decorator(ratelimit(key='ip', rate='12/m', block=True))
     @transaction.atomic
     def create(self, request, *args, **kwargs):
 
@@ -132,9 +138,10 @@ class OrderPdfViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 customer_selection_data, False
             )
         except Exception as e:
+            error = f'Ошибка генерации pdf: {e}'
+            logger.error(error)
             return Response(
-                {'error': f'Ошибка генерации pdf: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {'error': error}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         return pdf
 
@@ -149,6 +156,7 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     serializer_class = OrderCreateSerializer
     permission_classes = [AllowAnyPost]
 
+    @method_decorator(ratelimit(key='ip', rate='12/m', block=True))
     @transaction.atomic
     def create(self, request, *args, **kwargs):
 
@@ -293,9 +301,10 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
             order.final_order_amount = final_order_amount
             order.save()
         except Exception as e:
+            error = f'Ошибка создания заказа: {e}'
+            logger.error(error)
             return Response(
-                {'error': f'Ошибка создания заказа: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {'error': error}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
         try:
@@ -308,9 +317,10 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 customer_selection_data, True
             )
         except Exception as e:
+            error = f'Ошибка генерации pdf: {e}'
+            logger.error(error)
             return Response(
-                {'error': f'Ошибка генерации pdf: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {'error': error}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
         order_info = (f'Заказ:\n'
@@ -321,22 +331,24 @@ class OrderViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         try:
             asyncio.run(send_pdf_to_group(order_info, pdf_file_path))
         except Exception as e:
+            error = f'Ошибка отправки заявки в Telegram: {e}'
+            logger.error(error)
             return Response(
-                {'error': f'Ошибка отправки заявки в Telegram: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {'error': error}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
         try:
             send_email_with_order(order_info, pdf_file_path)
         except Exception as e:
+            error = f'Ошибка отправки заявки на почту: {e}'
+            logger.error(error)
             return Response(
-                {'error': f'Ошибка отправки заявки на почту: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {'error': error}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
         try:
             os.remove(pdf_file_path)
         except Exception as e:
-            print(f'Ошибка удаления pdf файла: {e}')
+            logger.error(f'Ошибка удаления pdf файла: {e}')
 
         return Response(status=status.HTTP_201_CREATED)

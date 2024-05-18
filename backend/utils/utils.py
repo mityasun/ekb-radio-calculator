@@ -1,3 +1,4 @@
+import logging
 import re
 import sys
 import traceback
@@ -17,6 +18,8 @@ from django_redis import get_redis_connection
 
 from settings.models import (City, AudioDuration, TimeInterval,
                              AudienceAge, AudienceSex, Month, WeekDay)
+
+logger = logging.getLogger(__name__)
 
 
 def clear_cache(patterns):
@@ -395,10 +398,12 @@ class ImportFromXLSX:
                 )
             return obj
         except Exception as e:
-            raise RuntimeError(
+            error = (
                 f'Error processing {self.radio_station_model.__name__} '
                 f'{str(station_data[0])}: {e}'
             )
+            logger.error(error)
+            raise RuntimeError(error)
 
     def process_social(self, df: pd.DataFrame, station_name) -> None:
         """
@@ -463,10 +468,12 @@ class ImportFromXLSX:
                     model2, 'percent'
                 )
             except Exception as e:
-                raise RuntimeError(
+                error = (
                     f'Error processing {model2.__name__} for '
                     f'{radio_station}: {e}'
                 )
+                logger.error(error)
+                raise RuntimeError(error)
 
     def process_rates(self, df: pd.DataFrame, station_name) -> None:
         """
@@ -542,10 +549,12 @@ class ImportFromXLSX:
                 interval_price_model, 'interval_price'
             )
         except RuntimeError as e:
-            raise RuntimeError(
+            error = (
                 f'Error processing {interval_price_model.__name__} for '
                 f'{radio_station}: {e}'
             )
+            logger.error(error)
+            raise RuntimeError(error)
 
     def process_month_rates(self, df: pd.DataFrame, radio_station) -> None:
         """
@@ -597,10 +606,12 @@ class ImportFromXLSX:
                 month_rate_model, 'rate'
             )
         except Exception as e:
-            raise RuntimeError(
+            error = (
                 f'Error processing {month_rate_model.__name__} for '
                 f'{radio_station}: {e}'
             )
+            logger.error(error)
+            raise RuntimeError(error)
 
     def process_block_position_rates(
             self, df: pd.DataFrame, radio_station
@@ -656,10 +667,12 @@ class ImportFromXLSX:
                 block_position_rate_model, 'rate'
             )
         except Exception as e:
-            raise RuntimeError(
+            error = (
                 f'Error processing {block_position_rate_model.__name__} for '
                 f'{radio_station}: {e}'
             )
+            logger.error(error)
+            raise RuntimeError(error)
 
     def process_discounts(self, df: pd.DataFrame, station_name) -> None:
         """
@@ -726,10 +739,12 @@ class ImportFromXLSX:
                     model, 'discount'
                 )
             except Exception as e:
-                raise RuntimeError(
+                error = (
                     f'Error processing {model.__name__} for '
                     f'{radio_station}: {e}'
                 )
+                logger.error(error)
+                raise RuntimeError(error)
 
     def process_all(self) -> tuple[str, str | None] | None:
         """Returns a tuple containing:
@@ -765,6 +780,7 @@ class ImportFromXLSX:
         except Exception as e:
             trace = traceback.format_exc()
             error_message = f'Ошибка импорта: {e}\n{trace}'
+            logger.error(error_message)
         finally:
             sys.stdout = sys.__stdout__
             output_text = self.output_buffer.getvalue()
