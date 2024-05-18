@@ -25,7 +25,7 @@ class SystemTextViewSet(ReadOnlyViewSet):
 
     @method_decorator(vary_on_cookie)
     @method_decorator(cache_control(no_cache=True, must_revalidate=True))
-    @method_decorator(ratelimit(key='ip', rate='1/s', block=True))
+    @method_decorator(ratelimit(key='ip', rate='5/s', block=True))
     def dispatch(self, *args, **kwargs):
         return cache_page(
             settings.CACHE_TTL,
@@ -46,7 +46,7 @@ class CityViewSet(ReadOnlyViewSet):
 
     @method_decorator(vary_on_cookie)
     @method_decorator(cache_control(no_cache=True, must_revalidate=True))
-    @method_decorator(ratelimit(key='ip', rate='1/s', block=True))
+    @method_decorator(ratelimit(key='ip', rate='5/s', block=True))
     def dispatch(self, *args, **kwargs):
         return cache_page(
             settings.CACHE_TTL,
