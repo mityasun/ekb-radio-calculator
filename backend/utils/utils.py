@@ -362,7 +362,6 @@ class ImportFromXLSX:
             if created:
                 print(f'Created {City.__name__}: {city_obj}')
             defaults = {
-                'city': city_obj,
                 'broadcast_zone': str(station_data[3]),
                 'reach_dly': self.convert_to_type_or_none(
                     station_data[4], int
@@ -374,7 +373,7 @@ class ImportFromXLSX:
                 'hour_selected_rate': round(float(rates_data[1]), 2),
             }
             obj, created = self.radio_station_model.objects.get_or_create(
-                name=str(station_data[0]), defaults=defaults
+                name=str(station_data[0]), city=city_obj, defaults=defaults
             )
             if created:
                 print(
@@ -405,7 +404,7 @@ class ImportFromXLSX:
             logger.error(error)
             raise RuntimeError(error)
 
-    def process_social(self, df: pd.DataFrame, station_name) -> None:
+    def process_social(self, df: pd.DataFrame, station) -> None:
         """
         Process social data from the Excel sheet.
 
@@ -417,7 +416,9 @@ class ImportFromXLSX:
         - None
         """
 
-        radio_station = self.radio_station_model.objects.get(name=station_name)
+        radio_station = self.radio_station_model.objects.get(
+            name=station, city=station.city
+        )
         sex_data = df.iloc[25:27, 1:3]
         age_data = df.iloc[27:28, 1:3]
         social_types = [
@@ -475,7 +476,7 @@ class ImportFromXLSX:
                 logger.error(error)
                 raise RuntimeError(error)
 
-    def process_rates(self, df: pd.DataFrame, station_name) -> None:
+    def process_rates(self, df: pd.DataFrame, station) -> None:
         """
         Process rate data from the Excel sheet.
 
@@ -487,7 +488,9 @@ class ImportFromXLSX:
         - None
         """
 
-        radio_station = self.radio_station_model.objects.get(name=station_name)
+        radio_station = self.radio_station_model.objects.get(
+            name=station, city=station.city
+        )
         self.process_interval_prices(df, radio_station)
         self.process_month_rates(df, radio_station)
         self.process_block_position_rates(df, radio_station)
@@ -674,7 +677,7 @@ class ImportFromXLSX:
             logger.error(error)
             raise RuntimeError(error)
 
-    def process_discounts(self, df: pd.DataFrame, station_name) -> None:
+    def process_discounts(self, df: pd.DataFrame, station) -> None:
         """
         Process discount data from the Excel sheet.
 
@@ -686,7 +689,9 @@ class ImportFromXLSX:
         - None
         """
 
-        radio_station = self.radio_station_model.objects.get(name=station_name)
+        radio_station = self.radio_station_model.objects.get(
+            name=station, city=station.city
+        )
 
         order_amount_discount = df.iloc[2:22, 7:9]
         order_days_discount = df.iloc[23:29, 7:9]

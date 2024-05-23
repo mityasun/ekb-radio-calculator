@@ -17,7 +17,7 @@ class RadioStation(DefaultOneMixin, models.Model):
     """Radio station model."""
 
     name = models.CharField(
-        'Название', max_length=settings.NAME, unique=True,
+        'Название', max_length=settings.NAME,
         validators=[partial(validate_text, max_length=settings.NAME)]
     )
     title = models.CharField(
