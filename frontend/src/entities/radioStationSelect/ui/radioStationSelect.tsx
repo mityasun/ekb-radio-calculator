@@ -6,7 +6,7 @@ import { RADIO_STATION_CONTENT_TEXT, maxWidth } from '../configs';
 
 export const RadioStationSelect = () => {
   const { radios, isLoading } = useDefaultRadios();
-  const { selectedRadioId, setSelectedRadioId, clearCustomerSelections } = useStore();
+  const { selectedRadioId, setSelectedRadioId } = useStore();
 
   if (!radios) return null;
 
@@ -20,7 +20,6 @@ export const RadioStationSelect = () => {
     const selectedRadio = radios.find((radio) => radio.id.toString() === (newValue as AppSelectOption).value);
     if (selectedRadio) {
       setSelectedRadioId(selectedRadio.id);
-      clearCustomerSelections();
     }
   };
 

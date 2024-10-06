@@ -13,7 +13,11 @@ export const DurationSelect = () => {
     const defaultAudioDuration =
       audioDurations.find((duration: AudioDuration) => duration.default) || audioDurations[0];
 
-    if (!defaultAudioDuration) return;
+    const isAudioDurationFound = Boolean(
+      audioDurations.find((duration: AudioDuration) => appSettings.audio_duration?.id === duration.id)
+    );
+
+    if (!defaultAudioDuration || isAudioDurationFound) return;
     setAudioDuration(defaultAudioDuration);
   }, [audioDurations]);
 

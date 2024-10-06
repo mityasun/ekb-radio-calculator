@@ -13,7 +13,11 @@ export const PositionSelect = () => {
     const defaultBlockPosition =
       blockPositions.find((position: BlockPosition) => position.default) || blockPositions[0];
 
-    if (!defaultBlockPosition) return;
+    const isBlockPositionFound = Boolean(
+      blockPositions.find((position: BlockPosition) => appSettings.block_position?.id === position.id)
+    );
+
+    if (!defaultBlockPosition || isBlockPositionFound) return;
     setBlockPosition(defaultBlockPosition);
   }, [blockPositions]);
 
