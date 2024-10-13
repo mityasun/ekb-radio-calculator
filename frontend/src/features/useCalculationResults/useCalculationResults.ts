@@ -11,11 +11,9 @@ export const useCalculationResults = () => {
 
     const seasonalRateValue = selectedRadio?.month_rate.find((rate) => rate.id === appSettings?.month?.id)?.rate || 1;
 
-    const otherPersonRateValue =
-      (appSettings?.other_person_rate && selectedRadio?.other_person_rate) || 1;
+    const otherPersonRateValue = (appSettings?.other_person_rate && selectedRadio?.other_person_rate) || 1;
 
-    const hourSelectedRateeValue =
-      (appSettings?.hour_selected_rate && selectedRadio?.hour_selected_rate) || 1;
+    const hourSelectedRateeValue = (appSettings?.hour_selected_rate && selectedRadio?.hour_selected_rate) || 1;
 
     const orderAmount = customer_selection.reduce(
       (acc, curr) =>
@@ -27,7 +25,9 @@ export const useCalculationResults = () => {
     );
 
     const orderAmountWithRates =
-      Math.round(orderAmount * blockPositionRateValue * seasonalRateValue * otherPersonRateValue * hourSelectedRateeValue) || 0;
+      Math.round(
+        orderAmount * blockPositionRateValue * seasonalRateValue * otherPersonRateValue * hourSelectedRateeValue
+      ) || 0;
 
     const amountDiscount =
       selectedRadio?.amount_discount

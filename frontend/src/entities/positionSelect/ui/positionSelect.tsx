@@ -5,7 +5,10 @@ import { BlockPosition, AppSelectOption } from 'shared/types';
 import { BLOCK_POSITION_CONTENT_TEXT, maxWidth } from '../configs';
 
 export const PositionSelect = () => {
-  const { appSettings, blockPositions, setBlockPosition } = useStore();
+  const appSettings = useStore((state) => state.appSettings);
+  const blockPositions = useStore((state) => state.blockPositions);
+  const setBlockPosition = useStore((state) => state.setBlockPosition);
+  const customer_selection = useStore((state) => state.customer_selection);
 
   useEffect(() => {
     if (!blockPositions) return;
@@ -17,9 +20,9 @@ export const PositionSelect = () => {
       blockPositions.find((position: BlockPosition) => appSettings.block_position?.id === position.id)
     );
 
-    if (!defaultBlockPosition || isBlockPositionFound) return;
+    if (!defaultBlockPosition || customer_selection.length > 0 || isBlockPositionFound) return;
     setBlockPosition(defaultBlockPosition);
-  }, [blockPositions]);
+  }, [blockPositions, customer_selection.length]);
 
   const options =
     blockPositions?.map((position: BlockPosition) => ({

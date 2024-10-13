@@ -5,7 +5,10 @@ import { AudioDuration, AppSelectOption } from 'shared/types';
 import { AUDIO_DURATION_CONTENT_TEXT, maxWidth } from '../configs';
 
 export const DurationSelect = () => {
-  const { appSettings, audioDurations, setAudioDuration } = useStore();
+  const appSettings = useStore((state) => state.appSettings);
+  const audioDurations = useStore((state) => state.audioDurations);
+  const setAudioDuration = useStore((state) => state.setAudioDuration);
+  const customer_selection = useStore((state) => state.customer_selection);
 
   useEffect(() => {
     if (!audioDurations) return;
@@ -17,9 +20,9 @@ export const DurationSelect = () => {
       audioDurations.find((duration: AudioDuration) => appSettings.audio_duration?.id === duration.id)
     );
 
-    if (!defaultAudioDuration || isAudioDurationFound) return;
+    if (!defaultAudioDuration || customer_selection.length > 0 || isAudioDurationFound) return;
     setAudioDuration(defaultAudioDuration);
-  }, [audioDurations]);
+  }, [audioDurations, customer_selection.length]);
 
   const options =
     audioDurations?.map((duration: AudioDuration) => ({

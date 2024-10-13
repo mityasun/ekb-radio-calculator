@@ -7,19 +7,44 @@ import { Tooltip } from 'react-tooltip';
 import { DATA_INTERVAL_PICKER_CONTENT_TEXT, DATA_TOOLTIP_TEXT, toolTipStyle } from '../configs';
 
 export const DateIntervalPicker = () => {
-  const {
-    appSettings,
-    audioDurations,
-    timeIntervals,
-    selectedRadio,
-    customer_selection,
-    setCustomerSelection,
-    deleteCustomerSelection
-  } = useStore();
+  const appSettings = useStore((state) => state.appSettings);
+  const timeIntervals = useStore((state) => state.timeIntervals);
+  const selectedRadio = useStore((state) => state.selectedRadio);
+  const customer_selection = useStore((state) => state.customer_selection);
+  const setCustomerSelection = useStore((state) => state.setCustomerSelection);
+  const deleteCustomerSelection = useStore((state) => state.deleteCustomerSelection);
+  const blockPositions = useStore((state) => state.blockPositions);
+  const audioDurations = useStore((state) => state.audioDurations);
 
   const daysInMonth = getDaysInMonth(appSettings.month?.id);
   const isNotSelectedRadio = selectedRadio === null;
   const audioDurationId = appSettings.audio_duration?.id ?? 0;
+  const selectedRadioAudioDurationsIds = audioDurations?.map((ad) => ad.id) ?? [];
+  const selectedRadioBlockPositionsIds = appSettings.block_position?.id;
+  const selectedRadioTimeIntervalsIds = timeIntervals?.map((ti) => ti.id) ?? [];
+  const selectedRadioMonthIds = selectedRadio?.month_rate.map((mr) => mr.id) ?? [];
+  const isSelectedAudioDuratiosValid = customer_selection
+    .map((cs) => selectedRadioAudioDurationsIds.includes(cs.audio_duration))
+    .includes(false)
+    ? false
+    : true;
+
+  const isSelectedTimeIntervalsValid = customer_selection
+    .map((cs) => selectedRadioTimeIntervalsIds.includes(cs.time_interval))
+    .includes(false)
+    ? false
+    : true;
+
+  const isSelectedMonthValid = appSettings.month && selectedRadioMonthIds.includes(appSettings.month.id);
+
+  const isSelectedBlockPositionsValid =
+    selectedRadioBlockPositionsIds && blockPositions?.map((bp) => bp.id).includes(selectedRadioBlockPositionsIds);
+
+  const isValidSet =
+    isSelectedAudioDuratiosValid &&
+    isSelectedTimeIntervalsValid &&
+    isSelectedMonthValid &&
+    isSelectedBlockPositionsValid;
 
   const findCustomerSelection = (date: number, time_interval: number) => {
     return customer_selection.find((cs) => cs.date === date && cs.time_interval === time_interval);
@@ -73,7 +98,7 @@ export const DateIntervalPicker = () => {
   );
 
   const handleCellClick = (date: number, time_interval: number) => {
-    if (!selectedRadio) return;
+    if (!selectedRadio || !isValidSet) return;
     const currentAudioDuration = audioDurationId;
     if (customer_selection.find((cs) => cs.date === date && cs.time_interval === time_interval)) {
       deleteCustomerSelection({
@@ -91,7 +116,7 @@ export const DateIntervalPicker = () => {
   };
 
   return (
-    <div className={clsx(s.dateIntervalPicker)}>
+    <div className={clsx(s.dateIntervalPicker, !isValidSet && s.invalidSet)}>
       <div className={clsx(s.rowHeaders)}>
         <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_HEADER}</div>
         {timeIntervals && timeIntervals.map((row) => <div key={row.id}>{row.time_interval}</div>)}
@@ -117,13 +142,15 @@ export const DateIntervalPicker = () => {
                   className={clsx(
                     day.isWeekend && s.weekend,
                     s.tableCell,
-                    findCustomerSelection(day.date, row.id) && s.selectedCell
+                    Boolean(getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)) &&
+                      s.selectedCell
                   )}
                   key={day.date}
                   data-tooltip-id="table-cell"
                   data-tooltip-content={DATA_TOOLTIP_TEXT}
                   onClick={() => handleCellClick(day.date, row.id)}>
                   {findCustomerSelection(day.date, row.id) &&
+                    Boolean(getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)) &&
                     getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)}
                 </div>
               ))}

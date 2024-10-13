@@ -12,6 +12,10 @@
   font-size: 1.2rem;
 }
 
+.invalidSet {
+  filter: blur(5px);
+}
+
 .rowHeaders {
   display: flex;
   flex-direction: column;
