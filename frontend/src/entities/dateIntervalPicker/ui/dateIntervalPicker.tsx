@@ -2,9 +2,10 @@ import clsx from 'clsx';
 import s from './dateIntervalPicker.module.css';
 import { getDaysInMonth } from 'shared/utils';
 import { useStore } from 'shared/store';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Tooltip } from 'react-tooltip';
 import { DATA_INTERVAL_PICKER_CONTENT_TEXT, DATA_TOOLTIP_TEXT, toolTipStyle } from '../configs';
+import { InvalidSetModal } from 'widgets/invalidSetModal';
 
 export const DateIntervalPicker = () => {
   const appSettings = useStore((state) => state.appSettings);
@@ -15,7 +16,7 @@ export const DateIntervalPicker = () => {
   const deleteCustomerSelection = useStore((state) => state.deleteCustomerSelection);
   const blockPositions = useStore((state) => state.blockPositions);
   const audioDurations = useStore((state) => state.audioDurations);
-
+  const [isInvalidSetModalOpen, setInvalidSetModalOpen] = useState<boolean>(false);
   const daysInMonth = getDaysInMonth(appSettings.month?.id);
   const isNotSelectedRadio = selectedRadio === null;
   const audioDurationId = appSettings.audio_duration?.id ?? 0;
@@ -56,6 +57,10 @@ export const DateIntervalPicker = () => {
     if (!audioDurations) return 0;
     return audioDurations.find((ad) => ad.id === idAudioDuration)?.audio_duration || 0;
   };
+
+  useEffect(() => {
+    setInvalidSetModalOpen(Boolean(!isValidSet));
+  }, [isValidSet]);
 
   const rowBroadcastQuantity = useMemo(
     () => (timeInterval: number) => {
@@ -117,64 +122,71 @@ export const DateIntervalPicker = () => {
     }
   };
 
+  const handleCloseInvalidSetModal = () => {
+    setInvalidSetModalOpen(false);
+  };
+
   return (
-    <div className={clsx(s.dateIntervalPicker, !isValidSet && s.invalidSet)}>
-      <div className={clsx(s.rowHeaders)}>
-        <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_HEADER}</div>
-        {timeIntervals && timeIntervals.map((row) => <div key={row.id}>{row.time_interval}</div>)}
-        <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_FOOTER}</div>
-      </div>
-      <div className={clsx(s.scrollContainer)}>
-        <div className={clsx(s.columHeaders)}>
-          {daysInMonth.map((day) => (
-            <div className={clsx(day.isWeekend && s.weekend)} key={day.date}>
-              {day.date}
-              <br />
-              {day.dayOfWeek}
-            </div>
-          ))}
-          <div className={clsx(s.scrollContainerCounter)}>{DATA_INTERVAL_PICKER_CONTENT_TEXT.BOADCAST_QUANTITY}</div>
-          <div className={clsx(s.scrollContainerTotal)}>{DATA_INTERVAL_PICKER_CONTENT_TEXT.TIMING_QUANTITY}</div>
+    <>
+      <div className={clsx(s.dateIntervalPicker, !isValidSet && s.invalidSet)}>
+        <div className={clsx(s.rowHeaders)}>
+          <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_HEADER}</div>
+          {timeIntervals && timeIntervals.map((row) => <div key={row.id}>{row.time_interval}</div>)}
+          <div>{DATA_INTERVAL_PICKER_CONTENT_TEXT.ROW_HEADERS_FOOTER}</div>
         </div>
-        {timeIntervals &&
-          timeIntervals.map((row) => (
-            <div className={clsx(s.tableRow)} key={row.id}>
-              {daysInMonth.map((day) => (
-                <div
-                  className={clsx(
-                    day.isWeekend && s.weekend,
-                    s.tableCell,
-                    Boolean(getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)) &&
-                      s.selectedCell
-                  )}
-                  key={day.date}
-                  data-tooltip-id="table-cell"
-                  data-tooltip-content={DATA_TOOLTIP_TEXT}
-                  onClick={() => handleCellClick(day.date, row.id)}>
-                  {findCustomerSelection(day.date, row.id) &&
-                    Boolean(getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)) &&
-                    getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)}
-                </div>
-              ))}
-              <div className={clsx(s.tableCellCounter)}>{rowBroadcastQuantity(row.id)}</div>
-              <div className={clsx(s.tableCellTotal)}>
-                {rowTimingQuantity(row.id) + ' ' + DATA_INTERVAL_PICKER_CONTENT_TEXT.UNIT_SECONDS}
+        <div className={clsx(s.scrollContainer)}>
+          <div className={clsx(s.columHeaders)}>
+            {daysInMonth.map((day) => (
+              <div className={clsx(day.isWeekend && s.weekend)} key={day.date}>
+                {day.date}
+                <br />
+                {day.dayOfWeek}
               </div>
+            ))}
+            <div className={clsx(s.scrollContainerCounter)}>{DATA_INTERVAL_PICKER_CONTENT_TEXT.BOADCAST_QUANTITY}</div>
+            <div className={clsx(s.scrollContainerTotal)}>{DATA_INTERVAL_PICKER_CONTENT_TEXT.TIMING_QUANTITY}</div>
+          </div>
+          {timeIntervals &&
+            timeIntervals.map((row) => (
+              <div className={clsx(s.tableRow)} key={row.id}>
+                {daysInMonth.map((day) => (
+                  <div
+                    className={clsx(
+                      day.isWeekend && s.weekend,
+                      s.tableCell,
+                      Boolean(getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)) &&
+                        s.selectedCell
+                    )}
+                    key={day.date}
+                    data-tooltip-id="table-cell"
+                    data-tooltip-content={DATA_TOOLTIP_TEXT}
+                    onClick={() => handleCellClick(day.date, row.id)}>
+                    {findCustomerSelection(day.date, row.id) &&
+                      Boolean(getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)) &&
+                      getAudioDurationById(findCustomerSelection(day.date, row.id)?.audio_duration)}
+                  </div>
+                ))}
+                <div className={clsx(s.tableCellCounter)}>{rowBroadcastQuantity(row.id)}</div>
+                <div className={clsx(s.tableCellTotal)}>
+                  {rowTimingQuantity(row.id) + ' ' + DATA_INTERVAL_PICKER_CONTENT_TEXT.UNIT_SECONDS}
+                </div>
+              </div>
+            ))}
+          <div className={clsx(s.tableRowTotal)}>
+            {daysInMonth.map((day) => (
+              <div className={clsx(day.isWeekend && s.weekend)} key={day.date}>
+                {columnBroadcastQuantity(day.date)}
+              </div>
+            ))}
+            <div className={clsx(s.tableCellCounter)}>{totalBroadcastQuantity()}</div>
+            <div className={clsx(s.tableCellTotal)}>
+              {totalTimingQuantity() + ' ' + DATA_INTERVAL_PICKER_CONTENT_TEXT.UNIT_SECONDS}
             </div>
-          ))}
-        <div className={clsx(s.tableRowTotal)}>
-          {daysInMonth.map((day) => (
-            <div className={clsx(day.isWeekend && s.weekend)} key={day.date}>
-              {columnBroadcastQuantity(day.date)}
-            </div>
-          ))}
-          <div className={clsx(s.tableCellCounter)}>{totalBroadcastQuantity()}</div>
-          <div className={clsx(s.tableCellTotal)}>
-            {totalTimingQuantity() + ' ' + DATA_INTERVAL_PICKER_CONTENT_TEXT.UNIT_SECONDS}
           </div>
         </div>
+        {isNotSelectedRadio && <Tooltip id="table-cell" place="top" style={toolTipStyle} />}
       </div>
-      {isNotSelectedRadio && <Tooltip id="table-cell" place="top" style={toolTipStyle} />}
-    </div>
+      <InvalidSetModal isOpen={isInvalidSetModalOpen} onClose={handleCloseInvalidSetModal} />
+    </>
   );
 };

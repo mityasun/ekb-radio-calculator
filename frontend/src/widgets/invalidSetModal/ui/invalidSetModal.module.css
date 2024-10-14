@@ -1,0 +1,11 @@
+.invalidSetModal {
+  display: flex;
+  width: 100%;
+  max-width: 450px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 300;
+  gap: 10px;
+}

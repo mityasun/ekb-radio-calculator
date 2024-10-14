@@ -6,6 +6,8 @@
   position: fixed;
   box-shadow: #0000001a 0 0 0.5rem 0.25rem;
   border: 1px solid #cccccc;
+  overflow: visible;
+  transition: height 0.5s; 
 
   a {
     color: var(--primary-color);
@@ -36,6 +38,10 @@
       fill: var(--primary-color);
     }
   }
+}
+
+.modalCloseButton:focus {
+  outline: none;
 }
 
 
