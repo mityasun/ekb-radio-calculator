@@ -41,10 +41,12 @@ export const DateIntervalPicker = () => {
     selectedRadioBlockPositionsIds && blockPositions?.map((bp) => bp.id).includes(selectedRadioBlockPositionsIds);
 
   const isValidSet =
-    isSelectedAudioDuratiosValid &&
-    isSelectedTimeIntervalsValid &&
-    isSelectedMonthValid &&
-    isSelectedBlockPositionsValid;
+    (Boolean(!appSettings.audio_duration) ||
+      (isSelectedAudioDuratiosValid &&
+        isSelectedTimeIntervalsValid &&
+        isSelectedMonthValid &&
+        isSelectedBlockPositionsValid)) ??
+    true;
 
   const findCustomerSelection = (date: number, time_interval: number) => {
     return customer_selection.find((cs) => cs.date === date && cs.time_interval === time_interval);
